@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, event
 from sqlalchemy.orm import sessionmaker, Session, DeclarativeBase
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
@@ -47,18 +48,21 @@ frontend_public_dir = os.path.abspath(r"G:\BuildWeb\frontend\LeavesBerry-project
 app.mount("/static", StaticFiles(directory=frontend_public_dir), name="static")
 
 # 数据库配置
-base_dir = os.path.dirname(os.path.abspath(__file__))
-os.makedirs(os.path.join(base_dir, "data"), exist_ok=True)
-database_url = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(base_dir, 'data/leavesberry.db')}")
-connect_args = {"check_same_thread": False} if database_url.startswith("sqlite") else {}
-engine = create_engine(database_url, connect_args=connect_args)
+DB_USER = os.getenv("DB_USER", "root")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "LeavesBerry_Helloworld")
+DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
+DB_PORT = os.getenv("DB_PORT", "3306")
+DB_NAME = os.getenv("DB_NAME", "leavesberry")
+ # MySQL 连接串
+database_url = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
+connect_args = {}
 
-@event.listens_for(engine, "connect")
-def set_sqlite_wal(dbapi_connection, _connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA journal_mode=WAL")
-    cursor.close()
-
+engine = create_engine(
+    database_url,
+    pool_pre_ping=True,  # MySQL 连接保活
+    pool_recycle=3600
+)
+ 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase):
@@ -161,7 +165,7 @@ async def get_current_user(
 # 数据库模型
 class User(Base):
     __tablename__ = "user"
-    user_id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_email = Column(String(120), unique=True, nullable=False, index=True)
     user_name = Column(String(80), nullable=False)
     password_hash = Column(String(256), nullable=False)
@@ -169,22 +173,22 @@ class User(Base):
 class Code(Base):
     __tablename__ = "code"
     user_id = Column(Integer, primary_key=True)
-    user_email = Column(String(120), nullable=False, index=True)
-    code = Column(String(10), nullable=False)
+    user_email = Column(String(120), unique=True, nullable=False, index=True)
+    code = Column(String(10), unique=True, nullable=False)
     create_time = Column(Float, default=time.time)
 
 class LimLogin(Base):
     __tablename__ = "lim_login"
-    user_ip = Column(String(20), primary_key=True, index=True)
-    try_times = Column(Integer, default=0)
-    lim_start_time = Column(Float, default=0)
-    lim_time = Column(Integer, default=0)
+    user_ip = Column(String(20), primary_key=True, unique=True, index=True, nullable=False)
+    try_times = Column(Integer, default=0, nullable=False)
+    lim_start_time = Column(Float, default=0, nullable=False)
+    lim_time = Column(Integer, default=0, nullable=False)
 
 class Coll(Base):
     __tablename__ = "coll"
-    user_id = Column(Integer, ForeignKey("user.user_id"), primary_key=True)
-    url = Column(String(1000), primary_key=True)
-    title = Column(String(255), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), primary_key=True, nullable=False)
+    url = Column(String(1000), primary_key=True, unique=True, nullable=False)
+    title = Column(String(255), default="未知界面", nullable=False)
 
 Base.metadata.create_all(bind=engine)
 
@@ -219,7 +223,7 @@ class CollRequest(BaseModel):
         return value
 
 # ------------------------------
-# 路由（已全部规范 + 清理干净）
+# 路由
 # ------------------------------
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
@@ -234,13 +238,19 @@ async def ping():
 async def send_code(data: SendCodeRequest, db: Session = Depends(get_db)):
     await check_code_rate(data.user_email, db)
     clean_expired_codes(db)
-    code = random.randint(100000, 999999)
-    old = db.query(Code).filter(Code.user_email == data.user_email).first()
-    if old:
-        db.delete(old)
-    new_code = Code(user_email=data.user_email, code=str(code), create_time=time.time())
-    db.add(new_code)
-    db.commit()
+    old_code = db.query(Code).filter(Code.user_email == data.user_email).first()
+    if old_code:
+        db.delete(old_code)
+    while True:
+        code = random.randint(100000, 999999)
+        try:
+            new_code = Code(user_email=data.user_email, code=str(code), create_time=time.time())
+            db.add(new_code)
+            db.commit()
+            break
+        except IntegrityError:
+            db.rollback()
+            continue
     send_email(data.user_email, f"验证码：{code}", "LeavesBerry验证码")
     return {"msg": "验证码已发送"}
 
