@@ -1,3 +1,4 @@
+#第三方库
 from fastapi import FastAPI, Request, HTTPException, Depends, status
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -7,16 +8,23 @@ from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, event
 from sqlalchemy.orm import sessionmaker, Session, DeclarativeBase
 from sqlalchemy.exc import IntegrityError
+<<<<<<< HEAD
+=======
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+>>>>>>> 3dd42bcb711cb7b4c3431c3cad2f14736a135771
 from jose import JWTError, jwt
 import bcrypt
+from dotenv import load_dotenv
+import uvicorn
+#标准库
+from email.message import EmailMessage
+from datetime import datetime, timedelta, timezone
+from typing import Optional
 import random
 import smtplib
-from email.message import EmailMessage
 import time
 import os
-from dotenv import load_dotenv
 import re
 
 # 环境变量
@@ -123,11 +131,17 @@ def check_password_strength(password: str):
     if not re.search(r"[A-Za-z]", password) or not re.search(r"[0-9]", password):
         raise APIError("密码必须包含字母+数字")
 
-def create_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    
+def create_refresh_token(data: dict) -> str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM) 
 
 async def check_code_rate(user_email: str, db: Session):
     now = time.time()
@@ -298,8 +312,9 @@ async def login(request: Request, data: LoginRequest, db: Session = Depends(get_
         raise APIError("密码错误")
     lim.try_times = 0
     db.commit()
-    token = create_token({"sub": str(user.user_id)}, timedelta(minutes=30))
-    return {"msg": f"欢迎回来，{user.user_name}", "user_token": token}
+    access_token = create_access_token({"sub": str(user.user_id)})
+    refresh_token = create_refresh_token({"sub": str(user.user_id)})
+    return {"msg": f"欢迎回来，{user.user_name}", "access_token": access_token, "refresh_token": refresh_token}
 
 @app.post("/api/getUserInfo")
 def get_user_info(user: User = Depends(get_current_user)):
@@ -330,6 +345,5 @@ async def toggle_coll(data: CollRequest, user: User = Depends(get_current_user),
         db.commit()
         return {"msg": "收藏成功", "is_collected": True}
 
-if __name__ == "__main__":
-    import uvicorn
+if __name__ == "__main__":   
     uvicorn.run("Backend:app", host="127.0.0.1", port=5000, reload=True)
