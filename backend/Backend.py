@@ -1,5 +1,5 @@
 #第三方库
-from fastapi import FastAPI, Request, HTTPException, Depends, status
+from fastapi import FastAPI, Request, HTTPException, Depends, status, Response
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer
@@ -46,7 +46,7 @@ app.add_middleware(
 )
 
 # OAuth2
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/refreshToken")
 
 # 静态文件
 frontend_public_dir = os.path.abspath(r"G:\BuildWeb\frontend\LeavesBerry-project\public")
@@ -131,13 +131,13 @@ def check_password_strength(password: str):
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "type": "access"})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     
 def create_refresh_token(data: dict) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "type": "refresh"})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM) 
 
 async def check_code_rate(user_email: str, db: Session):
@@ -286,7 +286,7 @@ async def register(data: RegisterRequest, db: Session = Depends(get_db)):
     return {"msg": "注册成功"}
 
 @app.post("/api/login")
-async def login(request: Request, data: LoginRequest, db: Session = Depends(get_db)):
+async def login(request: Request, response: Response, data: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_email == data.user_email).first()
     if not user:
         raise APIError("用户不存在")
@@ -311,7 +311,16 @@ async def login(request: Request, data: LoginRequest, db: Session = Depends(get_
     db.commit()
     access_token = create_access_token({"sub": str(user.user_id)})
     refresh_token = create_refresh_token({"sub": str(user.user_id)})
-    return {"msg": f"欢迎回来，{user.user_name}", "access_token": access_token, "refresh_token": refresh_token}
+    response.set_cookie(
+        key="refresh_cookie",
+        value=refresh_token,
+        expires=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        path="/"
+    )
+    return {"msg": f"欢迎回来，{user.user_name}", "access_token": access_token}
 
 @app.post("/api/getUserInfo")
 def get_user_info(user: User = Depends(get_current_user)):
@@ -322,6 +331,33 @@ def get_user_info(user: User = Depends(get_current_user)):
         "user_name": user.user_name,
         "user_email": user.user_email
     }
+
+@app.post("/api/refreshToken")
+async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="登录已失效",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "refresh":
+            raise credentials_exception
+        user_id = payload.get("sub")
+        if not user_id:
+            raise credentials_exception
+        user = db.query(User).filter(User.user_id == int(user_id)).first()
+        if not user:
+            raise credentials_exception
+        new_access_token = create_access_token({"sub": str(user.user_id)})
+        return {"access_token": new_access_token}
+    except JWTError:
+        raise credentials_exception
+    
+@app.post("logout")
+def logout(response: Response):
+    response.delete_cookie(key="refresh_cookie", path="/")
+    return {"msg": "已退出登录"}
 
 @app.post("/api/initColl")
 async def init_coll(data: CollRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):

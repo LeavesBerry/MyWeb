@@ -2,13 +2,19 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 import router from './router'
+import axios from 'axios'
 
 import './assets/CommonStyle.css'
-import axios from 'axios'
+
 //import * as CommonUtils from './utils/CommonScript.js'
 
 const app = createApp(App)
 window.axios = axios
+const api = axios.create({
+    baseURL: 'http://localhost:5000',
+    timeout: 5000,
+    withCredentials: true
+})
 
 axios.interceptors.request.use(config => {
     const userToken = localStorage.getItem("token")
@@ -17,6 +23,38 @@ axios.interceptors.request.use(config => {
     }
     return config;
 });
+let isRefreshing = false;
+let requestQueue = []
+AudioParam.interceptors.response.use(
+    res => res,
+    async err => {
+        const originalReq = config.err;
+        if (err.response?.status !== 401) {
+            return Promise.reject(err);
+        }
+        if (isRefreshing) {
+            return new Promise((resolve) => {
+                requestQueue.push(() => resolve(api(originalReq)))
+            })
+        }
+        isRefreshing = true;
+        try {
+            const result = await axios.post('refreshToken')
+            const newAccessToken = result.access_token;
+            requestQueue.forEach(cb => cb());
+            requestQueue = [];
+            originalReq.headers.Authorization = `Bearer ${newAccessToken}`;
+            return api(originalReq)
+        } catch (refreshErr) {
+            localStorage.removeItem('userAccessToken');
+            requestQueue = [];
+            return Promise.reject(refreshErr)
+        } finally {
+            isRefreshing = false;
+        }
+    }
+)
 
 app.use(router)
+app.config.globalProperties.$api = api
 app.mount('#app')

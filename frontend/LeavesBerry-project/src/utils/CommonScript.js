@@ -51,6 +51,11 @@ export const axiosRequest = {
         return res.data;
     },
 
+    async logout(data) {
+        const res = await axios.post('/api/logout', data)
+        return res.data;
+    },
+
     async getUserInfo() {
         const res = await axios.post('/api/getUserInfo')
         return res.data;
@@ -79,13 +84,13 @@ export const userStore = reactive({
     userName: '未登录',
     userId: null,
     userEmail: null,
-    userToken: null,
+    userAccessToken: null,
     getToken() {
-        return localStorage.getItem('userToken')
+        return localStorage.getItem('userAccessToken')
     },
     setToken(token) {
-        this.userToken = token
-        localStorage.setItem('userToken', token)
+        this.userAccessToken = token
+        localStorage.setItem('userAccessToken', token)
     },
     setCache(data) {
         const cache = { data, expire: Date.now() + 10 * 60 * 1000 }
@@ -106,8 +111,8 @@ export const userStore = reactive({
         this.userName = '未登录'
         this.userId = null
         this.userEmail = null
-        this.userToken = null
-        localStorage.removeItem('userToken')
+        this.userAccessToken = null
+        localStorage.removeItem('userAccessToken')
         localStorage.removeItem('userCache')
     }
 })
@@ -311,12 +316,12 @@ const navbarFunction = {
 // 初始化用户
 // ------------------------------
 async function initUser() {
-    userStore.userToken = userStore.getToken()
-    if (!userStore.userToken) {
+    userStore.userAccessToken = userStore.getToken()
+    if (!userStore.userAccessToken) {
         loginModule.openLogin();
         return;
     }
-    else if (userStore.userToken == 'vistor') {
+    else if (userStore.userAccessToken == 'vistor') {
         return;
     }
     const cacheData = userStore.getCache()
@@ -368,7 +373,7 @@ const loginModule = reactive({
     },
 
     visitorEnter() {
-        userStore.userToken = 'vistor';
+        userStore.userAccessToken = 'vistor';
         userStore.userId = 0;
         this.closeLoginWindow();
     },
@@ -416,13 +421,14 @@ const loginModule = reactive({
         }
         const result = await axiosRequest.login(data);
         if (testError(result)) return;
-        userStore.setToken(result.user_token);
+        userStore.setToken(result.access_token);
         await initUser();
         this.closeLoginWindow();
         await initColl();
     },
 
     async logout() {
+        await axiosRequest.logout();
         userStore.setToken('visitor');
         await initUser();
         await initColl();
