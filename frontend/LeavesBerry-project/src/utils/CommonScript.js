@@ -9,7 +9,7 @@ export function testError(data) {
     if (data.msg) { console.log(data.msg) }
     return false
 }
-exasync function copyText(text) {
+export async function copyText(text) {
     try {
         await navigator.clipboard.writeText(text)
     } catch (err) {
@@ -189,7 +189,7 @@ function pageTransition(href) {
             win.clearInterval?.();
             win.clearTimeout?.();
             win.cancelAnimationFrame?.();
-        } catch (e) {}
+        } catch (e) { }
     }
 
     requestAnimationFrame(() => {
@@ -219,7 +219,7 @@ const navbarFunction = {
                 pageState.isCollected = data.is_collected
                 localStorage.setItem(collCacheKey, data.is_collected)
             }
-        } catch (e) {}
+        } catch (e) { }
     },
 
     async toggleColl() {
@@ -230,7 +230,7 @@ const navbarFunction = {
                 pageState.isCollected = data.is_collected
                 localStorage.setItem(`coll_${pageState.currentUrl}`, data.is_collected)
             }
-        } catch (e) {}
+        } catch (e) { }
     },
 
     // ------------------------------
@@ -356,7 +356,7 @@ const loginModule = reactive({
     inputEmail: ref(''),
     inputName: ref(''),
     inputPw: ref(''),
-//  if (!inputEmail || !sendCodeButton) return
+    //  if (!inputEmail || !sendCodeButton) return
     openLoginWindow() {
         const loginWindow = document.querySelector('#login-window');
         loginWindow.style.display = 'block';
@@ -390,13 +390,13 @@ const loginModule = reactive({
         setTimeout(() => {
             memberSign.style.visibility = 'hidden';
             infoInput.style.visibility = 'visible';
-        },500);
+        }, 500);
     },
 
     async sendCode() {
         const email = this.inputEmail;
-            if (!email) return;
-                testError(await axiosRequest.sendCode(email));
+        if (!email) return;
+        testError(await axiosRequest.sendCode(email));
     },
 
     async register() {
@@ -409,7 +409,7 @@ const loginModule = reactive({
         testError(await axiosRequest.register(data));
     },
 
-    async login () {
+    async login() {
         const data = {
             user_email: this.inputEmail,
             password: this.inputPw
@@ -422,12 +422,12 @@ const loginModule = reactive({
         await initColl();
     },
 
-    logout() {
+    async logout() {
         userStore.setToken('visitor');
         await initUser();
         await initColl();
     }
-        
+
 })
 // ------------------------------
 // 全局点击关闭

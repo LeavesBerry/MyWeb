@@ -8,11 +8,8 @@ from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, event
 from sqlalchemy.orm import sessionmaker, Session, DeclarativeBase
 from sqlalchemy.exc import IntegrityError
-<<<<<<< HEAD
-=======
 from datetime import datetime, timedelta, timezone
 from typing import Optional
->>>>>>> 3dd42bcb711cb7b4c3431c3cad2f14736a135771
 from jose import JWTError, jwt
 import bcrypt
 from dotenv import load_dotenv
