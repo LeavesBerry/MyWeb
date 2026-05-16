@@ -111,6 +111,30 @@
   <router-view />
 </template>
 <script setup>
-import api from './utils/CommonScript.js';
-api.login()
+import * as CommonScript from './utils/CommonScript.js';
+// ------------------------------
+// 生命周期
+// ------------------------------
+const resizeHandler = debounce(navbarFunction.scaleNavbar);
+onMounted(() => {
+    initUser();
+    navbarFunction.scaleNavbar();
+    window.addEventListener('resize', resizeHandler);
+    document.addEventListener('click', onGlobalClick);
+
+    // 页面动画
+    window.addEventListener('pageshow', () => {
+        if (window !== window.top) return
+        const lastPage = localStorage.getItem('lastPage');
+        if (lastPage && lastPage !== location.href && !pageState.isTransitioning) {
+            pageTransition(lastPage);
+        }
+        localStorage.setItem('lastPage', location.href);
+    })
+})
+
+onUnmounted(() => {
+    window.removeEventListener('resize', resizeHandler);
+    document.removeEventListener('click', onGlobalClick);
+})
 </script>

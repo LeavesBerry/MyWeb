@@ -22,7 +22,7 @@ export async function copyText(text) {
     }
 }
 
-function debounce(fn, delay = 100) {
+export function debounce(fn, delay = 100) {
     let timer
     return (...args) => {
         clearTimeout(timer)
@@ -120,10 +120,10 @@ export const userStore = reactive({
 
 
 // 搜索
-const searchKey = ref('')
+export const searchKey = ref('')
 
 // 页面状态
-const pageState = reactive({
+export const pageState = reactive({
     isMenuClosed: true,
     isCollected: false,
     isShareClosed: true,
@@ -134,7 +134,7 @@ const pageState = reactive({
 })
 
 // 菜单按钮样式
-const menuBtnStyle = reactive({
+export const menuBtnStyle = reactive({
     leftUp: '',
     leftDown: '',
     rightUp: '',
@@ -142,17 +142,17 @@ const menuBtnStyle = reactive({
 })
 
 // 分享按钮
-const shareStyle = ref({})
-const shareText = ref('➹')
+export const shareStyle = ref({})
+export const shareText = ref('➹')
 
 // iframe 引用
-const tframe = ref(null)
+export const tframe = ref(null)
 
 
 // ------------------------------
 // 菜单切换
 // ------------------------------
-const menuFunction = {
+export const menuFunction = {
     toggleMenu() {
         const menuBox = document.querySelector('#menu-button-box')
         if (pageState.isMenuClosed) {
@@ -175,7 +175,7 @@ const menuFunction = {
 // ------------------------------
 // 页面切换动画
 // ------------------------------
-function pageTransition(href) {
+export function pageTransition(href) {
     if (pageState.isTransitioning) return
     pageState.isTransitioning = true
 
@@ -207,10 +207,11 @@ function pageTransition(href) {
     }, 800)
 }
 
-// ------------------------------
-// 收藏功能
-// ------------------------------
-const navbarFunction = {
+
+export const navbarFunction = {
+    // ------------------------------
+    // 收藏功能
+    // ------------------------------
     async initColl() {
         const collCacheKey = `coll_${pageState.currentUrl}`;
         const cached = localStorage.getItem(collCacheKey);
@@ -452,29 +453,5 @@ function onGlobalClick(e) {
     }
 }
 
-// ------------------------------
-// 生命周期
-// ------------------------------
-const resizeHandler = debounce(navbarFunction.scaleNavbar);
 
-onMounted(() => {
-    initUser();
-    navbarFunction.scaleNavbar();
-    window.addEventListener('resize', resizeHandler);
-    document.addEventListener('click', onGlobalClick);
 
-    // 页面动画
-    window.addEventListener('pageshow', () => {
-        if (window !== window.top) return
-        const lastPage = localStorage.getItem('lastPage');
-        if (lastPage && lastPage !== location.href && !pageState.isTransitioning) {
-            pageTransition(lastPage);
-        }
-        localStorage.setItem('lastPage', location.href);
-    })
-})
-
-onUnmounted(() => {
-    window.removeEventListener('resize', resizeHandler);
-    document.removeEventListener('click', onGlobalClick);
-})

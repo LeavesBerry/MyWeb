@@ -16,7 +16,7 @@ const api = axios.create({
     withCredentials: true
 })
 
-axios.interceptors.request.use(config => {
+api.interceptors.request.use(config => {
     const userToken = localStorage.getItem("token")
     if (userToken) {
         config.headers.Authorization = `Bearer ${userToken}`;
@@ -25,10 +25,13 @@ axios.interceptors.request.use(config => {
 });
 let isRefreshing = false;
 let requestQueue = []
-AudioParam.interceptors.response.use(
+api.interceptors.response.use(
     res => res,
     async err => {
-        const originalReq = config.err;
+        if (!err.response) {
+            return Promise.reject(err);
+        }
+        const originalReq = err.config;
         if (err.response?.status !== 401) {
             return Promise.reject(err);
         }
@@ -57,4 +60,5 @@ AudioParam.interceptors.response.use(
 
 app.use(router)
 app.config.globalProperties.$api = api
+window.api = api
 app.mount('#app')
