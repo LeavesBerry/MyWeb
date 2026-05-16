@@ -4,6 +4,9 @@ import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 // ------------------------------
 // 工具函数
 // ------------------------------
+export function showTips(text) {
+    tipText = text;
+}
 export function testError(data) {
     if (data.error) { console.error(data.error); return true }
     if (data.msg) { console.log(data.msg) }
@@ -118,10 +121,6 @@ export const userStore = reactive({
 })
 
 
-
-// 搜索
-export const searchKey = ref('')
-
 // 页面状态
 export const pageState = reactive({
     isMenuClosed: true,
@@ -140,13 +139,6 @@ export const menuBtnStyle = reactive({
     rightUp: '',
     rightDown: ''
 })
-
-// 分享按钮
-export const shareStyle = ref({})
-export const shareText = ref('➹')
-
-// iframe 引用
-export const tframe = ref(null)
 
 
 // ------------------------------
@@ -174,7 +166,9 @@ export const menuFunction = {
 
 // ------------------------------
 // 页面切换动画
-// ------------------------------
+// ------------------------------// 
+// iframe 引用
+export const tframe = ref(null);
 export function pageTransition(href) {
     if (pageState.isTransitioning) return
     pageState.isTransitioning = true
@@ -207,7 +201,12 @@ export function pageTransition(href) {
     }, 800)
 }
 
-
+export const navbarBtnStyle = reactive({
+    shareStyle: ref({}),
+    shareText: ref('➹'),
+    // 搜索
+    searchKey: ref(''),
+})
 export const navbarFunction = {
     // ------------------------------
     // 收藏功能
@@ -242,6 +241,7 @@ export const navbarFunction = {
     // ------------------------------
     // 分享功能
     // ------------------------------
+
     toggleShare(e) {
         if (!pageState.isShareClosed && e) {
             const btn = document.querySelector('#share-button');
@@ -292,6 +292,10 @@ export const navbarFunction = {
             document.head.appendChild(script);
         })
     },
+
+
+
+
     // ------------------------------
     // 导航栏缩放
     // ------------------------------
@@ -316,10 +320,12 @@ export const navbarFunction = {
 // ------------------------------
 // 初始化用户
 // ------------------------------
-async function initUser() {
+
+// 搜索
+export async function initUser() {
     userStore.userAccessToken = userStore.getToken()
     if (!userStore.userAccessToken) {
-        loginModule.openLogin();
+        loginModule.openLoginWindow();
         return;
     }
     else if (userStore.userAccessToken == 'vistor') {
@@ -357,7 +363,7 @@ async function initUser() {
 // 登录模块
 // ------------------------------
 
-const loginModule = reactive({
+export const loginModule = reactive({
     inputCode: ref(''),
     inputEmail: ref(''),
     inputName: ref(''),
@@ -439,7 +445,7 @@ const loginModule = reactive({
 // ------------------------------
 // 全局点击关闭
 // ------------------------------
-function onGlobalClick(e) {
+export function onGlobalClick(e) {
     const shareBtn = document.querySelector('#share-button');
     const menuBox = document.querySelector('#menu-button-box');
     const isClickShare = shareBtn?.contains(e.target);

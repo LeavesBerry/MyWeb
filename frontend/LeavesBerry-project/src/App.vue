@@ -39,7 +39,7 @@
     <button class="menu-button" id="button-right-up" :style="menuBtnStyle.rightUp"></button>
     <button class="menu-button" id="button-right-down" :style="menuBtnStyle.rightDown"></button>
 
-    <input id="search-input" type="text" placeholder="查找……" v-model="searchKey" />
+    <input id="search-input" type="text" placeholder="查找……" v-model="navbarBtnStyle.searchKey" />
     <button id="search-button" @click="navbarFunction.DoSearch">GO</button>
 
     <div id="navbar-fuction-button-box">
@@ -54,8 +54,8 @@
         class="function-button" 
         id="share-button" 
         @click="navbarFunction.toggleShare"
-        :style="shareStyle"
-      >{{ shareText }}</button>
+        :style="navbarBtnStyle.shareStyle"
+      >{{ navbarBtnStyle.shareText }}</button>
       <button 
         class="function-button" 
         id="command-button"
@@ -111,7 +111,13 @@
   <router-view />
 </template>
 <script setup>
-import * as CommonScript from './utils/CommonScript.js';
+import { 
+  initUser, debounce, navbarFunction, 
+  onGlobalClick, pageState, pageTransition, 
+  menuBtnStyle, userStore, menuFunction, loginModule, 
+  navbarBtnStyle
+} from './utils/CommonScript.js';
+import { onMounted, onUnmounted } from 'vue';
 // ------------------------------
 // 生命周期
 // ------------------------------
