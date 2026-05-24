@@ -4,7 +4,7 @@ body {
 	margin: 0;
 }
 
-#static-frame {
+#static-img {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -14,10 +14,11 @@ body {
 	clip-path: inset(8vh 0 0 0);
 	border: none;
 	overflow: hidden;
+	display: block;
 	pointer-events: none;
-	-webkit-mask-image: linear-gradient(to top left, transparent 100%, #000, 0%);
-	mask-image: linear-gradient(to top left, transparent 100%, #000, 0%);
-	transition: -webkit-mask-image 0.8s ease, mask-image 0.8s ease;
+	clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%);
+	transition: clip-path 0.4s ease-out;
+	will-change: clip-path;
 }
 
 a {
@@ -40,6 +41,37 @@ a {
 	padding: 28vh 3vh 3vh 3vh;
 	display: none;
 	z-index: 999;
+}
+
+#visitor-entry {
+	position: absolute;
+	left: 2vh;
+	top: 2vh;
+	width: 25vh;
+	height: 40vh;
+	background-color: #FFF3D0;
+}
+
+#member-entry {
+	position: absolute;
+	right: 2vh;
+	top: 2vh;
+	width: 25vh;
+	height: 40vh;
+	background-color: #FFF3D0;
+}
+
+#rechoose {
+	position: absolute;
+	right: 5vh;
+	bottom: -21vh;
+	width: 22vh;
+	height: 7vh;
+	background-color: #FFF3D0;
+}
+
+#info-input {
+	visibility: hidden;
 }
 
 #input-email {

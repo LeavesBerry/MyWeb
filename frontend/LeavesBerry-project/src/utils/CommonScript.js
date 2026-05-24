@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+import html2canvas from 'html2canvas'
 
 // ------------------------------
 // 工具函数
@@ -117,7 +118,44 @@ export const userStore = reactive({
         this.userAccessToken = null
         localStorage.removeItem('userAccessToken')
         localStorage.removeItem('userCache')
+    },
+    async initUser() {
+        userStore.userAccessToken = userStore.getToken()
+        if (!userStore.userAccessToken) {
+            loginModule.openLoginWindow();
+            return;
+        }
+        else if (userStore.userAccessToken == 'vistor') {
+            return;
+        }
+        const cacheData = userStore.getCache()
+        if (cacheData) {
+            userStore.isLogined = true;
+            userStore.userName = cacheData.user_name;
+            userStore.userId = cacheData.user_id;
+            userStore.userEmail = cacheData.user_email;
+            await initColl();
+            return;
+        }
+        try {
+            const data = await axiosRequest.getUserInfo();
+            if (testError(data)) {
+                userStore.clear();
+                loginModule.openLoginWindow();
+                return;
+            }
+            userStore.isLogined = true;
+            userStore.userName = data.user_name;
+            userStore.userId = data.user_id;
+            userStore.userEmail = data.user_email;
+            userStore.setCache(data);
+            await navbarFunction.initColl()
+        } catch (e) {
+            userStore.clear();
+            loginModule.openLoginWindow();
+        }
     }
+
 })
 
 
@@ -168,37 +206,62 @@ export const menuFunction = {
 // 页面切换动画
 // ------------------------------// 
 // iframe 引用
-export const tframe = ref(null);
 export function pageTransition(href) {
-    if (pageState.isTransitioning) return
-    pageState.isTransitioning = true
-
-    const frame = tframe.value
-    frame.onload = null
-    frame.style.transition = '-webkit-mask-image 0s ease, mask-image 0s ease';
-    frame.style.webkitMaskImage = 'linear-gradient(to top left, transparent 0%, #000, 100%)';
-    frame.style.maskImage = 'linear-gradient(to top left, transparent 0%, #000, 100%)';
-    frame.offsetWidth;
-    frame.src = href;
-    frame.style.transition = '-webkit-mask-image 0.8s ease, mask-image 0.8s ease';
-
-    frame.onload = function () {
-        try {
-            const win = frame.contentWindow;
-            win.clearInterval?.();
-            win.clearTimeout?.();
-            win.cancelAnimationFrame?.();
-        } catch (e) { }
+    if (pageState.isTransitioning) return;
+    pageState.isTransitioning = true;
+    tImg = window.tImg?.value;
+    tImg.onload = null;
+    tImg.src = href;
+    tImg.onload = function () {
+        requestAnimationFrame(() => {
+            tImg.style.clipPath = "polygon(0 0,100% 0,100% 0,0 100%,0 100%)";
+            setTimeout(() => {
+                tImg.style.clipPath = "polygon(0 0,0 0,0 0,0 0,0 0)";
+            }, 300)
+        });
+        setTimeout(() => {
+            tImg.style.display = "none";
+            tImg.style.clipPath = "polygon(0 0,100% 0,100% 0,0 100%,0 100%)";
+            localStorage.removeItem('lastPageScreenshot');
+            pageState.isTransitioning = false;
+        }, 800)
     }
+}
 
-    requestAnimationFrame(() => {
-        frame.style.webkitMaskImage = 'linear-gradient(to top left, transparent 100%, #000, 0%)';
-        frame.style.maskImage = 'linear-gradient(to top left, transparent 100%, #000, 0%)';
-    })
+export async function caputureCurrentPage() {
 
-    setTimeout(() => {
-        pageState.isTransitioning = false;
-    }, 800)
+    // 关键：立即克隆当前 DOM，防止后续变化
+    const clone = document.documentElement.cloneNode(true);
+
+    // 清除克隆中的脚本和动态内容
+    removeScripts(clone);
+
+    console.log(window.html2canvas)
+    const canvas = await html2canvas(clone, {
+        scale: 0.4,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        // 重要：使用克隆的 DOM 而不是实时 DOM
+        onclone: (clonedDoc) => {
+            // 确保克隆的文档保持当前状态
+            // 可以在这里做一些清理工作
+        }
+    });
+    console.log(2);
+    return canvas.toDataURL('image/jpeg', 0.6);
+}
+
+function removeScripts(element) {
+    const scripts = element.querySelectorAll('script');
+    scripts.forEach(script => script.remove());
+
+    const videos = element.querySelectorAll('video');
+    videos.forEach(video => video.remove());
+
+    const iframes = element.querySelectorAll('iframe');
+    iframes.forEach(iframe => iframe.remove());
 }
 
 export const navbarBtnStyle = reactive({
@@ -322,42 +385,6 @@ export const navbarFunction = {
 // ------------------------------
 
 // 搜索
-export async function initUser() {
-    userStore.userAccessToken = userStore.getToken()
-    if (!userStore.userAccessToken) {
-        loginModule.openLoginWindow();
-        return;
-    }
-    else if (userStore.userAccessToken == 'vistor') {
-        return;
-    }
-    const cacheData = userStore.getCache()
-    if (cacheData) {
-        userStore.isLogined = true;
-        userStore.userName = cacheData.user_name;
-        userStore.userId = cacheData.user_id;
-        userStore.userEmail = cacheData.user_email;
-        await initColl();
-        return;
-    }
-    try {
-        const data = await axiosRequest.getUserInfo();
-        if (testError(data)) {
-            userStore.clear();
-            loginModule.openLogin();
-            return;
-        }
-        userStore.isLogined = true;
-        userStore.userName = data.user_name;
-        userStore.userId = data.user_id;
-        userStore.userEmail = data.user_email;
-        userStore.setCache(data);
-        await initColl()
-    } catch (e) {
-        userStore.clear();
-        loginModule.openLoginWindow();
-    }
-}
 
 // ------------------------------
 // 登录模块
@@ -386,22 +413,25 @@ export const loginModule = reactive({
     },
 
     memberEnter() {
-        const member = document.querySelector('#member-choice');
+        const member = document.querySelector('#member-entry');
         const memberSign = document.querySelector('#member-sign');
         const infoInput = document.querySelector('#info-input');
         member.style.transform = 'scale(2.2,1)';
+        console.log('2');
         memberSign.style.visibility = 'hidden';
         infoInput.style.visibility = 'visible';
     },
 
     rechoose() {
-        const member = document.querySelector('#member');
+        const member = document.querySelector('#member-entry');
         const memberSign = document.querySelector('#member-sign');
         const infoInput = document.querySelector('#info-input');
-        member.sty.sty.style.transform = 'scale(1,1)';
+        member.style.transform = 'none';
+        console.log('1');
+        member.offsetWidth;
         setTimeout(() => {
-            memberSign.style.visibility = 'hidden';
-            infoInput.style.visibility = 'visible';
+            memberSign.style.visibility = 'visible';
+            infoInput.style.visibility = 'hidden';
         }, 500);
     },
 
@@ -438,7 +468,7 @@ export const loginModule = reactive({
         await axiosRequest.logout();
         userStore.setToken('visitor');
         await initUser();
-        await initColl();
+        await navbarFunction.initColl();
     }
 
 })

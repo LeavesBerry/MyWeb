@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "cd ..\\backend && python Backend.py",
+    "server": "cd ..\\backend && python main.py",
     "start": "concurrently \"npm run dev\" \"npm run server\"",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "axios": "^1.16.0",
+    "html2canvas": "^1.4.1",
     "vue": "^3.5.32",
     "vue-router": "^4.6.4"
   },

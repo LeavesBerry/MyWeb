@@ -201,6 +201,11 @@ class Coll(Base):
     url = Column(String(1000), primary_key=True, unique=True, nullable=False)
     title = Column(String(255), default="未知界面", nullable=False)
 
+class Pages(Base):
+    __tablename__ = "pages"
+    url = Column(String(1000), primary_key=True, unique=True, nullable=False)
+    title = Column(String(255), default="未知界面", nullable=False)
+
 Base.metadata.create_all(bind=engine)
 
 # 请求模型

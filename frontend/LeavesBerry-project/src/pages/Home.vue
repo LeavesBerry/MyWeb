@@ -1,8 +1,8 @@
 <template>
     <div class="home-page">
-		<a href="Test2.html">T2</a>
-		<!--home page-->
-		<a href="Collect.html">CL</a>
 		
+		<!--home page-->
+		<router-link to="/Collect">CL</router-link>
+		<router-link to="/Test2">T2</router-link>
 	</div>
 </template>	
