@@ -149,7 +149,7 @@ export const userStore = reactive({
             userStore.userId = data.user_id;
             userStore.userEmail = data.user_email;
             userStore.setCache(data);
-            await navbarFunction.initColl()
+            await navbarModule.initColl()
         } catch (e) {
             userStore.clear();
             loginModule.openLoginWindow();
@@ -171,106 +171,47 @@ export const pageState = reactive({
 })
 
 // 菜单按钮样式
-export const menuBtnStyle = reactive({
-    leftUp: '',
-    leftDown: '',
-    rightUp: '',
-    rightDown: ''
-})
+
 
 
 // ------------------------------
 // 菜单切换
 // ------------------------------
-export const menuFunction = {
+export const menuModule = reactive({
+
+    leftUp: '',
+    leftDown: '',
+    rightUp: '',
+    rightDown: '',
+    menuBox: '',
+
     toggleMenu() {
-        const menuBox = document.querySelector('#menu-button-box')
         if (pageState.isMenuClosed) {
-            menuBtnStyle.leftUp = 'transform:scale(0.8)'
-            menuBtnStyle.leftDown = 'transform:translateY(68.65vh) scale(0.8)'
-            menuBtnStyle.rightUp = 'transform:translateX(44vh) scale(0.8)'
-            menuBtnStyle.rightDown = 'transform:translate(44vh,68.65vh) scale(0.8)'
-            menuBox.style.cssText = 'z-index:21;opacity:1;transform:scale(0.8,0.8)'
+            this.leftUp = 'transform:scale(0.8)'
+            this.leftDown = 'transform:translateY(68.65vh) scale(0.8)'
+            this.rightUp = 'transform:translateX(44vh) scale(0.8)'
+            this.rightDown = 'transform:translate(44vh,68.65vh) scale(0.8)'
+            this.menuBox = 'z-index:21;opacity:1;transform:scale(0.8,0.8)'
         } else {
-            menuBtnStyle.leftUp = ''
-            menuBtnStyle.leftDown = ''
-            menuBtnStyle.rightUp = ''
-            menuBtnStyle.rightDown = ''
-            menuBox.style.cssText = 'z-index:23;opacity:0;transform:scale(0.1,0.067)'
+            this.leftUp = ''
+            this.leftDown = ''
+            this.rightUp = ''
+            this.rightDown = ''
+            this.menuBox = 'z-index:23;opacity:0;transform:scale(0.1,0.067)'
         }
         pageState.isMenuClosed = !pageState.isMenuClosed
     }
-}
-
-// ------------------------------
-// 页面切换动画
-// ------------------------------// 
-// iframe 引用
-export function pageTransition(href) {
-    if (pageState.isTransitioning) return;
-    pageState.isTransitioning = true;
-    tImg = window.tImg?.value;
-    tImg.onload = null;
-    tImg.src = href;
-    tImg.onload = function () {
-        requestAnimationFrame(() => {
-            tImg.style.clipPath = "polygon(0 0,100% 0,100% 0,0 100%,0 100%)";
-            setTimeout(() => {
-                tImg.style.clipPath = "polygon(0 0,0 0,0 0,0 0,0 0)";
-            }, 300)
-        });
-        setTimeout(() => {
-            tImg.style.display = "none";
-            tImg.style.clipPath = "polygon(0 0,100% 0,100% 0,0 100%,0 100%)";
-            localStorage.removeItem('lastPageScreenshot');
-            pageState.isTransitioning = false;
-        }, 800)
-    }
-}
-
-export async function caputureCurrentPage() {
-
-    // 关键：立即克隆当前 DOM，防止后续变化
-    const clone = document.documentElement.cloneNode(true);
-
-    // 清除克隆中的脚本和动态内容
-    removeScripts(clone);
-
-    console.log(window.html2canvas)
-    const canvas = await html2canvas(clone, {
-        scale: 0.4,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        // 重要：使用克隆的 DOM 而不是实时 DOM
-        onclone: (clonedDoc) => {
-            // 确保克隆的文档保持当前状态
-            // 可以在这里做一些清理工作
-        }
-    });
-    console.log(2);
-    return canvas.toDataURL('image/jpeg', 0.6);
-}
-
-function removeScripts(element) {
-    const scripts = element.querySelectorAll('script');
-    scripts.forEach(script => script.remove());
-
-    const videos = element.querySelectorAll('video');
-    videos.forEach(video => video.remove());
-
-    const iframes = element.querySelectorAll('iframe');
-    iframes.forEach(iframe => iframe.remove());
-}
-
-export const navbarBtnStyle = reactive({
-    shareStyle: ref({}),
-    shareText: ref('➹'),
-    // 搜索
-    searchKey: ref(''),
 })
-export const navbarFunction = {
+
+
+export const navbarModule = reactive({
+
+    shareStyle: {},
+    shareText: '➹',
+    // 搜索
+    searchKey: '',
+
+
     // ------------------------------
     // 收藏功能
     // ------------------------------
@@ -306,6 +247,7 @@ export const navbarFunction = {
     // ------------------------------
 
     toggleShare(e) {
+
         if (!pageState.isShareClosed && e) {
             const btn = document.querySelector('#share-button');
             const rect = btn.getBoundingClientRect();
@@ -316,19 +258,22 @@ export const navbarFunction = {
 
         pageState.isShareClosed = !pageState.isShareClosed
         if (!pageState.isShareClosed) {
-            shareStyle.value = {
+            this.shareText = '';
+            this.shareStyle = {
                 width: '9vh',
                 paddingLeft: '4.5vh',
                 paddingRight: '4.5vh',
-                backgroundImage: 'url("static/Picture/QR.png"),url("static/Picture/Link.png")',
+                backgroundImage: 'url("../public/images/QR.png"),url("../public/images/Link.png")',
                 backgroundPosition: '1vh center, right 1vh center',
                 backgroundSize: '3vh 3vh, 3vh 3vh',
                 backgroundRepeat: 'no-repeat,no-repeat'
             }
-            shareText.value = '';
+            this.shareText = '';
+
+
         } else {
-            shareStyle.value = {};
-            shareText.value = '➹';
+            this.shareStyle = {};
+            this.shareText = '➹';
         }
     },
 
@@ -377,33 +322,30 @@ export const navbarFunction = {
     DoSearch() {
         console.log('搜索:', searchKey.value);
     }
-}
+})
 
 
-// ------------------------------
-// 初始化用户
-// ------------------------------
 
-// 搜索
-
-// ------------------------------
-// 登录模块
-// ------------------------------
 
 export const loginModule = reactive({
-    inputCode: ref(''),
-    inputEmail: ref(''),
-    inputName: ref(''),
-    inputPw: ref(''),
+
+    inputCode: '',
+    inputEmail: '',
+    inputName: '',
+    inputPw: '',
+    window: {},
+    memberEntry: {},
+    memberSign: {},
+    infoInput: {},
+
+
     //  if (!inputEmail || !sendCodeButton) return
     openLoginWindow() {
-        const loginWindow = document.querySelector('#login-window');
-        loginWindow.style.display = 'block';
+        this.window = { display: 'block' };
     },
 
     closeLoginWindow() {
-        const loginWindow = document.querySelector('#login-window');
-        loginWindow.style.display = 'none';
+        this.window = { display: 'none' };
     },
 
     visitorEnter() {
@@ -413,25 +355,16 @@ export const loginModule = reactive({
     },
 
     memberEnter() {
-        const member = document.querySelector('#member-entry');
-        const memberSign = document.querySelector('#member-sign');
-        const infoInput = document.querySelector('#info-input');
-        member.style.transform = 'scale(2.2,1)';
-        console.log('2');
-        memberSign.style.visibility = 'hidden';
-        infoInput.style.visibility = 'visible';
+        this.memberEntry = { transform: 'scale(2,1)' };
+        this.memberSign = { visibility: 'hidden' };
+        this.infoInput = { visibility: 'visible' };
     },
 
     rechoose() {
-        const member = document.querySelector('#member-entry');
-        const memberSign = document.querySelector('#member-sign');
-        const infoInput = document.querySelector('#info-input');
-        member.style.transform = 'none';
-        console.log('1');
-        member.offsetWidth;
+        this.memberEntry = { transform: 'none' };
         setTimeout(() => {
-            memberSign.style.visibility = 'visible';
-            infoInput.style.visibility = 'hidden';
+            this.memberSign = { visibility: 'visible' };
+            this.infoInput = { visibility: 'hidden' };
         }, 500);
     },
 
@@ -468,7 +401,7 @@ export const loginModule = reactive({
         await axiosRequest.logout();
         userStore.setToken('visitor');
         await initUser();
-        await navbarFunction.initColl();
+        await navbarModule.initColl();
     }
 
 })
@@ -477,15 +410,15 @@ export const loginModule = reactive({
 // ------------------------------
 export function onGlobalClick(e) {
     const shareBtn = document.querySelector('#share-button');
-    const menuBox = document.querySelector('#menu-button-box');
+    const menuBox = document.querySelector('#menu-box');
     const isClickShare = shareBtn?.contains(e.target);
     const isClickMenu = menuBox?.contains(e.target);
 
     if (!pageState.isShareClosed && !isClickShare) {
-        navbarFunction.toggleShare();
+        navbarModule.toggleShare();
     }
     if (!pageState.isMenuClosed && !isClickMenu) {
-        menuFunction.toggleMenu();
+        menuModule.toggleMenu();
     }
 }
 

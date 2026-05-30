@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="navbar">
-      <div id="menu-button-box" @click="menuFunction.toggleMenu">
+      <div id="menu-box" @click="menuModule.toggleMenu" :style="menuModule.menuBox">
         <span class="star s1">✦</span>
         <span class="star s2">✦</span>
         <span class="star s3">✦</span>
@@ -35,33 +35,37 @@
         </div>
       </div>
 
-      <button class="menu-button" id="button-left-up" :style="menuBtnStyle.leftUp"></button>
-      <button class="menu-button" id="button-left-down" :style="menuBtnStyle.leftDown"></button>
-      <button class="menu-button" id="button-right-up" :style="menuBtnStyle.rightUp"></button>
-      <button class="menu-button" id="button-right-down" :style="menuBtnStyle.rightDown"></button>
+      <button class="menu-button" id="button-left-up" :style="menuModule.leftUp"></button>
+      <button class="menu-button" id="button-left-down" :style="menuModule.leftDown"></button>
+      <button class="menu-button" id="button-right-up" :style="menuModule.rightUp"></button>
+      <button class="menu-button" id="button-right-down" :style="menuModule.rightDown"></button>
 
-      <input id="search-input" type="text" placeholder="查找……" v-model="navbarBtnStyle.searchKey" />
-      <button id="search-button" @click="navbarFunction.DoSearch">GO</button>
+      <input id="search-input" type="text" placeholder="查找……" v-model="navbarModule.searchKey" />
+      <button id="search-button" @click="navbarModule.DoSearch">GO</button>
 
       <div id="navbar-fuction-button-box">
-        <button class="function-button" id="scrshot-button" @click="navbarFunction.handleScreenshot">✦</button>
         <button 
-          class="function-button" 
-          id="collect-button"
-          :style="{ color: pageState.isCollected ? '#73B436' : 'rgb(90,25,27)'}"
-          @click="navbarFunction.toggleColl"
+          class="navbar-function-button" 
+          id="scrshot-button" 
+          @click="navbarModule.handleScreenshot"
         >✦</button>
         <button 
-          class="function-button" 
-          id="share-button" 
-          @click="navbarFunction.toggleShare"
-          :style="navbarBtnStyle.shareStyle"
-        >{{ navbarBtnStyle.shareText }}</button>
+          class="navbar-function-button" 
+          id="collect-button"
+          :style="{ color: pageState.isCollected ? '#73B436' : 'rgb(90,25,27)'}"
+          @click="navbarModule.toggleColl"
+        >✦</button>
         <button 
-          class="function-button" 
+          class="navbar-function-button" 
+          id="share-button" 
+          @click="navbarModule.toggleShare"
+          :style="navbarModule.shareStyle"
+        >{{ navbarModule.shareText }}</button>
+        <button 
+          class="navbar-function-button" 
           id="command-button"
           :style="{ color: !pageState.isCmdClosed ? 'red' : '#5A191B' }"
-          @click="navbarFunction.toggleCmdUI"
+          @click="navbarModule.toggleCmdUI"
         >/</button>
       </div>
 
@@ -69,32 +73,41 @@
         id="command-menu" 
         :style="{ transform: pageState.isCmdClosed ? 'translateY(-76vh)' : 'none' }">
         <p id="command-title">------------------Command Input------------------</p>
-        <button id="close-command" @click="navbarFunction.toggleCmdUI">×</button>
+        <button id="close-command" @click="navbarModule.toggleCmdUI">×</button>
       </div>
     </div>
 
-    <div id="login-window">
+    <div id="login-window" :style="loginModule.window">
       <div id="visitor-entry" @click="loginModule.visitorEnter"></div>
-      <div id="member-entry" @click="loginModule.memberEnter">
-        <button id="rechoose" @click.stop="loginModule.rechoose"></button>
-        <canvas id="member-sign"></canvas>
-        <div id="info-input">
+      <div id="member-entry" @click="loginModule.memberEnter" 
+      :style="loginModule.memberEntry">
+        
+        <canvas id="member-sign" :style="loginModule.memberSign"></canvas>
+        <div id="info-input" :style="loginModule.infoInput">
+          <button 
+            id="rechoose" 
+            @click.stop="loginModule.rechoose"
+          >返回</button>
           <input 
-          id="input-email" 
-          v-model="loginModule.inputEmail" 
-          placeholder="邮箱"></input>
+            id="input-email" 
+            v-model="loginModule.inputEmail" 
+            placeholder="邮箱"
+          ></input>
           <input 
-          id="input-code" 
-          v-model="loginModule.inputCode"
-          placeholder="验证码"></input>
+            id="input-code" 
+            v-model="loginModule.inputCode"
+            placeholder="验证码"
+          ></input>
           <input 
-          id="input-name" 
-          v-model="loginModule.inputName" 
-          placeholder="名称"></input>
+            id="input-name" 
+            v-model="loginModule.inputName" 
+            placeholder="名称"
+          ></input>
           <input 
-          id="input-password" 
-          v-model="loginModule.inputPw" 
-          placeholder="密码"></input>
+            id="input-password" 
+            v-model="loginModule.inputPw" 
+            placeholder="密码"
+          ></input>
           <button id="send-code" @click="loginModule.sendCode">send code</button>
           <button id="register" @click="loginModule.register">register</button>
           <button id="login" @click="loginModule.login">login</button>
@@ -104,19 +117,23 @@
 
     <p id="tip">{{ tipText }}</p>
 
-    <img ref="tImg" id="static-img" loading="eager" scrolling="no">
 
     
 
-    <router-view />
+    <router-view v-slot="{ Component, route }">
+      <transition name="page-cover-slide">
+        <div :key="route.fullPath" class="page-cover-slide-view">
+          <component :is="Component" />
+        </div>
+      </transition>
+    </router-view>
   </div>
 </template>
 <script setup>
 import { 
-  debounce, navbarFunction, 
-  onGlobalClick, pageState, pageTransition, 
-  menuBtnStyle, userStore, menuFunction, loginModule, 
-  navbarBtnStyle
+  debounce, navbarModule, 
+  onGlobalClick, pageState,
+  userStore, menuModule, loginModule, 
 } from './utils/CommonScript.js';
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -127,11 +144,11 @@ window.tImg = tImg;
 // ------------------------------
 // 生命周期
 // ------------------------------
-const resizeHandler = debounce(navbarFunction.scaleNavbar);
+const resizeHandler = debounce(navbarModule.scaleNavbar);
 onMounted(() => {
     
     userStore.initUser();
-    navbarFunction.scaleNavbar();
+    navbarModule.scaleNavbar();
     window.addEventListener('resize', resizeHandler);
     document.addEventListener('click', onGlobalClick);
 })
@@ -141,3 +158,51 @@ onUnmounted(() => {
     document.removeEventListener('click', onGlobalClick);
 })
 </script>
+
+<style>
+/* 页面跳转动画：新页面从底部滑入并覆盖旧页面 */
+#app {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  isolation: isolate;
+}
+
+.page-cover-slide-view {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  min-height: 100vh;
+  overflow: auto;
+  z-index: 10;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  contain: paint;
+}
+
+/* 新页面入场：只动画 transform，避免触发布局重排，性能更好 */
+.page-cover-slide-enter-active {
+  z-index: 20;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.page-cover-slide-enter-from {
+  transform: translate3d(0, 100%, 0);
+}
+
+.page-cover-slide-enter-to {
+  transform: translate3d(0, 0, 0);
+}
+
+/* 旧页面不移动，留在下层，让新页面覆盖它 */
+.page-cover-slide-leave-active {
+  z-index: 10;
+  transition: none;
+}
+
+.page-cover-slide-leave-from,
+.page-cover-slide-leave-to {
+  transform: translate3d(0, 0, 0);
+}
+</style>
