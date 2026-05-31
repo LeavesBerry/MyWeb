@@ -2,15 +2,26 @@ import axios from 'axios'
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import html2canvas from 'html2canvas'
 
+
 // ------------------------------
 // 工具函数
 // ------------------------------
+export const tip = reactive({
+    tipStyle: {},
+    tipText: ''
+});
+
 export function showTips(text) {
-    tipText = text;
+    tip.tipText = text;
+    const showTime = text.length * 124 + 890;
+    tip.tipStyle = { visibility: 'visible', transform: 'translateY(6vh)' }
+    setTimeout(() => {
+        tip.tipStyle = { visibility: 'hidden', transform: 'none' }
+    }, showTime);
 }
 export function testError(data) {
-    if (data.error) { console.error(data.error); return true }
-    if (data.msg) { console.log(data.msg) }
+    if (data.error) { showTips(data.error); return true }
+    if (data.msg) { showTips(data.msg) }
     return false
 }
 export async function copyText(text) {
@@ -335,6 +346,7 @@ export const loginModule = reactive({
     inputPw: '',
     window: {},
     memberEntry: {},
+    visitorEntry: {},
     memberSign: {},
     infoInput: {},
 
@@ -351,20 +363,23 @@ export const loginModule = reactive({
     visitorEnter() {
         userStore.userAccessToken = 'vistor';
         userStore.userId = 0;
+        showTips('您已以访客身份进入');
         this.closeLoginWindow();
     },
 
     memberEnter() {
-        this.memberEntry = { transform: 'scale(2,1)' };
+        this.memberEntry = { transform: 'scale(2.04,1)' };
         this.memberSign = { visibility: 'hidden' };
         this.infoInput = { visibility: 'visible' };
+        this.visitorEntry = { visibility: 'hidden' }
     },
 
     rechoose() {
         this.memberEntry = { transform: 'none' };
+        this.memberSign = { visibility: 'visible' };
+        this.infoInput = { visibility: 'hidden' };
         setTimeout(() => {
-            this.memberSign = { visibility: 'visible' };
-            this.infoInput = { visibility: 'hidden' };
+            this.visitorEntry = { visibility: 'visible' };
         }, 500);
     },
 
@@ -385,16 +400,21 @@ export const loginModule = reactive({
     },
 
     async login() {
-        const data = {
-            user_email: this.inputEmail,
-            password: this.inputPw
+        if (this.inputCode) {
+            const data = {
+                user_email: this.inputEmail,
+                password: this.inputPw
+            }
+            const result = await axiosRequest.login(data);
+            if (testError(result)) return;
+            userStore.setToken(result.access_token);
+            await initUser();
+            this.closeLoginWindow();
+            await initColl();
         }
-        const result = await axiosRequest.login(data);
-        if (testError(result)) return;
-        userStore.setToken(result.access_token);
-        await initUser();
-        this.closeLoginWindow();
-        await initColl();
+        else {
+            this.sendCode();
+        }
     },
 
     async logout() {

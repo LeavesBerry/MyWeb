@@ -1,0 +1,249 @@
+/* 登录选择卡片中的人物图标：只用网页元素绘制，不依赖图片资源 */
+.entry-person {
+    position: absolute;
+    top: 8vh;
+    left: 8.6vh;
+    width: 20vh;
+    height: 32vh;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.entry-person__head,
+.entry-person__neck,
+.entry-person__body,
+.entry-person__sparkle {
+    position: absolute;
+    display: block;
+}
+
+.entry-person__head {
+    top: 3vh;
+    left: 5vh;
+    width: 10vh;
+    height: 10vh;
+    border-radius: 50%;
+}
+
+.entry-person__neck {
+    top: 15vh;
+    left: 7.8vh;
+    width: 3.8vh;
+    height: 3vh;
+    border-radius: 0 0 6vh 6vh;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.entry-person__neck::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -2vh;
+    width: 6vh;
+    height: 4vh;
+    border-radius: 50%;
+}
+
+.entry-person--visitor .entry-person__neck {
+    background: #18386F;
+}
+
+.entry-person--member .entry-person__neck {
+    background: #4F8A36;
+}
+
+.entry-person--visitor .entry-person__neck::after {
+    background: #A9B8C9;
+}
+
+.entry-person--member .entry-person__neck::after {
+    background: #BEE0A8;
+}
+
+.entry-person__body {
+    top: 10vh;
+    left: 1.3vh;
+    width: 0;
+    height: 0;
+    border-left: 8.7vh solid transparent;
+    border-right: 8.7vh solid transparent;
+    border-bottom: 24vh solid;
+}
+
+.entry-person--visitor .entry-person__head {
+    background: #A9B8C9;
+}
+
+
+.entry-person--visitor .entry-person__body {
+    border-bottom-color: #A9B8C9;
+}
+
+.entry-person--member .entry-person__head {
+    background: #BEE0A8;
+}
+
+
+.entry-person--member .entry-person__body {
+    border-bottom-color: #BEE0A8;
+}
+
+.entry-person--member .entry-person__sparkle {
+    top: 0vh;
+    right: 2vh;
+    width: 7vh;
+    height: 7vh;
+    background: #F39AAA;
+    z-index: 1001;
+    clip-path: polygon(50% 0%, 60% 39%, 100% 50%, 60% 61%, 50% 100%, 40% 61%, 0% 50%, 40% 39%);
+}
+
+#login-window {
+    position: fixed;
+    top: 15vh;
+    left: calc(50vw - 40vh);
+    height: 50vh;
+    width: 80vh;
+    background-color: #5A191B;
+    border-radius: 5vh;
+    border-color: #3A251A;
+    border-width: 0.5vh;
+    padding: 28vh 0vh 0vh 0vh;
+    display: none;
+    z-index: 999;
+}
+
+#enter-tip {
+    position: absolute;
+    left: 0vh;
+    top: 55vh;
+    width: 80vh;
+    height: 30vh;
+    color: #FFF3D0;
+    text-align: center;
+}
+
+#enter-tip p {
+    font-size: 5vh;
+    font-weight: 800;
+}
+
+#visitor-entry {
+    position: absolute;
+    left: 2vh;
+    top: 2vh;
+    width: 37.2vh;
+    height: 50vh;
+    background-color: #FFF3D0;
+    border-radius: 3vh;
+}
+
+#visitor-sign {
+    position: absolute;
+    top: 8vh;
+    left: 8.6vh;
+    width: 20vh;
+    height: auto;
+}
+
+#member-entry {
+    position: absolute;
+    right: 2vh;
+    top: 2vh;
+    width: 37.2vh;
+    height: 50vh;
+    border-radius: 3vh;
+    background-color: #FFF3D0;
+    transform-origin: 100% 100%;
+    transition: transform 0.4s ease-out;
+}
+
+#member-entry button {
+    border: none;
+    background-color: #FFF3D0;
+    font-size: 3vh;
+    color: #3A251A;
+    font-weight: 400;
+    text-align: center;
+    letter-spacing: 2vh;
+    transform-origin: 50% 100%;
+}
+
+#member-sign {
+    position: absolute;
+    top: 8vh;
+    left: 8.6vh;
+    width: 20vh;
+    height: auto;
+}
+
+
+#rechoose {
+    position: absolute;
+    left: -19.5vh;
+    bottom: -60vh;
+    width: 76vh;
+    height: 8vh;
+    border-radius: 4vh;
+}
+
+#info-input {
+    visibility: hidden;
+    transform: scale(0.49, 1);
+}
+
+#info-input input {
+    width: 67vh;
+    height: 8vh;
+    border: 0.5vh solid #5A191B;
+    border-radius: 4vh;
+    background-color: rgba(255, 255, 255, 0.4);
+    color: #3A251A;
+    font-weight: 400;
+    outline: none;
+    padding-left: 3vh;
+}
+
+#input-email {
+    position: absolute;
+    top: 4vh;
+    left: -17vh;
+}
+
+#input-password {
+    position: absolute;
+    top: 15vh;
+    left: -17vh;
+}
+
+#input-name {
+    position: absolute;
+    top: 26vh;
+    left: -17vh;
+}
+
+#input-code {
+    position: absolute;
+    top: 38vh;
+    left: -17vh;
+}
+
+#login {
+    position: absolute;
+    bottom: -71vh;
+    left: -19.5vh;
+    width: 39vh;
+    height: 8vh;
+    border-radius: 4vh 0 0 4vh;
+}
+
+
+#register {
+    position: absolute;
+    bottom: -71vh;
+    left: 17.5vh;
+    width: 39vh;
+    height: 8vh;
+    border-radius: 0 4vh 4vh 0;
+}

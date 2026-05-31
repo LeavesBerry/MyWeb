@@ -1,0 +1,119 @@
+#menu-box {
+    position: fixed;
+    top: 1.3vh;
+    left: 2.28vh;
+    width: 61vh;
+    height: 92vh;
+    background: #FFF3D0;
+    border: 0.5vh solid #73B436;
+    opacity: 0;
+    border-radius: 0.8vh 0.8vh 0.8vh 0.8vh;
+    transition: transform 0.8s ease;
+    transform: scale(0.1, 0.067);
+    transform-origin: left top;
+    z-index: 23;
+}
+
+.menu-button {
+    width: 3vh;
+    height: 3vh;
+    background: #73B436;
+    border: none;
+    border-radius: 1vh;
+    z-index: 22;
+    transition: transform 0.8s ease;
+    position: fixed;
+}
+
+#button-left-up {
+    top: 1vh;
+    left: 2vh;
+}
+
+#button-left-down {
+    top: 4.2vh;
+    left: 2vh;
+}
+
+#button-right-up {
+    top: 1vh;
+    left: 5.2vh;
+}
+
+#button-right-down {
+    top: 4.2vh;
+    left: 5.2vh;
+}
+
+.star {
+    position: absolute;
+    font-size: 4vh;
+    color: #73B436;
+}
+
+.s1 {
+    top: -0.6vh;
+    left: 2.2vh;
+}
+
+.s2 {
+    top: -0.6vh;
+    right: 2.2vh;
+}
+
+.s3 {
+    top: 0.8vh;
+    left: 0.6vh;
+}
+
+.s4 {
+    top: 0.8vh;
+    right: 0.6vh;
+}
+
+.s5 {
+    bottom: 1.5vh;
+    left: 0.6vh;
+}
+
+.s6 {
+    bottom: 0.1vh;
+    left: 2.2vh;
+}
+
+.s7 {
+    bottom: 0.1vh;
+    right: 2.2vh;
+}
+
+.s8 {
+    bottom: 1.5vh;
+    right: 0.6vh;
+}
+
+#menu-function-button-box {
+    width: 54vh;
+    height: 65vh;
+    border: none;
+    position: absolute;
+    bottom: 4vh;
+    left: 4vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+
+
+}
+
+.menu-function-button {
+    width: 17.22vh;
+    height: 15.5vh;
+    margin: 0;
+    padding-top: 10vh;
+    border: none;
+    margin-top: 0.5vh;
+    font-size: 3vh;
+    font-weight: 900;
+    text-align: center;
+    background-color: #3A251A;
+    color: #884C3A;
+}

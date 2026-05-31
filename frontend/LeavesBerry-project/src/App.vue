@@ -1,6 +1,9 @@
 <template>
   <div id="app">
     <div id="navbar">
+
+      <p id="tip" :style="tip.tipStyle">{{ tip.tipText }}</p>
+
       <div id="menu-box" @click="menuModule.toggleMenu" :style="menuModule.menuBox">
         <span class="star s1">✦</span>
         <span class="star s2">✦</span>
@@ -78,11 +81,32 @@
     </div>
 
     <div id="login-window" :style="loginModule.window">
-      <div id="visitor-entry" @click="loginModule.visitorEnter"></div>
-      <div id="member-entry" @click="loginModule.memberEnter" 
-      :style="loginModule.memberEntry">
+      <!--复用visitorEntry属性更为方便-->
+      <div id="enter-tip" :style="loginModule.visitorEntry">
+        <p>-----选择您进入本站的方式-----</p>
+      </div>
+      
+      <div id="visitor-entry" @click="loginModule.visitorEnter"
+      :style="loginModule.visitorEntry"
+      >
         
-        <canvas id="member-sign" :style="loginModule.memberSign"></canvas>
+        <div class="entry-person entry-person--visitor" aria-hidden="true">
+          <span class="entry-person__head"></span>
+          <span class="entry-person__neck"></span>
+          <span class="entry-person__body"></span>
+        </div>
+      </div>
+      <div id="member-entry" @click="loginModule.memberEnter" 
+      :style="loginModule.memberEntry">      
+        <div 
+          class="entry-person entry-person--member" 
+          aria-hidden="true"
+          :style="loginModule.memberSign" >
+          <span class="entry-person__sparkle"></span>
+          <span class="entry-person__head"></span>
+          <span class="entry-person__neck"></span>
+          <span class="entry-person__body"></span>
+        </div>
         <div id="info-input" :style="loginModule.infoInput">
           <button 
             id="rechoose" 
@@ -96,26 +120,25 @@
           <input 
             id="input-code" 
             v-model="loginModule.inputCode"
-            placeholder="验证码"
+            placeholder="验证码--仅注册须填"
           ></input>
           <input 
             id="input-name" 
             v-model="loginModule.inputName" 
-            placeholder="名称"
+            placeholder="名称--仅注册须填"
           ></input>
           <input 
             id="input-password" 
             v-model="loginModule.inputPw" 
             placeholder="密码"
           ></input>
-          <button id="send-code" @click="loginModule.sendCode">send code</button>
-          <button id="register" @click="loginModule.register">register</button>
-          <button id="login" @click="loginModule.login">login</button>
+          <button id="register" @click="loginModule.register">注册</button>
+          <button id="login" @click="loginModule.login">登录</button>
         </div>
       </div>
     </div>
 
-    <p id="tip">{{ tipText }}</p>
+    
 
 
     
@@ -132,7 +155,7 @@
 <script setup>
 import { 
   debounce, navbarModule, 
-  onGlobalClick, pageState,
+  onGlobalClick, pageState, tip,
   userStore, menuModule, loginModule, 
 } from './utils/CommonScript.js';
 import { ref, onMounted, onUnmounted, watch } from 'vue';
@@ -161,48 +184,5 @@ onUnmounted(() => {
 
 <style>
 /* 页面跳转动画：新页面从底部滑入并覆盖旧页面 */
-#app {
-  position: relative;
-  min-height: 100vh;
-  overflow-x: hidden;
-  isolation: isolate;
-}
 
-.page-cover-slide-view {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  min-height: 100vh;
-  overflow: auto;
-  z-index: 10;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  contain: paint;
-}
-
-/* 新页面入场：只动画 transform，避免触发布局重排，性能更好 */
-.page-cover-slide-enter-active {
-  z-index: 20;
-  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-
-.page-cover-slide-enter-from {
-  transform: translate3d(0, 100%, 0);
-}
-
-.page-cover-slide-enter-to {
-  transform: translate3d(0, 0, 0);
-}
-
-/* 旧页面不移动，留在下层，让新页面覆盖它 */
-.page-cover-slide-leave-active {
-  z-index: 10;
-  transition: none;
-}
-
-.page-cover-slide-leave-from,
-.page-cover-slide-leave-to {
-  transform: translate3d(0, 0, 0);
-}
 </style>

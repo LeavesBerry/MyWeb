@@ -4,7 +4,10 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 
-import './assets/CommonStyle.css'
+import './assets/BasicStyle.css'
+import './assets/NavberStyle.css'
+import './assets/LoginWinStyle.css'
+import './assets/MenuStyle.css'
 
 //import * as CommonUtils from './utils/CommonScript.js'
 
