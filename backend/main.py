@@ -49,7 +49,7 @@ app.add_middleware(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/refreshToken")
 
 # 静态文件
-frontend_public_dir = os.path.abspath(r"G:\MyWeb\frontend\LeavesBerry-project\public")
+frontend_public_dir = os.path.abspath(r"../frontend/LeavesBerry-project/public")
 app.mount("/static", StaticFiles(directory=frontend_public_dir), name="static")
 
 # 数据库配置

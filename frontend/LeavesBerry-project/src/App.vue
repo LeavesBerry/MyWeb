@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <div id="navbar">
+
+    <div id="page-filter" v-if="pageState.showFilter"></div>
+
+
+    <div id="navbar" :style="navbarModule.navbar">
 
       <p id="tip" :style="tip.tipStyle">{{ tip.tipText }}</p>
 
@@ -23,18 +27,22 @@
         </svg>
 
         <div id="menu-function-button-box">
-          <button class="menu-function-button">✦收藏夹</button>
-          <button class="menu-function-button">pas</button>
-          <button class="menu-function-button">pass</button>
-          <button class="menu-function-button">pas</button>
-          <button class="menu-function-button">pass</button>
-          <button class="menu-function-button">pas</button>
-          <button class="menu-function-button">pass</button>
-          <button class="menu-function-button">pas</button>
-          <button class="menu-function-button">pass</button>
-          <button class="menu-function-button" style="border-radius:0 0 0 3vh">pas</button>
-          <button class="menu-function-button">pass</button>
-          <button class="menu-function-button" style="border-radius:0 0 3vh 0">pas</button>
+          <button class="menu-function-button">✦邮箱✦</button>
+          <button class="menu-function-button">✦收藏夹✦</button>
+          <button class="menu-function-button">✦设置✦</button>
+          <button class="menu-function-button" 
+          @click="pageState.userAccessToken == 'visitor' ? 
+          loginModule.logout() : loginModule.openLoginWindow()">
+            {{ pageState.userAccessToken == 'visitor' ? '✦登出✦' : '✦登入✦' }}
+          </button>
+          <button class="menu-function-button">✦反馈箱✦</button>
+          <button class="menu-function-button">✦历史✦</button>
+          <button class="menu-function-button">✦下载✦</button>
+          <button class="menu-function-button">✦公告栏✦</button>
+          <button class="menu-function-button">✦协议✦</button>
+          <button class="menu-function-button" style="border-radius:0 0 0 3vh">✦测试✦</button>
+          <button class="menu-function-button">✦指令表✦</button>
+          <button class="menu-function-button" style="border-radius:0 0 3vh 0">✦退出✦</button>
         </div>
       </div>
 
@@ -47,23 +55,28 @@
       <button id="search-button" @click="navbarModule.DoSearch">GO</button>
 
       <div id="navbar-fuction-button-box">
+        <!-------------截图-------------->
         <button 
           class="navbar-function-button" 
           id="scrshot-button" 
           @click="navbarModule.handleScreenshot"
         >✦</button>
+        <img id="screen-shot" v-if="navbarModule.isScrShot" :src="navbarModule.scrShot">
+        <!-------------收藏-------------->
         <button 
           class="navbar-function-button" 
           id="collect-button"
           :style="{ color: pageState.isCollected ? '#73B436' : 'rgb(90,25,27)'}"
           @click="navbarModule.toggleColl"
         >✦</button>
+        <!-------------分享-------------->
         <button 
           class="navbar-function-button" 
           id="share-button" 
           @click="navbarModule.toggleShare"
           :style="navbarModule.shareStyle"
         >{{ navbarModule.shareText }}</button>
+        <!-------------指令-------------->
         <button 
           class="navbar-function-button" 
           id="command-button"
@@ -80,6 +93,9 @@
       </div>
     </div>
 
+
+
+
     <div id="login-window" :style="loginModule.window">
       <!--复用visitorEntry属性更为方便-->
       <div id="enter-tip" :style="loginModule.visitorEntry">
@@ -89,7 +105,7 @@
       <div id="visitor-entry" @click="loginModule.visitorEnter"
       :style="loginModule.visitorEntry"
       >
-        
+        <p id="identification">访客</p>
         <div class="entry-person entry-person--visitor" aria-hidden="true">
           <span class="entry-person__head"></span>
           <span class="entry-person__neck"></span>
@@ -97,7 +113,8 @@
         </div>
       </div>
       <div id="member-entry" @click="loginModule.memberEnter" 
-      :style="loginModule.memberEntry">      
+      :style="loginModule.memberEntry"> 
+        <p id="identification" :style="loginModule.visitorEntry">成员</p>     
         <div 
           class="entry-person entry-person--member" 
           aria-hidden="true"

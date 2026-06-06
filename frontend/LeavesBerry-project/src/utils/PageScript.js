@@ -1,5 +1,6 @@
 import { reactive } from "vue"
-import { userStore, axiosRequest } from "./index"
+import { userStore, axiosRequest, showTips } from "./index"
+import { create } from "axios"
 
 // 页面状态
 export const pageState = reactive({
@@ -9,10 +10,11 @@ export const pageState = reactive({
     isCmdClosed: true,
     isTransitioning: false,
     currentUrl: location.href,
-    currentTitle: document.title
+    currentTitle: document.title,
+    showFilter: false
 })
 
-// 菜单按钮样式
+
 
 
 
@@ -48,9 +50,11 @@ export const menuModule = reactive({
 
 export const navbarModule = reactive({
 
+    navbar: {},
+    srcShot: '',
+    isScrShot: false,
     shareStyle: {},
     shareText: '➹',
-    // 搜索
     searchKey: '',
 
 
@@ -129,18 +133,17 @@ export const navbarModule = reactive({
     // ------------------------------
     // 截图（懒加载）
     // ------------------------------
-    html2canvasLoaded: false,
-    async handleScreenshot() {
-        if (html2canvasLoaded) return;
-        return new Promise(resolve => {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
-            script.onload = () => {
-                html2canvasLoaded = true;
-                resolve();
-            }
-            document.head.appendChild(script);
-        })
+    async createScreshot() {
+        import html2canvas from 'html2canvas';
+        const canvas = await html2canvas(document, {
+            scale: 0.4,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+        });
+        this.srcShot = canvas.toDataURL('image/jpeg', 1);
+        this.isScrShot = true;
     },
 
 
@@ -150,14 +153,12 @@ export const navbarModule = reactive({
     // 导航栏缩放
     // ------------------------------
     scaleNavbar() {
-        const navbar = document.querySelector('#navbar');
-        if (!navbar) return;
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const scale = (vw / vh / 2.4).toFixed(2);
         const unscale = 1 / scale * vw;
-        navbar.style.transform = `scale(${scale})`;
-        navbar.style.width = `${unscale}px`;
+        this.navbar = { transform: `scale(${scale})` };
+        this.navbar = { width: `${unscale}px` };
     },
 
     // 搜索

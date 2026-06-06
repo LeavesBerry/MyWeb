@@ -114,6 +114,15 @@
     z-index: 999;
 }
 
+#identification {
+    margin-top: 2vh;
+    height: 30vh;
+    color: #3A251A;
+    font-size: 5vh;
+    font-weight: 800;
+    text-align: center;
+}
+
 #enter-tip {
     position: absolute;
     left: 0vh;
@@ -189,7 +198,7 @@
 }
 
 #info-input {
-    visibility: hidden;
+    display: none;
     transform: scale(0.49, 1);
 }
 

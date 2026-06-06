@@ -1,5 +1,5 @@
 import { reactive } from "vue"
-import { tip, testError, axiosRequest } from "./index"
+import { showTips, testError, axiosRequest, pageState } from "./index"
 // ------------------------------
 // 用户状态
 // ------------------------------
@@ -45,7 +45,7 @@ export const userStore = reactive({
             loginModule.openLoginWindow();
             return;
         }
-        else if (userStore.userAccessToken == 'vistor') {
+        else if (userStore.userAccessToken == 'visitor') {
             return;
         }
         const cacheData = userStore.getCache()
@@ -90,42 +90,46 @@ export const loginModule = reactive({
     inputEmail: '',
     inputName: '',
     inputPw: '',
-    window: {},
+    window: '',
     memberEntry: {},
     visitorEntry: {},
     memberSign: {},
     infoInput: {},
 
 
-    //  if (!inputEmail || !sendCodeButton) return
     openLoginWindow() {
         this.window = { display: 'block' };
+        pageState.showFilter = true;
     },
 
     closeLoginWindow() {
         this.window = { display: 'none' };
+        pageState.showFilter = false;
     },
 
     visitorEnter() {
+        //给予访客一个固定的非法token,以使后端拒绝请求
+        //同时用于前端判断身份
         userStore.userAccessToken = 'vistor';
         userStore.userId = 0;
+        userStore.setToken('visitor');
         showTips('您已以访客身份进入');
         this.closeLoginWindow();
     },
 
     memberEnter() {
         this.memberEntry = { transform: 'scale(2.04,1)' };
-        this.memberSign = { visibility: 'hidden' };
-        this.infoInput = { visibility: 'visible' };
-        this.visitorEntry = { visibility: 'hidden' }
+        this.memberSign = { display: 'none' };
+        this.infoInput = { display: 'block' };
+        this.visitorEntry = { display: 'none' }
     },
 
     rechoose() {
         this.memberEntry = { transform: 'none' };
-        this.memberSign = { visibility: 'visible' };
-        this.infoInput = { visibility: 'hidden' };
+        this.memberSign = { display: 'block' };
+        this.infoInput = { display: 'none' };
         setTimeout(() => {
-            this.visitorEntry = { visibility: 'visible' };
+            this.visitorEntry = { display: 'block' };
         }, 500);
     },
 
