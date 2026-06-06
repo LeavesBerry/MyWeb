@@ -138,10 +138,6 @@
       </div>
     </div>
 
-    
-
-
-    
 
     <router-view v-slot="{ Component, route }">
       <transition name="page-cover-slide">
@@ -156,9 +152,9 @@
 import axios from 'axios';
 import { ref, onMounted, onUnmounted, watch, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { debounce, navbarModule, onGlobalClick, tip, } from './utils/BasicScript.js';
-import { navbarModule, menuModule, pageState } from './utils/PageScript.js';
-import { userStore, loginModule } from './utils/UserScript.js';
+import { debounce, tip, onGlobalClick,
+navbarModule, menuModule, pageState, 
+userStore, loginModule } from './utils';
 
 
 

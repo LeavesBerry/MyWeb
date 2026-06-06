@@ -1,4 +1,5 @@
-
+import { reactive } from "vue"
+import { tip, testError, axiosRequest } from "./index"
 // ------------------------------
 // 用户状态
 // ------------------------------
@@ -171,19 +172,3 @@ export const loginModule = reactive({
     }
 
 })
-// ------------------------------
-// 全局点击关闭
-// ------------------------------
-export function onGlobalClick(e) {
-    const shareBtn = document.querySelector('#share-button');
-    const menuBox = document.querySelector('#menu-box');
-    const isClickShare = shareBtn?.contains(e.target);
-    const isClickMenu = menuBox?.contains(e.target);
-
-    if (!pageState.isShareClosed && !isClickShare) {
-        navbarModule.toggleShare();
-    }
-    if (!pageState.isMenuClosed && !isClickMenu) {
-        menuModule.toggleMenu();
-    }
-}

@@ -1,4 +1,5 @@
-
+import { reactive } from "vue"
+import { userStore, axiosRequest } from "./index"
 
 // 页面状态
 export const pageState = reactive({

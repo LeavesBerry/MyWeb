@@ -1,4 +1,5 @@
-
+import { reactive } from "vue";
+import { navbarModule, menuModule, pageState } from "./index";
 
 // ------------------------------
 // 工具函数
@@ -84,5 +85,22 @@ export const axiosRequest = {
             title: currentTitle
         });
         return res.data;
+    }
+}
+
+// ------------------------------
+// 全局点击关闭
+// ------------------------------
+export function onGlobalClick(e) {
+    const shareBtn = document.querySelector('#share-button');
+    const menuBox = document.querySelector('#menu-box');
+    const isClickShare = shareBtn?.contains(e.target);
+    const isClickMenu = menuBox?.contains(e.target);
+
+    if (!pageState.isShareClosed && !isClickShare) {
+        navbarModule.toggleShare();
+    }
+    if (!pageState.isMenuClosed && !isClickMenu) {
+        menuModule.toggleMenu();
     }
 }
