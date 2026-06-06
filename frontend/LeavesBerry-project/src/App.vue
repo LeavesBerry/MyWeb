@@ -153,16 +153,14 @@
   </div>
 </template>
 <script setup>
-import { 
-  debounce, navbarModule, 
-  onGlobalClick, pageState, tip,
-  userStore, menuModule, loginModule, 
-} from './utils/CommonScript.js';
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import axios from 'axios';
+import { ref, onMounted, onUnmounted, watch, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { debounce, navbarModule, onGlobalClick, tip, } from './utils/BasicScript.js';
+import { navbarModule, menuModule, pageState } from './utils/PageScript.js';
+import { userStore, loginModule } from './utils/UserScript.js';
 
-const tImg = ref(null);
-window.tImg = tImg;
+
 
 // ------------------------------
 // 生命周期
@@ -181,8 +179,3 @@ onUnmounted(() => {
     document.removeEventListener('click', onGlobalClick);
 })
 </script>
-
-<style>
-/* 页面跳转动画：新页面从底部滑入并覆盖旧页面 */
-
-</style>

@@ -49,12 +49,12 @@ app.add_middleware(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/refreshToken")
 
 # 静态文件
-frontend_public_dir = os.path.abspath(r"G:\BuildWeb\frontend\LeavesBerry-project\public")
+frontend_public_dir = os.path.abspath(r"G:\MyWeb\frontend\LeavesBerry-project\public")
 app.mount("/static", StaticFiles(directory=frontend_public_dir), name="static")
 
 # 数据库配置
 DB_USER = os.getenv("DB_USER", "root")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "LeavesBerry_Helloworld")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "LeavesBerry#Zzy")
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_PORT = os.getenv("DB_PORT", "3306")
 DB_NAME = os.getenv("DB_NAME", "leavesberry")
@@ -72,6 +72,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase):
     pass
+
 
 def get_db():
     db = SessionLocal()
@@ -198,15 +199,13 @@ class LimLogin(Base):
 class Coll(Base):
     __tablename__ = "coll"
     user_id = Column(Integer, ForeignKey("user.user_id"), primary_key=True, nullable=False)
-    url = Column(String(1000), primary_key=True, unique=True, nullable=False)
+    url = Column(String(100), primary_key=True, nullable=False)
     title = Column(String(255), default="未知界面", nullable=False)
 
 class Pages(Base):
     __tablename__ = "pages"
-    url = Column(String(1000), primary_key=True, unique=True, nullable=False)
+    url = Column(String(100), primary_key=True, unique=True, nullable=False)
     title = Column(String(255), default="未知界面", nullable=False)
-
-Base.metadata.create_all(bind=engine)
 
 # 请求模型
 class SendCodeRequest(BaseModel):
@@ -238,6 +237,8 @@ class CollRequest(BaseModel):
             raise APIError("URL不合法")
         return value
 
+
+Base.metadata.create_all(bind=engine)
 # ------------------------------
 # 路由
 # ------------------------------
@@ -384,4 +385,4 @@ async def toggle_coll(data: CollRequest, user: User = Depends(get_current_user),
         return {"msg": "收藏成功", "is_collected": True}
 
 if __name__ == "__main__":   
-    uvicorn.run("Backend:app", host="127.0.0.1", port=5000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=5000, reload=True)

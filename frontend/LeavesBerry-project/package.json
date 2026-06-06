@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "cd ..\\backend && python main.py",
+    "server": "cd ..\\backend && python main.py run",
     "start": "concurrently \"npm run dev\" \"npm run server\"",
     "build": "vite build",
     "preview": "vite preview"
