@@ -1,69 +1,72 @@
 #navbar {
-    width: 100vw;
-    height: 8vh;
+    width: var(--design-width, 1096.8px);
+    height: calc(8 * var(--design-vh, 4.57px));
     position: fixed;
     top: 0;
     left: 0;
     z-index: 20;
     background: #4a4030;
-
     transform-origin: left top;
 }
 
+#navbar> :not(#bio) {
+    -webkit-user-select: none;
+    user-select: none;
+}
 
 #search-input {
     position: fixed;
-    top: 1vh;
+    top: calc(1 * var(--design-vh, 4.57px));
     left: 10%;
     box-sizing: border-box;
-    padding: 0 4vh;
+    padding: 0 calc(4 * var(--design-vh, 4.57px));
     width: 16%;
-    height: 6vh;
-    border: 0.5vh solid white;
-    border-radius: 3vh 0 0 3vh;
+    height: calc(6 * var(--design-vh, 4.57px));
+    border: calc(0.5 * var(--design-vh, 4.57px)) solid white;
+    border-radius: calc(3 * var(--design-vh, 4.57px)) 0 0 calc(3 * var(--design-vh, 4.57px));
     background: rgba(0, 0, 0, 0);
     outline: none;
     color: white;
-    font-size: 3vh;
+    font-size: calc(3 * var(--design-vh, 4.57px));
 }
 
 #search-button {
     position: fixed;
-    top: 1vh;
-    left: calc(26% - 0.5vh);
+    top: calc(1 * var(--design-vh, 4.57px));
+    left: calc(26% - calc(0.5 * var(--design-vh, 4.57px)));
     width: 4.5%;
-    height: 6vh;
-    border: 0.5vh solid white;
-    border-radius: 0 3vh 3vh 0;
+    height: calc(6 * var(--design-vh, 4.57px));
+    border: calc(0.5 * var(--design-vh, 4.57px)) solid white;
+    border-radius: 0 calc(3 * var(--design-vh, 4.57px)) calc(3 * var(--design-vh, 4.57px)) 0;
     background: rgba(0, 0, 0, 0);
-    font-size: 3vh;
+    font-size: calc(3 * var(--design-vh, 4.57px));
     color: white;
 }
 
 #search-sign {
-    width: 3vh;
-    height: 3vh;
+    width: calc(3 * var(--design-vh, 4.57px));
+    height: calc(3 * var(--design-vh, 4.57px));
 }
 
 #navbar-fuction-button-box {
     position: fixed;
-    top: 1.9vh;
+    top: calc(1.9 * var(--design-vh, 4.57px));
     right: 0;
-    height: 4.2vh;
-    width: 26vh;
+    height: calc(4.2 * var(--design-vh, 4.57px));
+    width: calc(26 * var(--design-vh, 4.57px));
     display: flex;
-    gap: 1vh;
+    gap: calc(1 * var(--design-vh, 4.57px));
 }
 
 .navbar-function-button {
-    width: 4.2vh;
-    height: 4.2vh;
-    border-radius: 1vh;
+    width: calc(4.2 * var(--design-vh, 4.57px));
+    height: calc(4.2 * var(--design-vh, 4.57px));
+    border-radius: calc(1 * var(--design-vh, 4.57px));
     border: none;
     background: #FFF3D0;
-    font-size: 4vh;
+    font-size: calc(4 * var(--design-vh, 4.57px));
     display: flex;
-    gap: 1vh;
+    gap: calc(1 * var(--design-vh, 4.57px));
     justify-content: center;
     align-items: center;
     padding-top: 0;
@@ -80,29 +83,29 @@
 
 #command-button {
     color: #5A191B;
-    padding-top: 0.5vh;
+    padding-top: calc(0.5 * var(--design-vh, 4.57px));
 }
 
 #command-menu {
     position: fixed;
-    top: 8vh;
+    top: calc(8 * var(--design-vh, 4.57px));
     left: 15vw;
-    z-index: 10;
+    z-index: 1;
     width: 70vw;
-    height: 60vh;
+    height: calc(60 * var(--design-vh, 4.57px));
     background: rgba(255, 255, 255, 0.4);
     border: 3px solid black;
     border-top: none;
-    border-radius: 0 0 5vh 5vh;
-    transform: translateY(-76vh);
+    border-radius: 0 0 calc(5 * var(--design-vh, 4.57px)) calc(5 * var(--design-vh, 4.57px));
+    transform: translateY(calc(-76 * var(--design-vh, 4.57px)));
     transition: transform 0.8s ease;
 }
 
 #command-title {
     width: 70vw;
-    height: 6vh;
+    height: calc(6 * var(--design-vh, 4.57px));
     margin: 0;
-    font-size: 4vh;
+    font-size: calc(4 * var(--design-vh, 4.57px));
     font-weight: 200;
     text-align: center;
 }
@@ -112,8 +115,8 @@
     top: 0;
     right: 0;
     border: none;
-    width: 6vh;
-    height: 6vh;
-    font-size: 6vh;
+    width: calc(6 * var(--design-vh, 4.57px));
+    height: calc(6 * var(--design-vh, 4.57px));
+    font-size: calc(6 * var(--design-vh, 4.57px));
     background-color: rgba(255, 255, 255, 0);
 }

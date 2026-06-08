@@ -1,6 +1,7 @@
 #第三方库
 from fastapi import FastAPI, Request, HTTPException, Depends, status, Response
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
+#(下文中的api报错用JSONRESPONSE返回给前端以便其处理)
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
@@ -49,7 +50,7 @@ app.add_middleware(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/refreshToken")
 
 # 静态文件
-frontend_public_dir = os.path.abspath(r"../frontend/LeavesBerry-project/public")
+frontend_public_dir = os.path.abspath(r"./data/static/")
 app.mount("/static", StaticFiles(directory=frontend_public_dir), name="static")
 
 # 数据库配置
@@ -112,8 +113,7 @@ def send_email(user_email: str, text: str, subject: str) -> bool:
         sender.quit()
         return True
     except Exception as e:
-        print(f"邮件发送失败: {e}")
-        return False
+        return False,e
 
 def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
@@ -167,20 +167,34 @@ async def get_current_user(
         user_id = payload.get("sub")
         if not user_id:
             raise credentials_exception
-        user = db.query(User).filter(User.user_id == int(user_id)).first()
+        user = db.query(UserBase).filter(UserBase.user_id == int(user_id)).first()
         if not user:
             raise credentials_exception
         return user
     except JWTError:
         raise credentials_exception
+#经验    
+
+     
+
 
 # 数据库模型
-class User(Base):
-    __tablename__ = "user"
+class UserBase(Base):
+    __tablename__ = "user_base"
     user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_email = Column(String(120), unique=True, nullable=False, index=True)
     user_name = Column(String(80), nullable=False)
     password_hash = Column(String(256), nullable=False)
+
+class UserProfile(Base):
+    __tablename__ = "user_profile"
+    user_id = Column(Integer, ForeignKey("user_base.user_id", ondelete="CASCADE"), 
+                     primary_key=True, nullable=False, unique=True, index=True)
+    avatar_url = Column(String(100), 
+                        default="http://localhost:5000/static/avatar/default_avatar.jpg", 
+                        unique=True)
+    bio = Column(String(30), default="你好,世界")
+    level_xp = Column(Integer, default=1000, nullable=False)
 
 class Code(Base):
     __tablename__ = "code"
@@ -220,7 +234,7 @@ class RegisterRequest(BaseModel):
     @field_validator("password")
     def validate_password(cls, value):
         if len(value) < 8 or not re.search(r"[A-Za-z]", value) or not re.search(r"[0-9]", value):
-            raise APIError("密码必须8位以上，包含字母+数字")
+            return JSONResponse("密码必须8位以上，包含字母+数字")
         return value
 
 class LoginRequest(BaseModel):
@@ -234,7 +248,7 @@ class CollRequest(BaseModel):
     @field_validator("url")
     def validate_url(cls, value):
         if not value or len(value) > 1000:
-            raise APIError("URL不合法")
+            return JSONResponse("URL不合法")
         return value
 
 
@@ -244,7 +258,7 @@ Base.metadata.create_all(bind=engine)
 # ------------------------------
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
-    return FileResponse("static/favicon.ico")
+    return FileResponse("/static/favicon.ico")
 
 # 连通性测试接口
 @app.get("/api/ping")
@@ -261,41 +275,50 @@ async def send_code(data: SendCodeRequest, db: Session = Depends(get_db)):
     while True:
         code = random.randint(100000, 999999)
         try:
-            new_code = Code(user_email=data.user_email, code=str(code), create_time=time.time())
+            new_code = Code(user_email=data.user_email, 
+                            code=str(code), create_time=time.time())
             db.add(new_code)
             db.commit()
             break
         except IntegrityError:
             db.rollback()
             continue
-    send_email(data.user_email, f"验证码：{code}", "LeavesBerry验证码")
-    return {"msg": "验证码已发送"}
+    res,det = send_email(data.user_email, f"验证码：{code}", "LeavesBerry验证码")
+    if res:
+        return JSONResponse({"msg": "验证码已发送"})
+    else:
+        return JSONResponse({"msg": f"验证码发送失败,因为:{det}"})
 
 @app.post("/api/register")
 async def register(data: RegisterRequest, db: Session = Depends(get_db)):
     clean_expired_codes(db)
     code_record = db.query(Code).filter(Code.user_email == data.user_email).first()
     if not code_record or code_record.code != data.code:
-        raise APIError("验证码错误")
+        raise JSONResponse("验证码错误")
     if time.time() - code_record.create_time > 300:
         db.delete(code_record)
         db.commit()
-        raise APIError("验证码已过期")
-    exist = db.query(User).filter(User.user_email == data.user_email).first()
+        raise JSONResponse("验证码已过期")
+    exist = db.query(UserBase).filter(UserBase.user_email == data.user_email).first()
     if exist:
-        raise APIError("用户已存在")
+        raise JSONResponse("用户已存在")
     hashed = hash_password(data.password)
-    user = User(user_email=data.user_email, user_name=data.user_name, password_hash=hashed)
+    user = UserBase(user_email=data.user_email, 
+                    user_name=data.user_name, password_hash=hashed)
     db.add(user)
+    db.flush()
+    user_profile = UserProfile(user_id = user.user_id)
+    db.add(user_profile)
     db.delete(code_record)
     db.commit()
-    return {"msg": "注册成功"}
+    return JSONResponse({"msg": "注册成功"})
 
 @app.post("/api/login")
-async def login(request: Request, response: Response, data: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.user_email == data.user_email).first()
+async def login(request: Request, response: Response, 
+                data: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(UserBase).filter(UserBase.user_email == data.user_email).first()
     if not user:
-        raise APIError("用户不存在")
+        raise JSONResponse("用户不存在")
     ip = request.client.host
     lim = db.query(LimLogin).filter(LimLogin.user_ip == ip).first()
     if not lim:
@@ -304,7 +327,7 @@ async def login(request: Request, response: Response, data: LoginRequest, db: Se
         db.commit()
     now = time.time()
     if now < lim.lim_start_time + lim.lim_time:
-        raise APIError("登录过于频繁，请稍后再试")
+        raise JSONResponse("登录过于频繁，请稍后再试")
     if not verify_password(data.password, user.password_hash):
         lim.try_times += 1
         if lim.try_times >= 5:
@@ -312,7 +335,7 @@ async def login(request: Request, response: Response, data: LoginRequest, db: Se
             lim.lim_time = 300
             lim.try_times = 0
         db.commit()
-        raise APIError("密码错误")
+        raise JSONResponse("密码错误")
     lim.try_times = 0
     db.commit()
     access_token = create_access_token({"sub": str(user.user_id)})
@@ -326,23 +349,28 @@ async def login(request: Request, response: Response, data: LoginRequest, db: Se
         samesite="lax",
         path="/"
     )
-    return {"msg": f"欢迎回来，{user.user_name}", "access_token": access_token}
+    return JSONResponse({"msg": f"欢迎回来，{user.user_name}", "access_token": access_token})
 
 @app.post("/api/getUserInfo")
-def get_user_info(user: User = Depends(get_current_user)):
-    return {
+def get_user_info(user: UserBase = Depends(get_current_user), db: Session = Depends(get_db)):
+    user_profile = db.query(UserProfile).filter(UserProfile.user_id == user.id).first()
+    return JSONResponse({
         "msg": "获取成功",
         "is_logined": True,
         "user_id": user.user_id,
         "user_name": user.user_name,
-        "user_email": user.user_email
-    }
+        "user_email": user.user_email,
+        "avatar": user_profile.avatar_url,
+        "bio": user_profile.bio,
+        "level": str(user_profile.level_xp)[0],
+        "xp": str(user_profile.level_xp)[1:5]
+    })
 
 @app.post("/api/refreshToken")
 async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="登录已失效",
+        error="登录已失效",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
@@ -352,7 +380,7 @@ async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depen
         user_id = payload.get("sub")
         if not user_id:
             raise credentials_exception
-        user = db.query(User).filter(User.user_id == int(user_id)).first()
+        user = db.query(UserBase).filter(UserBase.user_id == int(user_id)).first()
         if not user:
             raise credentials_exception
         new_access_token = create_access_token({"sub": str(user.user_id)})
@@ -363,26 +391,28 @@ async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depen
 @app.post("logout")
 def logout(response: Response):
     response.delete_cookie(key="refresh_cookie", path="/")
-    return {"msg": "已退出登录"}
+    return JSONResponse({"msg": "已退出登录"})
 
 @app.post("/api/initColl")
-async def init_coll(data: CollRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def init_coll(data: CollRequest, user: UserBase = Depends(get_current_user), 
+                    db: Session = Depends(get_db)):
     exist = db.query(Coll).filter(Coll.user_id == user.user_id, Coll.url == data.url).first()
-    return {"msg": "ok", "is_collected": exist is not None}
+    return JSONResponse({"msg": "ok", "is_collected": exist is not None})
 
 @app.post("/api/toggleColl")
-async def toggle_coll(data: CollRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def toggle_coll(data: CollRequest, user: UserBase = Depends(get_current_user), 
+                      db: Session = Depends(get_db)):
     coll = db.query(Coll).filter(Coll.user_id == user.user_id, Coll.url == data.url).first()
     title = data.title or data.url
     if coll:
         db.delete(coll)
         db.commit()
-        return {"msg": "已取消收藏", "is_collected": False}
+        return JSONResponse({"msg": "已取消收藏", "is_collected": False})
     else:
         new_coll = Coll(user_id=user.user_id, title=title, url=data.url)
         db.add(new_coll)
         db.commit()
-        return {"msg": "收藏成功", "is_collected": True}
+        return JSONResponse({"msg": "收藏成功", "is_collected": True})
 
 if __name__ == "__main__":   
     uvicorn.run("main:app", host="127.0.0.1", port=5000, reload=True)

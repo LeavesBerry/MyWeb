@@ -1,6 +1,12 @@
-import { reactive } from "vue"
+import { reactive, ref } from "vue"
 import { userStore, axiosRequest, showTips } from "./index"
 import { create } from "axios"
+
+const NAV_DESIGN_HEIGHT = 457
+const NAV_DESIGN_RATIO = 2.4
+const NAV_DESIGN_WIDTH = NAV_DESIGN_HEIGHT * NAV_DESIGN_RATIO
+const du = (value) => `calc(${value} * var(--design-vh, 4.57px))`
+
 
 // 页面状态
 export const pageState = reactive({
@@ -32,9 +38,9 @@ export const menuModule = reactive({
     toggleMenu() {
         if (pageState.isMenuClosed) {
             this.leftUp = { transform: 'scale(0.8)' }
-            this.leftDown = { transform: 'translateY(68.65vh) scale(0.8)' }
-            this.rightUp = { transform: 'translateX(44vh) scale(0.8)' }
-            this.rightDown = { transform: 'translate(44vh,68.65vh) scale(0.8)' }
+            this.leftDown = { transform: `translateY(${du(68.65)}) scale(0.8)` }
+            this.rightUp = { transform: `translateX(${du(43.7)}) scale(0.8)` }
+            this.rightDown = { transform: `translate(${du(43.7)}, ${du(68.65)}) scale(0.8)` }
             this.menuBox = { zIndex: '21', opacity: '1', transform: 'scale(0.8,0.8)' }
         } else {
             this.leftUp = {}
@@ -106,12 +112,12 @@ export const navbarModule = reactive({
         if (!pageState.isShareClosed) {
             this.shareText = '';
             this.shareStyle = {
-                width: '9vh',
-                paddingLeft: '4.5vh',
-                paddingRight: '4.5vh',
+                width: du(9),
+                paddingLeft: du(4.5),
+                paddingRight: du(4.5),
                 backgroundImage: 'url("../public/images/QR.png"),url("../public/images/Link.png")',
-                backgroundPosition: '1vh center, right 1vh center',
-                backgroundSize: '3vh 3vh, 3vh 3vh',
+                backgroundPosition: `${du(1)} center, right ${du(1)} center`,
+                backgroundSize: `${du(3)} ${du(3)}, ${du(3)} ${du(3)}`,
                 backgroundRepeat: 'no-repeat,no-repeat'
             }
             this.shareText = '';
@@ -134,7 +140,7 @@ export const navbarModule = reactive({
     // 截图（懒加载）
     // ------------------------------
     async createScreshot() {
-        import html2canvas from 'html2canvas';
+        //import html2canvas from 'html2canvas';
         const canvas = await html2canvas(document, {
             scale: 0.4,
             useCORS: true,
@@ -152,17 +158,21 @@ export const navbarModule = reactive({
     // ------------------------------
     // 导航栏缩放
     // ------------------------------
+
     scaleNavbar() {
         const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const scale = (vw / vh / 2.4).toFixed(2);
-        const unscale = 1 / scale * vw;
-        this.navbar = { transform: `scale(${scale})` };
-        this.navbar = { width: `${unscale}px` };
+        const scale = vw / NAV_DESIGN_WIDTH;
+
+        navbarModule.navbar = {
+            '--design-vh': `${NAV_DESIGN_HEIGHT / 100}px`,
+            '--design-width': `${NAV_DESIGN_WIDTH}px`,
+            transform: `scale(${scale})`,
+            width: `${NAV_DESIGN_WIDTH}px`,
+        };
     },
 
     // 搜索
     DoSearch() {
-        console.log('搜索:', searchKey.value);
+        console.log('搜索:', this.searchKey);
     }
 });

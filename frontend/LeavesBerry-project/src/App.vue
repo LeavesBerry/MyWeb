@@ -8,7 +8,18 @@
 
       <p id="tip" :style="tip.tipStyle">{{ tip.tipText }}</p>
 
-      <div id="menu-box" @click="menuModule.toggleMenu" :style="menuModule.menuBox">
+      <div id="menu-box" 
+      :class="pageState.isMenuClosed ? 'parent-prevent' : ''" 
+      @click="menuModule.toggleMenu" 
+      :style="menuModule.menuBox">
+
+        <div id="user_info">
+          <img id="avatar" :src="userModule.AvatarUrl" @click="userModule.changeAvatar">
+          <p id="name">{{ userModule.userName }}</p>
+          <p id="bio" @click="userModule.changeBio">{{ userModule.bio }}</p>
+          <div id="level"><p>XP: Lv{{ userModule.level }}</p><div><line></line></div></div>
+        </div>
+
         <span class="star s1">✦</span>
         <span class="star s2">✦</span>
         <span class="star s3">✦</span>
@@ -105,7 +116,7 @@
       <div id="visitor-entry" @click="loginModule.visitorEnter"
       :style="loginModule.visitorEntry"
       >
-        <p id="identification">访客</p>
+        <p id="identification">❖访客❖</p>
         <div class="entry-person entry-person--visitor" aria-hidden="true">
           <span class="entry-person__head"></span>
           <span class="entry-person__neck"></span>
@@ -114,7 +125,7 @@
       </div>
       <div id="member-entry" @click="loginModule.memberEnter" 
       :style="loginModule.memberEntry"> 
-        <p id="identification" :style="loginModule.visitorEntry">成员</p>     
+        <p id="identification" :style="loginModule.visitorEntry">❖成员❖</p>     
         <div 
           class="entry-person entry-person--member" 
           aria-hidden="true"
@@ -171,7 +182,7 @@ import { ref, onMounted, onUnmounted, watch, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { debounce, tip, onGlobalClick,
 navbarModule, menuModule, pageState, 
-userStore, loginModule } from './utils';
+userStore, userModule, loginModule } from './utils';
 
 
 
@@ -181,7 +192,7 @@ userStore, loginModule } from './utils';
 const resizeHandler = debounce(navbarModule.scaleNavbar);
 onMounted(() => {
     
-    userStore.initUser();
+    userModule.initUser();
     navbarModule.scaleNavbar();
     window.addEventListener('resize', resizeHandler);
     document.addEventListener('click', onGlobalClick);

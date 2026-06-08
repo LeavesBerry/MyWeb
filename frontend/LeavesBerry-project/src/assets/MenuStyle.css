@@ -1,117 +1,189 @@
 #menu-box {
     position: fixed;
-    top: 1.3vh;
-    left: 2.28vh;
-    width: 61vh;
-    height: 92vh;
+    top: calc(1.3 * var(--design-vh, 4.57px));
+    left: calc(2.28 * var(--design-vh, 4.57px));
+    width: calc(61 * var(--design-vh, 4.57px));
+    height: calc(92 * var(--design-vh, 4.57px));
     background: #FFF3D0;
-    border: 0.5vh solid #73B436;
+    border: calc(0.5 * var(--design-vh, 4.57px)) solid #73B436;
     opacity: 0;
-    border-radius: 0.8vh 0.8vh 0.8vh 0.8vh;
+    border-radius: calc(0.8 * var(--design-vh, 4.57px)) calc(0.8 * var(--design-vh, 4.57px)) calc(0.8 * var(--design-vh, 4.57px)) calc(0.8 * var(--design-vh, 4.57px));
     transition: transform 0.8s ease;
     transform: scale(0.1, 0.067);
     transform-origin: left top;
     z-index: 23;
 }
 
+
 .menu-button {
-    width: 3vh;
-    height: 3vh;
+    width: calc(3 * var(--design-vh, 4.57px));
+    height: calc(3 * var(--design-vh, 4.57px));
     background: #73B436;
     border: none;
-    border-radius: 1vh;
+    border-radius: calc(1 * var(--design-vh, 4.57px));
     z-index: 22;
     transition: transform 0.8s ease;
     position: fixed;
 }
 
 #button-left-up {
-    top: 1vh;
-    left: 2vh;
+    top: calc(1 * var(--design-vh, 4.57px));
+    left: calc(2 * var(--design-vh, 4.57px));
 }
 
 #button-left-down {
-    top: 4.2vh;
-    left: 2vh;
+    top: calc(4.2 * var(--design-vh, 4.57px));
+    left: calc(2 * var(--design-vh, 4.57px));
 }
 
 #button-right-up {
-    top: 1vh;
-    left: 5.2vh;
+    top: calc(1 * var(--design-vh, 4.57px));
+    left: calc(5.2 * var(--design-vh, 4.57px));
 }
 
 #button-right-down {
-    top: 4.2vh;
-    left: 5.2vh;
+    top: calc(4.2 * var(--design-vh, 4.57px));
+    left: calc(5.2 * var(--design-vh, 4.57px));
 }
 
 .star {
     position: absolute;
-    font-size: 4vh;
+    font-size: calc(4 * var(--design-vh, 4.57px));
     color: #73B436;
 }
 
 .s1 {
-    top: -0.6vh;
-    left: 2.2vh;
+    top: calc(-0.6 * var(--design-vh, 4.57px));
+    left: calc(2.2 * var(--design-vh, 4.57px));
 }
 
 .s2 {
-    top: -0.6vh;
-    right: 2.2vh;
+    top: calc(-0.6 * var(--design-vh, 4.57px));
+    right: calc(2.2 * var(--design-vh, 4.57px));
 }
 
 .s3 {
-    top: 0.8vh;
-    left: 0.6vh;
+    top: calc(0.8 * var(--design-vh, 4.57px));
+    left: calc(0.6 * var(--design-vh, 4.57px));
 }
 
 .s4 {
-    top: 0.8vh;
-    right: 0.6vh;
+    top: calc(0.8 * var(--design-vh, 4.57px));
+    right: calc(0.6 * var(--design-vh, 4.57px));
 }
 
 .s5 {
-    bottom: 1.5vh;
-    left: 0.6vh;
+    bottom: calc(1.5 * var(--design-vh, 4.57px));
+    left: calc(0.6 * var(--design-vh, 4.57px));
 }
 
 .s6 {
-    bottom: 0.1vh;
-    left: 2.2vh;
+    bottom: calc(0.1 * var(--design-vh, 4.57px));
+    left: calc(2.2 * var(--design-vh, 4.57px));
 }
 
 .s7 {
-    bottom: 0.1vh;
-    right: 2.2vh;
+    bottom: calc(0.1 * var(--design-vh, 4.57px));
+    right: calc(2.2 * var(--design-vh, 4.57px));
 }
 
 .s8 {
-    bottom: 1.5vh;
-    right: 0.6vh;
+    bottom: calc(1.5 * var(--design-vh, 4.57px));
+    right: calc(0.6 * var(--design-vh, 4.57px));
+}
+
+#avatar {
+    position: absolute;
+    top: calc(4.6 * var(--design-vh, 4.57px));
+    left: calc(4.8 * var(--design-vh, 4.57px));
+    width: calc(12 * var(--design-vh, 4.57px));
+    height: calc(12 * var(--design-vh, 4.57px));
+    border-radius: calc(12 * var(--design-vh, 4.57px));
+    border: #73B436 solid 1px;
+}
+
+#name {
+    font-size: calc(4 * var(--design-vh, 4.57px));
+    color: #3A251A;
+    position: absolute;
+    top: calc(4.3 * var(--design-vh, 4.57px));
+    left: calc(19 * var(--design-vh, 4.57px));
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+#bio {
+    position: absolute;
+    top: calc(10 * var(--design-vh, 4.57px));
+    left: calc(19 * var(--design-vh, 4.57px));
+    width: calc(36 * var(--design-vh, 4.57px));
+    height: calc(7 * var(--design-vh, 4.57px));
+    border: #3A251A solid 1px;
+    font-size: calc(2.3 * var(--design-vh, 4.57px));
+    color: #884C3A;
+    text-align: left;
+    vertical-align: top;
+    padding-left: 5px;
+}
+
+#level {
+    position: absolute;
+    top: calc(17 * var(--design-vh, 4.57px));
+    left: calc(6 * var(--design-vh, 4.57px));
+    width: calc(30 * var(--design-vh, 4.57px));
+    height: calc(2.3 * var(--design-vh, 4.57px));
+    padding-left: 0;
+    align-items: center;
+}
+
+#level p {
+    font-size: calc(2.2 * var(--design-vh, 4.57px));
+    color: #3A251A;
+    position: absolute;
+    left: -3px;
+    font-weight: 600;
+    letter-spacing: 3px;
+}
+
+#level div {
+    position: absolute;
+    top: calc(1.8 * var(--design-vh, 4.57px));
+    left: calc(13 * var(--design-vh, 4.57px));
+    border: #3A251A solid 1px;
+    width: calc(36 * var(--design-vh, 4.57px));
+    height: calc(1.5 * var(--design-vh, 4.57px));
+    padding: 0 0 0 0;
+}
+
+#level line {
+    width: calc(20 * var(--design-vh, 4.57px));
+    height: calc(1.5 * var(--design-vh, 4.57px));
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #884C3A;
 }
 
 #menu-function-button-box {
-    width: 54vh;
-    height: 65vh;
+    width: calc(54 * var(--design-vh, 4.57px));
+    height: calc(65 * var(--design-vh, 4.57px));
     border: none;
     position: absolute;
-    bottom: 4vh;
-    left: 4vh;
+    bottom: calc(4 * var(--design-vh, 4.57px));
+    left: calc(4 * var(--design-vh, 4.57px));
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-
-
 }
 
+
 .menu-function-button {
-    width: 17.22vh;
-    height: 15.5vh;
+    width: calc(17.22 * var(--design-vh, 4.57px));
+    height: calc(15.5 * var(--design-vh, 4.57px));
     margin: 0;
-    padding-top: 10vh;
+    padding-top: calc(10 * var(--design-vh, 4.57px));
     border: none;
-    margin-top: 0.5vh;
-    font-size: 3vh;
+    margin-top: calc(0.5 * var(--design-vh, 4.57px));
+    font-size: calc(3 * var(--design-vh, 4.57px));
     font-weight: 900;
     text-align: center;
     background-color: #3A251A;

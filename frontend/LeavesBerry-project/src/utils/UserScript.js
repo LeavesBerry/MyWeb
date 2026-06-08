@@ -3,12 +3,29 @@ import { showTips, testError, axiosRequest, pageState } from "./index"
 // ------------------------------
 // 用户状态
 // ------------------------------
-export const userStore = reactive({
-    isLogined: false,
+export const DEFAULTUSERINDO = {
     userName: '未登录',
     userId: null,
     userEmail: null,
+    bio: "你好,世界!",
     userAccessToken: null,
+    AvatarUrl: "http://localhost:5000/static/avatar/default_avatar.jpg",
+    level: "0",
+    xp: "0"
+}
+export const userStore = reactive({
+    isLogined: false
+})
+export const userModule = reactive({
+    userName: '未登录',
+    userId: null,
+    userEmail: null,
+    bio: "你好,世界!",
+    userAccessToken: null,
+    AvatarUrl: "http://localhost:5000/static/avatar/default_avatar.jpg",
+    level: "0",
+    xp: "0",
+
     getToken() {
         return localStorage.getItem('userAccessToken')
     },
@@ -31,49 +48,56 @@ export const userStore = reactive({
         return data
     },
     clear() {
-        this.isLogined = false
-        this.userName = '未登录'
-        this.userId = null
-        this.userEmail = null
-        this.userAccessToken = null
+        userStore.isLogined = false
+        Object.entries(DEFAULTUSERINDO).forEach(([key, vaule]) => {
+            this[key] = value;
+        });
         localStorage.removeItem('userAccessToken')
         localStorage.removeItem('userCache')
     },
     async initUser() {
-        userStore.userAccessToken = userStore.getToken()
-        if (!userStore.userAccessToken) {
+        this.userAccessToken = this.getToken()
+        if (!this.userAccessToken) {
             loginModule.openLoginWindow();
             return;
         }
-        else if (userStore.userAccessToken == 'visitor') {
+        else if (this.userAccessToken == 'visitor') {
             return;
         }
-        const cacheData = userStore.getCache()
+        const cacheData = this.getCache()
         if (cacheData) {
             userStore.isLogined = true;
-            userStore.userName = cacheData.user_name;
-            userStore.userId = cacheData.user_id;
-            userStore.userEmail = cacheData.user_email;
+            Object.entries(cacheData).forEach(([key, vaule]) => {
+                this[key] = value;
+            });
             await initColl();
             return;
         }
         try {
             const data = await axiosRequest.getUserInfo();
             if (testError(data)) {
-                userStore.clear();
+                this.clear();
                 loginModule.openLoginWindow();
                 return;
             }
             userStore.isLogined = true;
-            userStore.userName = data.user_name;
-            userStore.userId = data.user_id;
-            userStore.userEmail = data.user_email;
-            userStore.setCache(data);
+            Object.entries(data).forEach(([key, vaule]) => {
+                this[key] = value;
+            });
+            this.setCache(data);
             await navbarModule.initColl()
         } catch (e) {
-            userStore.clear();
+            this.clear();
             loginModule.openLoginWindow();
         }
+    },
+
+    async changeAvatar() {
+        pass
+    },
+
+    async changeBio() {
+        pass
     }
 
 })
@@ -110,9 +134,9 @@ export const loginModule = reactive({
     visitorEnter() {
         //给予访客一个固定的非法token,以使后端拒绝请求
         //同时用于前端判断身份
-        userStore.userAccessToken = 'vistor';
-        userStore.userId = 0;
-        userStore.setToken('visitor');
+        userModule.userAccessToken = 'vistor';
+        userModule.userId = 0;
+        userModule.setToken('visitor');
         showTips('您已以访客身份进入');
         this.closeLoginWindow();
     },
@@ -162,15 +186,15 @@ export const loginModule = reactive({
         }
         const result = await axiosRequest.login(data);
         if (testError(result)) return;
-        userStore.setToken(result.access_token);
-        await userStore.initUser();
+        userModule.setToken(result.access_token);
+        await userModule.initUser();
         this.closeLoginWindow();
         await navbarModule.initColl();
     },
 
     async logout() {
         await axiosRequest.logout();
-        userStore.setToken('visitor');
+        userModule.setToken('visitor');
         await initUser();
         await navbarModule.initColl();
     }
