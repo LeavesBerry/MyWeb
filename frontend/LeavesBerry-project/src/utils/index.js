@@ -1,3 +1,3 @@
-export * from './BasicScript'
-export * from './UserScript'
-export * from './PageScript'
+export * from './base'
+export * from './user'
+export * from './page'

@@ -14,10 +14,12 @@
       :style="menuModule.menuBox">
 
         <div id="user_info">
-          <img id="avatar" :src="userModule.AvatarUrl" @click="userModule.changeAvatar">
+          <img id="avatar" :src="userModule.avatarUrl" @click="userModule.changeAvatar">
           <p id="name">{{ userModule.userName }}</p>
           <p id="bio" @click="userModule.changeBio">{{ userModule.bio }}</p>
-          <div id="level"><p>XP: Lv{{ userModule.level }}</p><div><line></line></div></div>
+          <div id="level"><p>XP: Lv{{ userModule.level }}</p>
+            <div><line :style="{width: `${(userModule.xp / 1000) * 100}%`}"></line></div>
+          </div>
         </div>
 
         <span class="star s1">✦</span>
@@ -42,9 +44,9 @@
           <button class="menu-function-button">✦收藏夹✦</button>
           <button class="menu-function-button">✦设置✦</button>
           <button class="menu-function-button" 
-          @click="pageState.userAccessToken == 'visitor' ? 
-          loginModule.logout() : loginModule.openLoginWindow()">
-            {{ pageState.userAccessToken == 'visitor' ? '✦登出✦' : '✦登入✦' }}
+          @click="userModule.userAccessToken == 'visitor' ? 
+          loginModule.openLoginWindow() : loginModule.logout()">
+            {{ userModule.userAccessToken == 'visitor' ? '✦登入✦' : '✦登出✦' }}
           </button>
           <button class="menu-function-button">✦反馈箱✦</button>
           <button class="menu-function-button">✦历史✦</button>
@@ -53,7 +55,7 @@
           <button class="menu-function-button">✦协议✦</button>
           <button class="menu-function-button" style="border-radius:0 0 0 3vh">✦测试✦</button>
           <button class="menu-function-button">✦指令表✦</button>
-          <button class="menu-function-button" style="border-radius:0 0 3vh 0">✦退出✦</button>
+          <button class="menu-function-button" style="border-radius:0 0 3vh 0">✦帮助✦</button>
         </div>
       </div>
 
@@ -182,7 +184,7 @@ import { ref, onMounted, onUnmounted, watch, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { debounce, tip, onGlobalClick,
 navbarModule, menuModule, pageState, 
-userStore, userModule, loginModule } from './utils';
+userState, userModule, loginModule } from './utils/index';
 
 
 

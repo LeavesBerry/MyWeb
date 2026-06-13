@@ -1,5 +1,6 @@
 import { reactive } from "vue";
-import { navbarModule, menuModule, pageState } from "./index";
+import { navbarModule, menuModule, pageState, userModule } from "./index";
+import api from "./api";
 
 // ------------------------------
 // 工具函数
@@ -10,17 +11,31 @@ export const tip = reactive({
 });
 
 export function showTips(text) {
-    tip.tipText = text;
-    let showTime = text.length * 124 + 890;
-    tip.tipStyle = { visibility: 'visible', transform: 'translateY(6vh)' }
-    setTimeout(() => {
-        tip.tipStyle = { visibility: 'hidden', transform: 'none' }
-    }, showTime);
+    let currentTask = Promise.resolve()
+    let taskQueue = []
+    taskQueue.push(text)
+    function disposeTask() {
+        if (taskQueue.length === 0) { return }
+        tip.tipText = taskQueue.shift()
+        currentTask = currentTask.then(() => {
+            return new Promise((resolve) => {
+                let showTime = text.length * 124 + 890;
+                tip.tipStyle = { visibility: 'visible', transform: 'translateY(6vh)' }
+                setTimeout(() => {
+                    tip.tipStyle = { visibility: 'hidden', transform: 'none' }
+                    resolve();
+                }, showTime);
+            });
+        }).then(() => {
+            disposeTask();
+        });
+    }
+    disposeTask();
 }
-export function testError(data) {
-    if (data.error) { showTips(data.error); return true }
-    if (data.msg) { showTips(data.msg) }
-    return false
+export function disposeReturn(data) {
+    if (data.error) { showTips(data.error); console.log(data); return true }
+    if (data.xpChange) { userModule.changeXp(data.xpChange) }
+    if (data.msg) { showTips(data.msg); return false }
 }
 export async function copyText(text) {
     try {
@@ -50,37 +65,37 @@ export function debounce(fn, delay = 100) {
 // ------------------------------
 export const axiosRequest = {
     async sendCode(email) {
-        const res = await axios.post('/api/sendCode', { user_email: email });
+        const res = await api.post('/api/sendCode', { user_email: email });
         return res.data;
     },
 
     async register(data) {
-        const res = await axios.post('/api/register', data);
+        const res = await api.post('/api/register', data);
         return res.data;
     },
 
     async login(data) {
-        const res = await axios.post('/api/login', data)
+        const res = await api.post('/api/login', data)
         return res.data;
     },
 
     async logout(data) {
-        const res = await axios.post('/api/logout', data)
+        const res = await api.post('/api/logout', data)
         return res.data;
     },
 
     async getUserInfo() {
-        const res = await axios.post('/api/getUserInfo')
+        const res = await api.post('/api/getUserInfo')
         return res.data;
     },
 
     async initColl(currentUrl) {
-        const res = await axios.post('/api/toggleColl', { url: currentUrl });
+        const res = await api.post('/api/initColl', { url: currentUrl });
         return res.data;
     },
 
     async toggleColl(currentUrl, currentTitle) {
-        const res = await axios.post('/api/toggleColl', {
+        const res = await api.post('/api/toggleColl', {
             url: currentUrl,
             title: currentTitle
         });

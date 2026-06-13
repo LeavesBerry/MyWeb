@@ -6,3 +6,10 @@
 		
 	</div>
 </template>	
+<script setup>
+	import api from "../utils/api"
+	import { userState } from "../utils/index";
+	async function getAllColl() {
+
+	}
+</script>

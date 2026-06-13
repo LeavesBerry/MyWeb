@@ -1,16 +1,15 @@
 #第三方库
-from fastapi import FastAPI, Request, HTTPException, Depends, status, Response
+from fastapi import FastAPI, Request, HTTPException, Depends, status, Response,File, UploadFile
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 #(下文中的api报错用JSONRESPONSE返回给前端以便其处理)
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, field_validator
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, event
+from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, update
 from sqlalchemy.orm import sessionmaker, Session, DeclarativeBase
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 from jose import JWTError, jwt
 import bcrypt
 from dotenv import load_dotenv
@@ -25,7 +24,7 @@ import time
 import os
 import re
 
-# 环境变量
+# 环境常量
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "leavesberry-helloworld-520")
 ALGORITHM = "HS256"
@@ -33,6 +32,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 EMAIL_SENDER = os.getenv("EMAIL_SENDER")
 EMAIL_AUTH_CODE = os.getenv("EMAIL_AUTH_CODE")
+MAX_UPLOADIMG_SIZE = 2 * 1024 * 1024
 
 # FastAPI 实例
 app = FastAPI()
@@ -50,8 +50,8 @@ app.add_middleware(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/refreshToken")
 
 # 静态文件
-frontend_public_dir = os.path.abspath(r"./data/static/")
-app.mount("/static", StaticFiles(directory=frontend_public_dir), name="static")
+public_dir = os.path.abspath(r"./data/static/")
+app.mount("/static", StaticFiles(directory=public_dir), name="static")
 
 # 数据库配置
 DB_USER = os.getenv("DB_USER", "root")
@@ -59,7 +59,7 @@ DB_PASSWORD = os.getenv("DB_PASSWORD", "LeavesBerry#Zzy")
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_PORT = os.getenv("DB_PORT", "3306")
 DB_NAME = os.getenv("DB_NAME", "leavesberry")
- # MySQL 连接串
+# MySQL 连接串
 database_url = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
 connect_args = {}
 
@@ -111,7 +111,7 @@ def send_email(user_email: str, text: str, subject: str) -> bool:
         msg["Subject"] = subject
         sender.send_message(msg)
         sender.quit()
-        return True
+        return True, None
     except Exception as e:
         return False,e
 
@@ -153,29 +153,64 @@ def clean_expired_codes(db: Session):
     db.commit()
 
 # 鉴权
-async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="登录已失效",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if not user_id:
+def get_current_user(target: str):
+    if target not in ['user','user_id']:
+        raise ValueError('参数错误')
+    async def get_id_only(token: str = Depends(oauth2_scheme)):
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="登录已失效",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            user_id = payload.get("sub")
+            if not user_id:
+                raise credentials_exception
+            return user_id
+        except JWTError:
             raise credentials_exception
-        user = db.query(UserBase).filter(UserBase.user_id == int(user_id)).first()
-        if not user:
-            raise credentials_exception
-        return user
-    except JWTError:
-        raise credentials_exception
+    async def get_all_info(user_id: str = Depends(get_id_only),
+                            db: Session = Depends(get_db)):
+            user = db.query(UserBase).filter(UserBase.user_id == int(user_id)).first()
+            if not user:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                    detail="用户不存在")
+            return user
+    if target == "user_id":
+        return get_id_only
+    elif target == "user":
+        return get_all_info
+        
+    
 #经验    
-
+def changeXp (user_id: str, change_value: int, db: Session):
+    change = (
+        update(UserProfile)
+        .where(UserProfile.user_id == user_id)
+        .values(level_xp = UserProfile.level_xp + change_value)
+    )
+    result = db.execute(change)
+    db.commit()
+    return result.rowcount > 0 
      
+#头像
+def changeAvatar(user_id: str, file, db: Session) -> str:
+    file_name = f'avatar_{user_id}.jpg'
+    file_path = os.path.join(public_dir, file_name)
+    with open(file_path, "wb") as f:
+        f.write(file)
+    change = (
+        update(UserProfile)
+        .where(UserProfile.user_id == user_id)
+        .value(avatar_url = file_path)
+    )
+    result = db.execute(change)
+    db.commit()
+    if result.rowcount > 0:
+        return file_path, True
+    else:
+        return "http://localhost:5000/static/avatar/default_avatar.jpg", False
 
 
 # 数据库模型
@@ -192,7 +227,7 @@ class UserProfile(Base):
                      primary_key=True, nullable=False, unique=True, index=True)
     avatar_url = Column(String(100), 
                         default="http://localhost:5000/static/avatar/default_avatar.jpg", 
-                        unique=True)
+                        unique=False)
     bio = Column(String(30), default="你好,世界")
     level_xp = Column(Integer, default=1000, nullable=False)
 
@@ -212,7 +247,7 @@ class LimLogin(Base):
 
 class Coll(Base):
     __tablename__ = "coll"
-    user_id = Column(Integer, ForeignKey("user.user_id"), primary_key=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("user_base.user_id"), primary_key=True, nullable=False)
     url = Column(String(100), primary_key=True, nullable=False)
     title = Column(String(255), default="未知界面", nullable=False)
 
@@ -220,6 +255,8 @@ class Pages(Base):
     __tablename__ = "pages"
     url = Column(String(100), primary_key=True, unique=True, nullable=False)
     title = Column(String(255), default="未知界面", nullable=False)
+
+Base.metadata.create_all(bind=engine)
 
 # 请求模型
 class SendCodeRequest(BaseModel):
@@ -241,6 +278,10 @@ class LoginRequest(BaseModel):
     user_email: EmailStr
     password: str
 
+class BioRequest(BaseModel):
+    bio: str
+
+
 class CollRequest(BaseModel):
     url: str
     title: Optional[str] = None
@@ -252,7 +293,7 @@ class CollRequest(BaseModel):
         return value
 
 
-Base.metadata.create_all(bind=engine)
+
 # ------------------------------
 # 路由
 # ------------------------------
@@ -294,31 +335,31 @@ async def register(data: RegisterRequest, db: Session = Depends(get_db)):
     clean_expired_codes(db)
     code_record = db.query(Code).filter(Code.user_email == data.user_email).first()
     if not code_record or code_record.code != data.code:
-        raise JSONResponse("验证码错误")
+        return JSONResponse("验证码错误")
     if time.time() - code_record.create_time > 300:
         db.delete(code_record)
         db.commit()
-        raise JSONResponse("验证码已过期")
+        raise APIError("验证码已过期")
     exist = db.query(UserBase).filter(UserBase.user_email == data.user_email).first()
     if exist:
-        raise JSONResponse("用户已存在")
+        raise APIError("用户已存在")
     hashed = hash_password(data.password)
     user = UserBase(user_email=data.user_email, 
                     user_name=data.user_name, password_hash=hashed)
     db.add(user)
     db.flush()
-    user_profile = UserProfile(user_id = user.user_id)
+    user_profile = UserProfile(user_id = user.user_id, level_xp = 1050)
     db.add(user_profile)
     db.delete(code_record)
     db.commit()
-    return JSONResponse({"msg": "注册成功"})
+    return JSONResponse({"msg": "注册成功", "xpChange" : 50})
 
 @app.post("/api/login")
 async def login(request: Request, response: Response, 
                 data: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(UserBase).filter(UserBase.user_email == data.user_email).first()
     if not user:
-        raise JSONResponse("用户不存在")
+        raise APIError("用户不存在")
     ip = request.client.host
     lim = db.query(LimLogin).filter(LimLogin.user_ip == ip).first()
     if not lim:
@@ -327,7 +368,7 @@ async def login(request: Request, response: Response,
         db.commit()
     now = time.time()
     if now < lim.lim_start_time + lim.lim_time:
-        raise JSONResponse("登录过于频繁，请稍后再试")
+        raise APIError("登录过于频繁，请稍后再试")
     if not verify_password(data.password, user.password_hash):
         lim.try_times += 1
         if lim.try_times >= 5:
@@ -335,7 +376,7 @@ async def login(request: Request, response: Response,
             lim.lim_time = 300
             lim.try_times = 0
         db.commit()
-        raise JSONResponse("密码错误")
+        return JSONResponse("密码错误")
     lim.try_times = 0
     db.commit()
     access_token = create_access_token({"sub": str(user.user_id)})
@@ -352,18 +393,19 @@ async def login(request: Request, response: Response,
     return JSONResponse({"msg": f"欢迎回来，{user.user_name}", "access_token": access_token})
 
 @app.post("/api/getUserInfo")
-def get_user_info(user: UserBase = Depends(get_current_user), db: Session = Depends(get_db)):
-    user_profile = db.query(UserProfile).filter(UserProfile.user_id == user.id).first()
+def get_user_info(user: UserBase = Depends(get_current_user("user")), 
+                  db: Session = Depends(get_db)):
+    user_profile = db.query(UserProfile).filter(UserProfile.user_id == user.user_id).first()
     return JSONResponse({
         "msg": "获取成功",
         "is_logined": True,
         "user_id": user.user_id,
         "user_name": user.user_name,
         "user_email": user.user_email,
-        "avatar": user_profile.avatar_url,
+        "avatar_url": user_profile.avatar_url,
         "bio": user_profile.bio,
-        "level": str(user_profile.level_xp)[0],
-        "xp": str(user_profile.level_xp)[1:5]
+        "level": user_profile.level_xp // 1000,
+        "xp": user_profile.level_xp % 1000
     })
 
 @app.post("/api/refreshToken")
@@ -388,28 +430,52 @@ async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depen
     except JWTError:
         raise credentials_exception
     
-@app.post("logout")
+@app.post("/api/logout")
 def logout(response: Response):
     response.delete_cookie(key="refresh_cookie", path="/")
     return JSONResponse({"msg": "已退出登录"})
 
+@app.post("/api/changeBio")
+def change_bio (data: BioRequest, 
+                user_id: int = Depends(get_current_user("user_id")), 
+                db: Session = Depends(get_db)):
+    user_profile = db.query(UserProfile).filter(UserProfile.user_id == user_id).first()
+    user_profile.bio = data.bio
+    db.commit()
+    return JSONResponse({"msg": "成功修改个人简介"})
+
+@app.post("/api/changeAvatar")
+async def change_avatar (file: UploadFile = File(...), 
+                         user_id: int = Depends(get_current_user("user_id")),
+                         db: Session = Depends(get_db)):
+    suffix = file.filename.split(".")[-1].lower()
+    if suffix not in ["jpg","jpeg","png"]:
+        raise APIError("不支持该文件类型")
+    bytes = file.size()
+    if bytes > MAX_UPLOADIMG_SIZE:
+        raise APIError("图片尺寸过大")
+    avatar_url, result = changeAvatar(user_id, file, db)
+    if result:
+        return JSONResponse({"msg": "修改头像成功", "avatar_url": avatar_url}) 
+
+
 @app.post("/api/initColl")
-async def init_coll(data: CollRequest, user: UserBase = Depends(get_current_user), 
+async def init_coll(data: CollRequest, user_id: int = Depends(get_current_user("user_id")), 
                     db: Session = Depends(get_db)):
-    exist = db.query(Coll).filter(Coll.user_id == user.user_id, Coll.url == data.url).first()
+    exist = db.query(Coll).filter(Coll.user_id == user_id, Coll.url == data.url).first()
     return JSONResponse({"msg": "ok", "is_collected": exist is not None})
 
 @app.post("/api/toggleColl")
-async def toggle_coll(data: CollRequest, user: UserBase = Depends(get_current_user), 
+async def toggle_coll(data: CollRequest, user_id: int = Depends(get_current_user("user_id")), 
                       db: Session = Depends(get_db)):
-    coll = db.query(Coll).filter(Coll.user_id == user.user_id, Coll.url == data.url).first()
+    coll = db.query(Coll).filter(Coll.user_id == user_id, Coll.url == data.url).first()
     title = data.title or data.url
     if coll:
         db.delete(coll)
         db.commit()
         return JSONResponse({"msg": "已取消收藏", "is_collected": False})
     else:
-        new_coll = Coll(user_id=user.user_id, title=title, url=data.url)
+        new_coll = Coll(user_id=user_id, title=title, url=data.url)
         db.add(new_coll)
         db.commit()
         return JSONResponse({"msg": "收藏成功", "is_collected": True})

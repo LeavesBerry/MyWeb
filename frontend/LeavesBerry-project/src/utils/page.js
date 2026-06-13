@@ -1,5 +1,5 @@
 import { reactive, ref } from "vue"
-import { userStore, axiosRequest, showTips } from "./index"
+import { userState, axiosRequest, showTips } from "./index"
 import { create } from "axios"
 
 const NAV_DESIGN_HEIGHT = 457
@@ -76,7 +76,7 @@ export const navbarModule = reactive({
         }
         try {
             const data = await axiosRequest.initColl(pageState.currentUrl)
-            if (!testError(data)) {
+            if (!disposeReturn(data)) {
                 pageState.isCollected = data.is_collected
                 localStorage.setItem(collCacheKey, data.is_collected)
             }
@@ -84,10 +84,10 @@ export const navbarModule = reactive({
     },
 
     async toggleColl() {
-        if (!userStore.isLogined) return
+        if (!userState.isLogined) return
         try {
             const data = await axiosRequest.toggleColl(pageState.currentUrl, pageState.currentTitle);
-            if (!testError(data)) {
+            if (!disposeReturn(data)) {
                 pageState.isCollected = data.is_collected
                 localStorage.setItem(`coll_${pageState.currentUrl}`, data.is_collected)
             }

@@ -4,12 +4,12 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 
-import './assets/BasicStyle.css'
-import './assets/NavberStyle.css'
-import './assets/LoginWinStyle.css'
-import './assets/MenuStyle.css'
+import './assets/base.css'
+import './assets/navbar.css'
+import './assets/login.css'
+import './assets/menu.css'
 
-//import * as CommonUtils from './utils/CommonScript.js'
+
 
 const app = createApp(App)
 window.axios = axios
@@ -20,7 +20,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(config => {
-    const userToken = localStorage.getItem("token")
+    const userToken = localStorage.getItem("userAccessToken")
     if (userToken) {
         config.headers.Authorization = `Bearer ${userToken}`;
     }
@@ -45,8 +45,8 @@ api.interceptors.response.use(
         }
         isRefreshing = true;
         try {
-            const result = await axios.post('refreshToken')
-            const newAccessToken = result.access_token;
+            const result = await axios.post('/api/refreshToken')
+            const newAccessToken = result.data.access_token;
             requestQueue.forEach(cb => cb());
             requestQueue = [];
             originalReq.headers.Authorization = `Bearer ${newAccessToken}`;

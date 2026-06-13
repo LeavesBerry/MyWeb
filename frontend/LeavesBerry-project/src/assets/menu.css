@@ -150,13 +150,12 @@
     top: calc(1.8 * var(--design-vh, 4.57px));
     left: calc(13 * var(--design-vh, 4.57px));
     border: #3A251A solid 1px;
-    width: calc(36 * var(--design-vh, 4.57px));
+    width: calc(36 * var(--design-vh, 4.57px) + 5px);
     height: calc(1.5 * var(--design-vh, 4.57px));
     padding: 0 0 0 0;
 }
 
 #level line {
-    width: calc(20 * var(--design-vh, 4.57px));
     height: calc(1.5 * var(--design-vh, 4.57px));
     position: absolute;
     top: 0;

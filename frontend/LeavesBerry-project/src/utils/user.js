@@ -1,19 +1,13 @@
 import { reactive } from "vue"
-import { showTips, testError, axiosRequest, pageState } from "./index"
+import { showTips, disposeReturn, axiosRequest, pageState, navbarModule } from "./index"
 // ------------------------------
 // 用户状态
 // ------------------------------
-export const DEFAULTUSERINDO = {
-    userName: '未登录',
-    userId: null,
-    userEmail: null,
-    bio: "你好,世界!",
-    userAccessToken: null,
-    AvatarUrl: "http://localhost:5000/static/avatar/default_avatar.jpg",
-    level: "0",
-    xp: "0"
+export const DEFAULTUSERINFO = {
+
 }
-export const userStore = reactive({
+
+export const userState = reactive({
     isLogined: false
 })
 export const userModule = reactive({
@@ -22,9 +16,9 @@ export const userModule = reactive({
     userEmail: null,
     bio: "你好,世界!",
     userAccessToken: null,
-    AvatarUrl: "http://localhost:5000/static/avatar/default_avatar.jpg",
-    level: "0",
-    xp: "0",
+    avatarUrl: "http://localhost:5000/static/avatar/default_avatar.jpg",
+    level: 0,
+    xp: 0,
 
     getToken() {
         return localStorage.getItem('userAccessToken')
@@ -47,11 +41,31 @@ export const userModule = reactive({
         }
         return data
     },
+    updateUserInfo(data) {
+        console.log(data);
+        this.userName = data.user_name,
+            this.userId = data.user_id,
+            this.userEmail = data.user_email,
+            this.bio = data.bio,
+            this.avatarUrl = data.avatar_url,
+            this.level = data.level,
+            this.xp = data.xp,
+            userState.isLogined = data.is_logined
+    },
+    resetUserInfo() {
+        this.userName = '未登录',
+            this.userId = null,
+            this.userEmail = null,
+            this.bio = "你好,世界!",
+            this.userAccessToken = null,
+            this.avatarUrl = "http://localhost:5000/static/avatar/default_avatar.jpg",
+            this.level = 0,
+            this.xp = 0,
+            userState.isLogined = true
+    },
     clear() {
-        userStore.isLogined = false
-        Object.entries(DEFAULTUSERINDO).forEach(([key, vaule]) => {
-            this[key] = value;
-        });
+        userState.isLogined = false
+        this.resetUserInfo()
         localStorage.removeItem('userAccessToken')
         localStorage.removeItem('userCache')
     },
@@ -66,27 +80,23 @@ export const userModule = reactive({
         }
         const cacheData = this.getCache()
         if (cacheData) {
-            userStore.isLogined = true;
-            Object.entries(cacheData).forEach(([key, vaule]) => {
-                this[key] = value;
-            });
-            await initColl();
+            userState.isLogined = true;
+            this.updateUserInfo(cacheData)
+            await navbarModule.initColl();
             return;
         }
         try {
             const data = await axiosRequest.getUserInfo();
-            if (testError(data)) {
+            if (disposeReturn(data)) {
                 this.clear();
                 loginModule.openLoginWindow();
                 return;
             }
-            userStore.isLogined = true;
-            Object.entries(data).forEach(([key, vaule]) => {
-                this[key] = value;
-            });
+            this.updateUserInfo(data)
             this.setCache(data);
             await navbarModule.initColl()
         } catch (e) {
+            console.log(e);
             this.clear();
             loginModule.openLoginWindow();
         }
@@ -98,6 +108,19 @@ export const userModule = reactive({
 
     async changeBio() {
         pass
+    },
+
+    changeXp(change) {
+        let old_level = this.level;
+        let level_xp = 1000 * this.level + this.xp;
+        level_xp += change;
+        this.level = parseInt(level_xp / 1000);
+        this.xp = level_xp % 1000;
+        showTips(change >= 0 ? `失去${-change}点经验` : `获得${change}点经验`);
+        if (parseInt(level_xp / 1000) > old_level) {
+            showTips(`恭喜您升级到${this.level}级`);
+        }
+
     }
 
 })
@@ -160,7 +183,7 @@ export const loginModule = reactive({
     async sendCode() {
         const email = this.inputEmail;
         if (!email) return;
-        testError(await axiosRequest.sendCode(email));
+        disposeReturn(await axiosRequest.sendCode(email));
     },
 
     async register() {
@@ -174,7 +197,7 @@ export const loginModule = reactive({
                 code: this.inputCode,
                 password: this.inputPw
             }
-            testError(await axiosRequest.register(data));
+            disposeReturn(await axiosRequest.register(data));
         }
 
     },
@@ -185,18 +208,22 @@ export const loginModule = reactive({
             password: this.inputPw
         }
         const result = await axiosRequest.login(data);
-        if (testError(result)) return;
+        if (disposeReturn(result)) return;
         userModule.setToken(result.access_token);
         await userModule.initUser();
+        this.rechoose();
         this.closeLoginWindow();
+        console.log(2)
         await navbarModule.initColl();
     },
 
     async logout() {
         await axiosRequest.logout();
         userModule.setToken('visitor');
-        await initUser();
-        await navbarModule.initColl();
+        userModule.clear();
+        showTips("您已登出")
+        /*await userModule.initUser();
+        await navbarModule.initColl();*/
     }
 
 })

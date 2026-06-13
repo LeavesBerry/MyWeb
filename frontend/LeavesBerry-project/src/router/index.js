@@ -1,8 +1,8 @@
 // src/router/index.js
 import axios from 'axios';
 import { createRouter, createWebHistory } from 'vue-router'
-import { pageState } from '../utils/PageScript.js'
-import { userStore } from '../utils/UserScript.js';
+import { pageState } from '../utils/page'
+
 
 const pageModules = import.meta.glob('../pages/*.vue')
 
