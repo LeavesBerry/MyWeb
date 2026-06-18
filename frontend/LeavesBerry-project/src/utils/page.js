@@ -77,21 +77,26 @@ export const navbarModule = reactive({
         try {
             const data = await axiosRequest.initColl(pageState.currentUrl)
             if (!disposeReturn(data)) {
-                pageState.isCollected = data.is_collected
-                localStorage.setItem(collCacheKey, data.is_collected)
+                pageState.isCollected = data.is_collected === "true";
+                localStorage.setItem(collCacheKey, pageState.isCollected)
             }
-        } catch (e) { }
+        } catch (e) {
+            showTips(e);
+        }
     },
 
     async toggleColl() {
         if (!userState.isLogined) return
         try {
             const data = await axiosRequest.toggleColl(pageState.currentUrl, pageState.currentTitle);
-            if (!disposeReturn(data)) {
-                pageState.isCollected = data.is_collected
-                localStorage.setItem(`coll_${pageState.currentUrl}`, data.is_collected)
+            if (true) {
+                pageState.isCollected = data.is_collected === "true";
+                console.log(pageState.isCollected);
+                localStorage.setItem(`coll_${pageState.currentUrl}`, pageState.isCollected)
             }
-        } catch (e) { }
+        } catch (e) {
+            showTips(e)
+        }
     },
 
     // ------------------------------

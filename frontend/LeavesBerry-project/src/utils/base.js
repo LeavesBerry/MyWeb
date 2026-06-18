@@ -33,9 +33,11 @@ export function showTips(text) {
     disposeTask();
 }
 export function disposeReturn(data) {
+    console.log(1);
     if (data.error) { showTips(data.error); console.log(data); return true }
     if (data.xpChange) { userModule.changeXp(data.xpChange) }
-    if (data.msg) { showTips(data.msg); return false }
+    if (data.msg) { showTips(data.msg); return false; console.log(2) }
+    return false;
 }
 export async function copyText(text) {
     try {

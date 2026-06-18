@@ -222,6 +222,7 @@ export const loginModule = reactive({
         userModule.setToken('visitor');
         userModule.clear();
         showTips("您已登出")
+        this.openLoginWindow();
         /*await userModule.initUser();
         await navbarModule.initColl();*/
     }

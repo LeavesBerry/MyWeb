@@ -1,12 +1,12 @@
 #第三方库
-from fastapi import FastAPI, Request, HTTPException, Depends, status, Response,File, UploadFile
+from fastapi import FastAPI, Request, HTTPException, Depends, status, Response,File, UploadFile, Cookie
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 #(下文中的api报错用JSONRESPONSE返回给前端以便其处理)
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, field_validator
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, update
+from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, update, exists
 from sqlalchemy.orm import sessionmaker, Session, DeclarativeBase
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta, timezone
@@ -14,6 +14,7 @@ from jose import JWTError, jwt
 import bcrypt
 from dotenv import load_dotenv
 import uvicorn
+
 #标准库
 from email.message import EmailMessage
 from datetime import datetime, timedelta, timezone
@@ -23,6 +24,7 @@ import smtplib
 import time
 import os
 import re
+import hashlib
 
 # 环境常量
 load_dotenv()
@@ -40,7 +42,7 @@ app = FastAPI()
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -89,11 +91,18 @@ class APIError(Exception):
 
 @app.exception_handler(APIError)
 async def handle_api_error(request: Request, exc: APIError):
-    return JSONResponse({"error": exc.error})
+    return JSONResponse(
+        {"error": exc.error},
+        status_code=400
+    )
 
 @app.exception_handler(HTTPException)
 async def handle_http_error(request: Request, exc: HTTPException):
-    return JSONResponse({"error": exc.detail})
+    return JSONResponse(
+        {"error": exc.detail},
+        status_code=exc.status_code,
+        headers=exc.headers
+    )
 
 @app.exception_handler(Exception)
 async def handle_global_error(request: Request, exc: Exception):
@@ -122,6 +131,9 @@ def hash_password(password: str) -> str:
 
 def verify_password(password: str, hashed_pw: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), hashed_pw.encode("utf-8"))
+
+def hash_url(url: str) -> str:
+    return hashlib.sha256(url.encode("utf-8")).hexdigest()
 
 def check_password_strength(password: str):
     if len(password) < 8:
@@ -164,15 +176,15 @@ def get_current_user(target: str):
         )
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            user_id = payload.get("sub")
+            user_id = int(payload.get("sub"))
             if not user_id:
                 raise credentials_exception
             return user_id
         except JWTError:
             raise credentials_exception
-    async def get_all_info(user_id: str = Depends(get_id_only),
+    async def get_all_info(user_id: int = Depends(get_id_only),
                             db: Session = Depends(get_db)):
-            user = db.query(UserBase).filter(UserBase.user_id == int(user_id)).first()
+            user = db.query(UserBase).filter(UserBase.user_id == user_id).first()
             if not user:
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                     detail="用户不存在")
@@ -247,8 +259,10 @@ class LimLogin(Base):
 
 class Coll(Base):
     __tablename__ = "coll"
-    user_id = Column(Integer, ForeignKey("user_base.user_id"), primary_key=True, nullable=False)
-    url = Column(String(100), primary_key=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("user_base.user_id"), primary_key=True, 
+                     nullable=False)
+    url = Column(String(1000), nullable=False)
+    url_hash = Column(String(64), primary_key=True, nullable=False)
     title = Column(String(255), default="未知界面", nullable=False)
 
 class Pages(Base):
@@ -376,11 +390,13 @@ async def login(request: Request, response: Response,
             lim.lim_time = 300
             lim.try_times = 0
         db.commit()
-        return JSONResponse("密码错误")
+        return APIError("密码错误")
     lim.try_times = 0
     db.commit()
     access_token = create_access_token({"sub": str(user.user_id)})
     refresh_token = create_refresh_token({"sub": str(user.user_id)})
+    response = JSONResponse({"msg": f"欢迎回来，{user.user_name}", 
+                             "access_token": access_token})
     response.set_cookie(
         key="refresh_cookie",
         value=refresh_token,
@@ -390,7 +406,7 @@ async def login(request: Request, response: Response,
         samesite="lax",
         path="/"
     )
-    return JSONResponse({"msg": f"欢迎回来，{user.user_name}", "access_token": access_token})
+    return response
 
 @app.post("/api/getUserInfo")
 def get_user_info(user: UserBase = Depends(get_current_user("user")), 
@@ -409,7 +425,8 @@ def get_user_info(user: UserBase = Depends(get_current_user("user")),
     })
 
 @app.post("/api/refreshToken")
-async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def refresh_token(token: Optional[str] = Cookie(default=None), 
+                        db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         error="登录已失效",
@@ -462,23 +479,33 @@ async def change_avatar (file: UploadFile = File(...),
 @app.post("/api/initColl")
 async def init_coll(data: CollRequest, user_id: int = Depends(get_current_user("user_id")), 
                     db: Session = Depends(get_db)):
-    exist = db.query(Coll).filter(Coll.user_id == user_id, Coll.url == data.url).first()
-    return JSONResponse({"msg": "ok", "is_collected": exist is not None})
+    exist = db.query(
+        exists().where(Coll.user_id == user_id, Coll.url_hash == hash_url(data.url))
+    ).scalar()
+    return JSONResponse({"msg": "ok", 
+                         "is_collected": "true" if exist is not None else "false"})
 
 @app.post("/api/toggleColl")
 async def toggle_coll(data: CollRequest, user_id: int = Depends(get_current_user("user_id")), 
                       db: Session = Depends(get_db)):
-    coll = db.query(Coll).filter(Coll.user_id == user_id, Coll.url == data.url).first()
+    coll = db.query(Coll).filter(Coll.user_id == user_id, 
+                                 Coll.url_hash == hash_url(data.url)).first()
     title = data.title or data.url
     if coll:
         db.delete(coll)
         db.commit()
-        return JSONResponse({"msg": "已取消收藏", "is_collected": False})
+        return JSONResponse({"msg": "已取消收藏", "is_collected": "false"})
     else:
         new_coll = Coll(user_id=user_id, title=title, url=data.url)
         db.add(new_coll)
         db.commit()
-        return JSONResponse({"msg": "收藏成功", "is_collected": True})
+        return JSONResponse({"msg": "收藏成功", "is_collected": "true"})
+
+@app.post("/api/getAllColl")
+async def get_all_coll(user_id: int = Depends(get_current_user("user_id")), 
+                       db: Session = Depends(get_db)):
+    colls = db.query(Coll.url, Coll.title).filter(Coll.user_id == user_id).all()
+    return JSONResponse({url: title for url,title in colls})
 
 if __name__ == "__main__":   
     uvicorn.run("main:app", host="127.0.0.1", port=5000, reload=True)
