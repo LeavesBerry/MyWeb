@@ -38,7 +38,7 @@ a {
 	height: 100dvh;
 	transform: scale(2);
 	background: rgba(0, 0, 0, 0.25);
-
+	filter: blur(8px);
 	z-index: 200;
 }
 

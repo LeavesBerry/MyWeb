@@ -8,7 +8,7 @@ export const DEFAULTUSERINFO = {
 }
 
 export const userState = reactive({
-    isLogined: false
+    isLogined: "false"
 })
 export const userModule = reactive({
     userName: '未登录',
@@ -42,7 +42,7 @@ export const userModule = reactive({
         return data
     },
     updateUserInfo(data) {
-        console.log(data);
+
         this.userName = data.user_name,
             this.userId = data.user_id,
             this.userEmail = data.user_email,
@@ -61,10 +61,10 @@ export const userModule = reactive({
             this.avatarUrl = "http://localhost:5000/static/avatar/default_avatar.jpg",
             this.level = 0,
             this.xp = 0,
-            userState.isLogined = true
+            userState.isLogined = "true"
     },
     clear() {
-        userState.isLogined = false
+        userState.isLogined = "false"
         this.resetUserInfo()
         localStorage.removeItem('userAccessToken')
         localStorage.removeItem('userCache')
@@ -80,23 +80,23 @@ export const userModule = reactive({
         }
         const cacheData = this.getCache()
         if (cacheData) {
-            userState.isLogined = true;
+            userState.isLogined = "true";
             this.updateUserInfo(cacheData)
             await navbarModule.initColl();
             return;
         }
         try {
-            const data = await axiosRequest.getUserInfo();
-            if (disposeReturn(data)) {
+            const res = await axiosRequest.getUserInfo();
+            if (disposeReturn(res)) {
                 this.clear();
                 loginModule.openLoginWindow();
                 return;
             }
-            this.updateUserInfo(data)
-            this.setCache(data);
+            this.updateUserInfo(res)
+            this.setCache(res);
             await navbarModule.initColl()
         } catch (e) {
-            console.log(e);
+            showTips(e);
             this.clear();
             loginModule.openLoginWindow();
         }
@@ -197,7 +197,8 @@ export const loginModule = reactive({
                 code: this.inputCode,
                 password: this.inputPw
             }
-            disposeReturn(await axiosRequest.register(data));
+            const res = await axiosRequest.register(data)
+            disposeReturn(res);
         }
 
     },
@@ -207,13 +208,12 @@ export const loginModule = reactive({
             user_email: this.inputEmail,
             password: this.inputPw
         }
-        const result = await axiosRequest.login(data);
-        if (disposeReturn(result)) return;
-        userModule.setToken(result.access_token);
+        const res = await axiosRequest.login(data);
+        if (disposeReturn(res)) return;
+        userModule.setToken(res.access_token);
         await userModule.initUser();
         this.rechoose();
         this.closeLoginWindow();
-        console.log(2)
         await navbarModule.initColl();
     },
 

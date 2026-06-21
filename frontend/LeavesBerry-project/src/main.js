@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createHead } from '@vueuse/head'
 import './style.css'
 import App from './App.vue'
 import router from './router'
@@ -8,11 +9,13 @@ import './assets/base.css'
 import './assets/navbar.css'
 import './assets/login.css'
 import './assets/menu.css'
+import './assets/sidebar.css'
 
 
 
 const app = createApp(App)
-window.axios = axios
+const head = createHead()
+
 const api = axios.create({
     baseURL: 'http://localhost:5000',
     timeout: 5000,
@@ -21,11 +24,18 @@ const api = axios.create({
 
 api.interceptors.request.use(config => {
     const userToken = localStorage.getItem("userAccessToken")
-    if (userToken) {
-        config.headers.Authorization = `Bearer ${userToken}`;
+
+    if (userToken && userToken !== 'visitor') {
+        config.headers.Authorization = `Bearer ${userToken}`
     }
-    return config;
-});
+
+    return config
+})
+
+export default api
+
+window.axios = axios
+
 let isRefreshing = false;
 let requestQueue = []
 api.interceptors.response.use(
@@ -63,5 +73,5 @@ api.interceptors.response.use(
 
 app.use(router)
 app.config.globalProperties.$api = api
-window.api = api
+app.use(head)
 app.mount('#app')

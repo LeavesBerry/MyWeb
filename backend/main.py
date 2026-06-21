@@ -414,7 +414,7 @@ def get_user_info(user: UserBase = Depends(get_current_user("user")),
     user_profile = db.query(UserProfile).filter(UserProfile.user_id == user.user_id).first()
     return JSONResponse({
         "msg": "获取成功",
-        "is_logined": True,
+        "is_logined": "true",
         "user_id": user.user_id,
         "user_name": user.user_name,
         "user_email": user.user_email,
@@ -496,7 +496,8 @@ async def toggle_coll(data: CollRequest, user_id: int = Depends(get_current_user
         db.commit()
         return JSONResponse({"msg": "已取消收藏", "is_collected": "false"})
     else:
-        new_coll = Coll(user_id=user_id, title=title, url=data.url)
+        new_coll = Coll(user_id=user_id, title=title, 
+                        url=data.url, url_hash=hash_url(data.url))
         db.add(new_coll)
         db.commit()
         return JSONResponse({"msg": "收藏成功", "is_collected": "true"})

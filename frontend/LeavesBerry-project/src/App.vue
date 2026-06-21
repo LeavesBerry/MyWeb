@@ -3,6 +3,7 @@
 
     <div id="page-filter" v-if="pageState.showFilter"></div>
 
+    <div ref="qrBox" style="display: none;"></div>
 
     <div id="navbar" :style="navbarModule.navbar">
 
@@ -41,7 +42,7 @@
 
         <div id="menu-function-button-box">
           <button class="menu-function-button">✦邮箱✦</button>
-          <button class="menu-function-button">✦收藏夹✦</button>
+          <button class="menu-function-button" @click="goPage('/Collect')">✦收藏夹✦</button>
           <button class="menu-function-button">✦设置✦</button>
           <button class="menu-function-button" 
           @click="userModule.userAccessToken == 'visitor' ? 
@@ -50,7 +51,7 @@
           </button>
           <button class="menu-function-button">✦反馈箱✦</button>
           <button class="menu-function-button">✦历史✦</button>
-          <button class="menu-function-button">✦下载✦</button>
+          <button class="menu-function-button" @click="goPage('/')">✦主页✦</button>
           <button class="menu-function-button">✦公告栏✦</button>
           <button class="menu-function-button">✦协议✦</button>
           <button class="menu-function-button" style="border-radius:0 0 0 3vh">✦测试✦</button>
@@ -182,12 +183,17 @@
 import axios from 'axios';
 import { ref, onMounted, onUnmounted, watch, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { debounce, tip, onGlobalClick,
+import { routeListener, debounce, tip, onGlobalClick,
 navbarModule, menuModule, pageState, 
-userState, userModule, loginModule } from './utils/index';
+userState, userModule, loginModule, qrBox } from './utils/index';
 
+const router = useRouter()
 
+const goPage = (url) => {
+  router.push(url);
+}
 
+routeListener();
 // ------------------------------
 // 生命周期
 // ------------------------------

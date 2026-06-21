@@ -1,6 +1,8 @@
-import { reactive } from "vue";
+import { reactive, watch, ref } from "vue";
+import { useRoute } from "vue-router";
 import { navbarModule, menuModule, pageState, userModule } from "./index";
 import api from "./api";
+import QRCode from "qrcodejs2-fix"
 
 // ------------------------------
 // 工具函数
@@ -9,6 +11,18 @@ export const tip = reactive({
     tipStyle: {},
     tipText: ''
 });
+
+export function routeListener() {
+    const route = useRoute();
+    watch(
+        () => route.fullPath,
+        (newPath) => {
+            pageState.currentUrl = `${location.origin}${newPath}`;
+            navbarModule.initColl(pageState.currentUrl);
+        },
+        { flush: "sync", immediate: true }
+    )
+}
 
 export function showTips(text) {
     let currentTask = Promise.resolve()
@@ -33,12 +47,14 @@ export function showTips(text) {
     disposeTask();
 }
 export function disposeReturn(data) {
-    console.log(1);
-    if (data.error) { showTips(data.error); console.log(data); return true }
+
+    if (data.error) { showTips(data.error);; return true }
     if (data.xpChange) { userModule.changeXp(data.xpChange) }
-    if (data.msg) { showTips(data.msg); return false; console.log(2) }
+    if (data.msg) { showTips(data.msg); return false; }
     return false;
 }
+
+
 export async function copyText(text) {
     try {
         await navigator.clipboard.writeText(text)
@@ -50,6 +66,39 @@ export async function copyText(text) {
         document.execCommand('copy')
         document.body.removeChild(area)
     }
+}
+
+export const qrBox = ref(null)
+export async function createQRCode(url) {
+    const qrDom = qrBox.value;
+    qrDom.innerHTML = ''
+    new QRCode(qrDom, {
+        text: url,
+        width: 220,
+        height: 220,
+        colorDark: "rgb(90,25,27)",
+        colorLight: "#fff3d0",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    setTimeout(async () => {
+        const canvas = qrDom.querySelector('canvas');
+        if (!canvas) {
+            showTips("生成二维码失败");
+            return
+        }
+        try {
+            const blob = await new Promise(resolve => {
+                canvas.toBlob(resolve, 'image/png')
+            })
+            const item = new ClipboardItem({
+                'image/png': blob
+            })
+            await navigator.clipboard.write([item])
+            showTips("创建二维码成功")
+        } catch (e) {
+            showTips(`生成二维码失败,由于${e}`);
+        }
+    }, 100)
 }
 
 export function debounce(fn, delay = 100) {
@@ -99,7 +148,7 @@ export const axiosRequest = {
     async toggleColl(currentUrl, currentTitle) {
         const res = await api.post('/api/toggleColl', {
             url: currentUrl,
-            title: currentTitle
+            title: currentTitle,
         });
         return res.data;
     }

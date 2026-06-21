@@ -1,0 +1,25 @@
+.sidebar {
+    width: 25vw;
+    height: 92vh;
+    position: fixed;
+    top: calc(8 * var(--design-vh, 4.57px));
+    left: 0;
+    box-shadow: 0 10px 25px rgb(180, 145, 80, 1);
+}
+
+.coll-type {
+    width: 23vw;
+    height: calc(8 * var(--design-vh, 4.57px));
+    border-radius: calc(8 * var(--design-vh, 4.57px)) 0 0 calc(8 * var(--design-vh, 4.57px));
+    clip-path: polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%);
+    background-color: #3A251A;
+    color: #FFF3D0;
+    font-size: calc(3.5 * var(--design-vh, 4.57px));
+    font-weight: 500;
+    letter-spacing: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4%;
+    margin-left: 1vw;
+}

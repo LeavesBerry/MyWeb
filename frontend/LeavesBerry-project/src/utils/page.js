@@ -1,12 +1,12 @@
 import { reactive, ref } from "vue"
-import { userState, axiosRequest, showTips } from "./index"
+import { userState, axiosRequest, showTips, copyText, createQRCode, disposeReturn } from "./index"
 import { create } from "axios"
+
 
 const NAV_DESIGN_HEIGHT = 457
 const NAV_DESIGN_RATIO = 2.4
 const NAV_DESIGN_WIDTH = NAV_DESIGN_HEIGHT * NAV_DESIGN_RATIO
 const du = (value) => `calc(${value} * var(--design-vh, 4.57px))`
-
 
 // 页面状态
 export const pageState = reactive({
@@ -15,7 +15,7 @@ export const pageState = reactive({
     isShareClosed: true,
     isCmdClosed: true,
     isTransitioning: false,
-    currentUrl: location.href,
+    currentUrl: '',
     currentTitle: document.title,
     showFilter: false
 })
@@ -67,17 +67,17 @@ export const navbarModule = reactive({
     // ------------------------------
     // 收藏功能
     // ------------------------------
-    async initColl() {
-        const collCacheKey = `coll_${pageState.currentUrl}`;
+    async initColl(url = pageState.currentUrl) {
+        const collCacheKey = `coll_${url}`;
         const cached = localStorage.getItem(collCacheKey);
         if (cached !== null) {
-            pageState.isCollected = cached === 'true'
+            pageState.isCollected = cached === "true";
             return
         }
         try {
-            const data = await axiosRequest.initColl(pageState.currentUrl)
-            if (!disposeReturn(data)) {
-                pageState.isCollected = data.is_collected === "true";
+            const res = await axiosRequest.initColl(url)
+            if (disposeReturn(res)) {
+                pageState.isCollected = res.is_collected === "true";
                 localStorage.setItem(collCacheKey, pageState.isCollected)
             }
         } catch (e) {
@@ -85,14 +85,15 @@ export const navbarModule = reactive({
         }
     },
 
-    async toggleColl() {
-        if (!userState.isLogined) return
+    async toggleColl(currentUrl, currentTitle) {
+        if (!userState.isLogined === "true") return
         try {
-            const data = await axiosRequest.toggleColl(pageState.currentUrl, pageState.currentTitle);
-            if (true) {
-                pageState.isCollected = data.is_collected === "true";
-                console.log(pageState.isCollected);
-                localStorage.setItem(`coll_${pageState.currentUrl}`, pageState.isCollected)
+            console.log(currentUrl, pageState.currentUrl);
+            const res = await axiosRequest.toggleColl(pageState.currentUrl,
+                pageState.currentTitle);
+            if (!disposeReturn(res)) {
+                pageState.isCollected = res.is_collected === "true";
+                localStorage.setItem(`coll_${currentUrl}`, res.is_collected)
             }
         } catch (e) {
             showTips(e)
@@ -111,6 +112,10 @@ export const navbarModule = reactive({
             if (e.clientX - rect.left >= rect.width / 2) {
                 copyText(pageState.currentUrl);
             }
+            else {
+                createQRCode(pageState.currentUrl);
+
+            }
         }
 
         pageState.isShareClosed = !pageState.isShareClosed
@@ -120,7 +125,7 @@ export const navbarModule = reactive({
                 width: du(9),
                 paddingLeft: du(4.5),
                 paddingRight: du(4.5),
-                backgroundImage: 'url("../public/images/QR.png"),url("../public/images/Link.png")',
+                backgroundImage: 'url("http://localhost:5000/static/resource/images/QR.png"),url("http://localhost:5000/static/resource/images/Link.png")',
                 backgroundPosition: `${du(1)} center, right ${du(1)} center`,
                 backgroundSize: `${du(3)} ${du(3)}, ${du(3)} ${du(3)}`,
                 backgroundRepeat: 'no-repeat,no-repeat'
