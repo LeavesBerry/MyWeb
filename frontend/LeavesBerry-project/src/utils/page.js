@@ -72,28 +72,30 @@ export const navbarModule = reactive({
         const cached = localStorage.getItem(collCacheKey);
         if (cached !== null) {
             pageState.isCollected = cached === "true";
+            console.log(pageState.currentUrl, cached)
             return
         }
         try {
             const res = await axiosRequest.initColl(url)
-            if (disposeReturn(res)) {
+            if (!disposeReturn(res)) {
                 pageState.isCollected = res.is_collected === "true";
-                localStorage.setItem(collCacheKey, pageState.isCollected)
+                localStorage.setItem(collCacheKey, res.is_collected)
+                console.log(pageState.currentUrl, localStorage.getItem(collCacheKey))
             }
         } catch (e) {
             showTips(e);
         }
     },
 
-    async toggleColl(currentUrl, currentTitle) {
+    async toggleColl() {
         if (!userState.isLogined === "true") return
         try {
-            console.log(currentUrl, pageState.currentUrl);
             const res = await axiosRequest.toggleColl(pageState.currentUrl,
                 pageState.currentTitle);
             if (!disposeReturn(res)) {
                 pageState.isCollected = res.is_collected === "true";
-                localStorage.setItem(`coll_${currentUrl}`, res.is_collected)
+                localStorage.setItem(`coll_${pageState.currentUrl}`, res.is_collected)
+                console.log(pageState.currentUrl, localStorage.getItem(`coll_${pageState.currentUrl}`))
             }
         } catch (e) {
             showTips(e)

@@ -66,8 +66,7 @@ export const userModule = reactive({
     clear() {
         userState.isLogined = "false"
         this.resetUserInfo()
-        localStorage.removeItem('userAccessToken')
-        localStorage.removeItem('userCache')
+        localStorage.clear()
     },
     async initUser() {
         this.userAccessToken = this.getToken()

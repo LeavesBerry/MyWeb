@@ -52,7 +52,7 @@
           <button class="menu-function-button">✦反馈箱✦</button>
           <button class="menu-function-button">✦历史✦</button>
           <button class="menu-function-button" @click="goPage('/')">✦主页✦</button>
-          <button class="menu-function-button">✦公告栏✦</button>
+          <button class="menu-function-button" @click="goPage('/AnnouncePage')">✦公告栏✦</button>
           <button class="menu-function-button">✦协议✦</button>
           <button class="menu-function-button" style="border-radius:0 0 0 3vh">✦测试✦</button>
           <button class="menu-function-button">✦指令表✦</button>

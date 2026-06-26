@@ -1,11 +1,12 @@
 <template>
     <div id="page">
 		<div class="sidebar">
-			<div class="coll-type" id="all">❖所有❖</div>
-			<div class="coll-type" id="good">❖商品❖</div>
-			<div class="coll-type" id="essay">❖文章❖</div>
-			<div class="coll-type" id="resource">❖资源❖</div>
-			<div class="coll-type" id="other">❖其他❖</div>
+			<span class="dir-active-arrow"><<<</span>
+			<div class="type" id="all">❖所有❖</div>
+			<div class="type" id="good">❖商品❖</div>
+			<div class="type" id="essay">❖文章❖</div>
+			<div class="type" id="resource">❖资源❖</div>
+			<div class="type" id="other">❖其他❖</div>
 		</div>
 		<div id="coll-box">
 			<router-link class="colls" v-for="item in navList" :to="item.path" :key="item.name">
@@ -90,6 +91,7 @@
 		border-radius: calc(6 * var(--design-vh));
 		text-decoration: none;
 		z-index: 2;
+		-webkit-user-select: none;
 		user-select: none;
 	}
 	#colls-function-box {

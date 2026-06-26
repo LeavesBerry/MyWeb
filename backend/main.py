@@ -483,7 +483,7 @@ async def init_coll(data: CollRequest, user_id: int = Depends(get_current_user("
         exists().where(Coll.user_id == user_id, Coll.url_hash == hash_url(data.url))
     ).scalar()
     return JSONResponse({"msg": "ok", 
-                         "is_collected": "true" if exist is not None else "false"})
+                         "is_collected": "true" if exist else "false"})
 
 @app.post("/api/toggleColl")
 async def toggle_coll(data: CollRequest, user_id: int = Depends(get_current_user("user_id")), 
