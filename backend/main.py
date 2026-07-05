@@ -28,6 +28,7 @@ import hashlib
 
 # 环境常量
 load_dotenv()
+ROOT_PATH = "http://localhost:5173"
 SECRET_KEY = os.getenv("SECRET_KEY", "leavesberry-helloworld-520")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -264,6 +265,7 @@ class Coll(Base):
     url = Column(String(1000), nullable=False)
     url_hash = Column(String(64), primary_key=True, nullable=False)
     title = Column(String(255), default="未知界面", nullable=False)
+    type = Column(String(10), default="other", nullable=False)
 
 class Pages(Base):
     __tablename__ = "pages"
@@ -299,6 +301,7 @@ class BioRequest(BaseModel):
 class CollRequest(BaseModel):
     url: str
     title: Optional[str] = None
+    type: Optional[str] = None
 
     @field_validator("url")
     def validate_url(cls, value):
@@ -479,6 +482,8 @@ async def change_avatar (file: UploadFile = File(...),
 @app.post("/api/initColl")
 async def init_coll(data: CollRequest, user_id: int = Depends(get_current_user("user_id")), 
                     db: Session = Depends(get_db)):
+    print('data:')
+    print(data.url)
     exist = db.query(
         exists().where(Coll.user_id == user_id, Coll.url_hash == hash_url(data.url))
     ).scalar()
@@ -497,7 +502,7 @@ async def toggle_coll(data: CollRequest, user_id: int = Depends(get_current_user
         return JSONResponse({"msg": "已取消收藏", "is_collected": "false"})
     else:
         new_coll = Coll(user_id=user_id, title=title, 
-                        url=data.url, url_hash=hash_url(data.url))
+                        url=data.url, url_hash=hash_url(data.url), type=data.type)
         db.add(new_coll)
         db.commit()
         return JSONResponse({"msg": "收藏成功", "is_collected": "true"})
@@ -505,8 +510,10 @@ async def toggle_coll(data: CollRequest, user_id: int = Depends(get_current_user
 @app.post("/api/getAllColl")
 async def get_all_coll(user_id: int = Depends(get_current_user("user_id")), 
                        db: Session = Depends(get_db)):
-    colls = db.query(Coll.url, Coll.title).filter(Coll.user_id == user_id).all()
-    return JSONResponse({url: title for url,title in colls})
+    colls = db.query(Coll).filter(Coll.user_id == user_id).all()
+    return JSONResponse([{"url": item.url.replace(ROOT_PATH, ''),
+                           "title": item.title, "type": item.type} 
+                         for item in colls])
 
 if __name__ == "__main__":   
     uvicorn.run("main:app", host="127.0.0.1", port=5000, reload=True)

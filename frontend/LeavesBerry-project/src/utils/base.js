@@ -3,6 +3,7 @@ import { useRoute } from "vue-router";
 import { navbarModule, menuModule, pageState, userModule } from "./index";
 import api from "./api";
 import QRCode from "qrcodejs2-fix"
+import { updatePageInfo } from "../router";
 
 // ------------------------------
 // 工具函数
@@ -11,13 +12,12 @@ export const tip = reactive({
     tipStyle: {},
     tipText: ''
 });
-
 export function routeListener() {
     const route = useRoute();
     watch(
         () => route.fullPath,
         (newPath) => {
-            pageState.currentUrl = `${location.origin}${newPath}`;
+            updatePageInfo(route.params.page, `${location.origin}${newPath}`)
             navbarModule.initColl(pageState.currentUrl);
         },
         { flush: "sync", immediate: true }
@@ -109,7 +109,15 @@ export function debounce(fn, delay = 100) {
     }
 }
 
-
+export function classifyGroup(data, keyField) {
+    const groupMap = new Map();
+    for (const item of data) {
+        const groupKey = item[keyField]
+        if (!groupMap.has(groupKey)) groupMap.set(groupKey, []);
+        groupMap.get(groupKey).push(item)
+    }
+    return groupMap
+}
 
 // ------------------------------
 // 后端请求
@@ -145,10 +153,11 @@ export const axiosRequest = {
         return res.data;
     },
 
-    async toggleColl(currentUrl, currentTitle) {
+    async toggleColl(currentUrl, currentTitle, currentType) {
         const res = await api.post('/api/toggleColl', {
             url: currentUrl,
             title: currentTitle,
+            type: currentType
         });
         return res.data;
     }

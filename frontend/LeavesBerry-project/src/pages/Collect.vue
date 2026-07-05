@@ -1,28 +1,35 @@
 <template>
     <div id="page">
 		<div class="sidebar">
-			<span class="dir-active-arrow"><<<</span>
-			<div class="type" id="all">❖所有❖</div>
-			<div class="type" id="good">❖商品❖</div>
-			<div class="type" id="essay">❖文章❖</div>
-			<div class="type" id="resource">❖资源❖</div>
-			<div class="type" id="other">❖其他❖</div>
+			<span class="dir-active-arrow" :style="arrowStyle.transform"><<<</span>
+			<div class="type" id="all"
+			@click="switchDirContent(0, 'all')">❖所有❖</div>
+			<div class="type" id="good" 
+			@click="switchDirContent(1, 'good')">❖商品❖</div>
+			<div class="type" id="essay" 
+			@click="switchDirContent(2, 'essay')">❖文章❖</div>
+			<div class="type" id="resource" 
+			@click="switchDirContent(3, 'resourse')">❖资源❖</div>
+			<div class="type" id="other"
+			@click="switchDirContent(4, 'other')">❖其他❖</div>
 		</div>
-		<div id="coll-box">
-			<router-link class="colls" v-for="item in navList" :to="item.path" :key="item.name">
-				<p id="coll-title">{{ item.name }}</p>
+		<div id="item-box">
+			<p class="no-item-tip" v-if="currentContent.length == 0">暂无收藏awa</p>
+			<router-link class="items" 
+			v-for="item in currentContent" :to="item.url" :key="item.title">
+				<p id="coll-title">{{ item.title }}</p>
 				<div id="colls-function-box">
-					<button @click.stop="cancelColl(item.path)" 
+					<button @click.stop="cancelColl(item.title)" 
 					style="color: #73B436; 
 					font-size: calc(6 * var(--design-vh));
 					padding-bottom: 2%;
 					border-left: 1px solid #3A251A;">✦</button>
-					<button @click.stop="createQRCode(ROOT + item.path)"
+					<button @click.stop="createQRCode(ROOT + item.url)"
 					style="background-image: url('http://localhost:5000/static/resource/images/QR.png');
 					background-size: calc(4 * var(--design-vh));
 					background-position: calc(1.3 * var(--design-vh)) center;
 					"></button>
-					<button @click.stop="copyText(item.path)"
+					<button @click.stop="copyText(item.url)"
 					style="background-image: url('http://localhost:5000/static/resource/images/Link.png');
 					background-size: calc(6 * var(--design-vh));
 					background-position: calc(0.3 * var(--design-vh)) center;
@@ -35,36 +42,44 @@
 </template>	
 <script setup>
 	import api from "../utils/api"
-	import { userState, userModule, navbarModule } from "../utils/index";
+	import { userState, userModule, navbarModule, 
+		copyText, createQRCode, classifyGroup, 
+		switchArrow, arrowStyle } from "../utils/index";
 	import { ref } from "vue"
-	import { createHead, useHead } from "@vueuse/head";
-	import { copyText, createQRCode } from "../utils/index";
 
-	useHead({
-		title:"收藏界面",
-		meta:[{name:"description",content:"我的收藏"}]
-	});
 
-	const navList = ref([]);
+	let navList = ref([]);
+	let currentContent = ref([])
+	let groupMap = new Map()
 	const ROOT = "http://localhost:5173";
-	function createLink(url,title) {
-		const navItem = { path: url, name: title }
-		navList.value.push(navItem);
-	}
-
+	
 	async function getAllColl() {
 		if (!userState.isLogined || userModule.userAccessToken == "visitor") 
 		{ return null }
-		const data = await api.post('/api/getAllColl');
-		Object.entries(data.data).forEach(([url,title]) => {
-			createLink(url.startsWith(ROOT)?url.slice(ROOT.length) : url,title);
-		});
+		const res = await api.post('/api/getAllColl');
+		console.log(res.data)
+		navList.value = res.data;
+		currentContent.value = navList.value;
+		groupMap = classifyGroup(navList.value, 'type')
 	}
 
 	async function cancelColl(url, title) {
 		await navbarModule.toggleColl(url, title)
 	}
-	
+
+	function switchDirContent(sn, type) {
+		switchArrow(sn);
+		if (type === "all") {
+			currentContent.value = navList.value
+			return
+		}
+		if (groupMap.get(type)) {
+			currentContent.value = groupMap.get(type)
+		}
+		else {
+			currentContent.value = []
+		}
+	}
 	getAllColl();
 </script>
 
@@ -75,35 +90,17 @@
 		--design-width: 1096.8px;
 		/* 457px * 2.4 */
 	}
-	#coll-box {
-		position: absolute;
-		top: calc(8 * var(--design-vh));
-		right: 30px;
-		width: 70vw;
-		height: auto;
-	}
-	.colls {
-		width: 70vw;
-		height: calc(20 * var(--design-vh));
-		box-shadow: 8px 10px 25px rgb(180,145,80,1);
-		margin-top: calc(6 * var(--design-vh));
-		display: flex;
-		border-radius: calc(6 * var(--design-vh));
-		text-decoration: none;
-		z-index: 2;
-		-webkit-user-select: none;
-		user-select: none;
-	}
+	
 	#colls-function-box {
-		position: relative;
-		right: -50%;
-		top: 10%;
+		position: absolute;
+		right: 10%;
+		top: 15%;
 		height: 10%;
 		width: auto;
 		display: flex;
 		z-index: 3;
 	}
-	.colls button{
+	.items button{
 		width: calc(8 * var(--design-vh));
 		height: calc(6 * var(--design-vh));
 		background-color: rgba(0,0,0,0);
@@ -120,7 +117,7 @@
 		border-left:none;
 		z-index: 4;
 	}
-	.colls p{
+	.items p{
 		width:auto;
 		height: 40%;
 		color:#3A251A;

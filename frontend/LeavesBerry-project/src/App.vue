@@ -52,7 +52,7 @@
           <button class="menu-function-button">✦反馈箱✦</button>
           <button class="menu-function-button">✦历史✦</button>
           <button class="menu-function-button" @click="goPage('/')">✦主页✦</button>
-          <button class="menu-function-button" @click="goPage('/AnnouncePage')">✦公告栏✦</button>
+          <button class="menu-function-button" @click="goPage('/Announce')">✦公告栏✦</button>
           <button class="menu-function-button">✦协议✦</button>
           <button class="menu-function-button" style="border-radius:0 0 0 3vh">✦测试✦</button>
           <button class="menu-function-button">✦指令表✦</button>
@@ -182,10 +182,12 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted, onUnmounted, watch, reactive } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { routeListener, debounce, tip, onGlobalClick,
+import { useRouter } from 'vue-router';
+import { debounce, tip, onGlobalClick,
 navbarModule, menuModule, pageState, 
 userState, userModule, loginModule, qrBox } from './utils/index';
+import { useHead } from "@vueuse/head"
+import { routeListener } from './utils/index';
 
 const router = useRouter()
 
@@ -193,13 +195,17 @@ const goPage = (url) => {
   router.push(url);
 }
 
+useHead({
+  title: () => pageState.currentTitle,
+  meta: [{ name:"description", content: () => pageState.currentDesc}]
+})
+
 routeListener();
 // ------------------------------
 // 生命周期
 // ------------------------------
 const resizeHandler = debounce(navbarModule.scaleNavbar);
 onMounted(() => {
-    
     userModule.initUser();
     navbarModule.scaleNavbar();
     window.addEventListener('resize', resizeHandler);

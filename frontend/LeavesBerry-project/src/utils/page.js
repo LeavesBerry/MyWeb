@@ -1,7 +1,8 @@
 import { reactive, ref } from "vue"
 import { userState, axiosRequest, showTips, copyText, createQRCode, disposeReturn } from "./index"
 import { create } from "axios"
-
+import { updatePageInfo } from "../router"
+import router from "../router"
 
 const NAV_DESIGN_HEIGHT = 457
 const NAV_DESIGN_RATIO = 2.4
@@ -16,11 +17,13 @@ export const pageState = reactive({
     isCmdClosed: true,
     isTransitioning: false,
     currentUrl: '',
-    currentTitle: document.title,
+    currentTitle: '',
+    currentType: '',
+    currentDesc: '',
     showFilter: false
 })
 
-
+//const route = router.currentRoute.value
 
 
 
@@ -67,20 +70,22 @@ export const navbarModule = reactive({
     // ------------------------------
     // 收藏功能
     // ------------------------------
-    async initColl(url = pageState.currentUrl) {
-        const collCacheKey = `coll_${url}`;
+    async initColl() {
+        if (pageState.currentUrl == '') {
+            const route = router.currentRoute.value
+            updatePageInfo(route.params.page, location.href);
+        }
+        const collCacheKey = `coll_${pageState.currentUrl}`;
         const cached = localStorage.getItem(collCacheKey);
         if (cached !== null) {
             pageState.isCollected = cached === "true";
-            console.log(pageState.currentUrl, cached)
             return
         }
         try {
-            const res = await axiosRequest.initColl(url)
+            const res = await axiosRequest.initColl(pageState.currentUrl)
             if (!disposeReturn(res)) {
                 pageState.isCollected = res.is_collected === "true";
                 localStorage.setItem(collCacheKey, res.is_collected)
-                console.log(pageState.currentUrl, localStorage.getItem(collCacheKey))
             }
         } catch (e) {
             showTips(e);
@@ -90,15 +95,16 @@ export const navbarModule = reactive({
     async toggleColl() {
         if (!userState.isLogined === "true") return
         try {
+            console.log(pageState)
             const res = await axiosRequest.toggleColl(pageState.currentUrl,
-                pageState.currentTitle);
+                pageState.currentTitle, pageState.currentType);
             if (!disposeReturn(res)) {
                 pageState.isCollected = res.is_collected === "true";
                 localStorage.setItem(`coll_${pageState.currentUrl}`, res.is_collected)
-                console.log(pageState.currentUrl, localStorage.getItem(`coll_${pageState.currentUrl}`))
             }
         } catch (e) {
             showTips(e)
+            console.log(e)
         }
     },
 

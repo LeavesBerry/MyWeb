@@ -1,8 +1,8 @@
 // src/router/index.js
 import axios from 'axios';
 import { createRouter, createWebHistory } from 'vue-router'
-import { pageState } from '../utils/page'
-
+import { pageState } from '../utils/index.js'
+import { pageMetaConfig } from './pageMetaConfig.js';
 
 const pageModules = import.meta.glob('../pages/*.vue')
 
@@ -15,7 +15,12 @@ const routes = [
     {
         path: '/:page',
         name: 'AutoPage',
-        component: () => import('../pages/AutoPage.vue')
+        component: () => import('../pages/AutoPage.vue'),
+        meta: {
+            title: 'LeavesBerry',
+            type: 'other',
+            description: ''
+        }
     }
 ]
 
@@ -23,6 +28,18 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 })
+
+export function updatePageInfo(pagename, fullPath) {
+    const metaInfo = pageMetaConfig[pagename] ?? {
+        title: 'LeavesBerry',
+        type: 'other',
+        description: ''
+    }
+    pageState.currentUrl = `${fullPath}`;
+    pageState.currentTitle = `${metaInfo.title}`;
+    pageState.currentType = `${metaInfo.type}`;
+    pageState.currentDesc = `${metaInfo.description}`;
+}
 
 router.beforeEach(async (to, from, next) => {
     const needLoginPages = ['Test2'];
