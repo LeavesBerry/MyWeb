@@ -1,5 +1,34 @@
 <template>
-    <div id="page">
+	<!--受到transform影响,不要把fixed,拖拽,需获取坐标的点击等放入-->
+    <div class="slide-page">
+		<div class="item-box">
+			<p class="no-item-tip" v-if="currentContent.length == 0">暂无收藏awa</p>
+			<router-link class="items" 
+			v-for="item in currentContent" :to="item.url" :key="item.title">
+				<p id="coll-title">{{ item.title }}</p>
+				<div id="colls-function-box">
+					<button @click.stop.prevent="cancelColl(item.title)" 
+					style="color: #73B436; 
+					font-size: calc(6 * var(--design-vh));
+					padding-bottom: 2%;
+					border-left: 1px solid #3A251A;">✦</button>
+					<button @click.stop.prevent="createQRCode(ROOT + item.url)"
+					style="background-image: url('http://localhost:5000/static/resource/images/QR.png');
+					background-size: calc(4 * var(--design-vh));
+					background-position: calc(1.3 * var(--design-vh)) center;
+					"></button>
+					<button @click.stop.prevent="copyText(item.url)"
+					style="background-image: url('http://localhost:5000/static/resource/images/Link.png');
+					background-size: calc(6 * var(--design-vh));
+					background-position: calc(0.3 * var(--design-vh)) center;
+					"></button>
+				</div>
+			</router-link>
+			<p class="refresh-tip" 
+			v-if="currentContent.length !== 0">若缺少收藏,可尝试刷新界面( •̀ ω •́ )</p>
+		</div>
+	</div>	
+	<teleport class="fixed-page" to="#app #app">
 		<div class="sidebar">
 			<span class="dir-active-arrow" :style="arrowStyle.transform"><<<</span>
 			<div class="type" id="all"
@@ -13,31 +42,7 @@
 			<div class="type" id="other"
 			@click="switchDirContent(4, 'other')">❖其他❖</div>
 		</div>
-		<div id="item-box">
-			<p class="no-item-tip" v-if="currentContent.length == 0">暂无收藏awa</p>
-			<router-link class="items" 
-			v-for="item in currentContent" :to="item.url" :key="item.title">
-				<p id="coll-title">{{ item.title }}</p>
-				<div id="colls-function-box">
-					<button @click.stop="cancelColl(item.title)" 
-					style="color: #73B436; 
-					font-size: calc(6 * var(--design-vh));
-					padding-bottom: 2%;
-					border-left: 1px solid #3A251A;">✦</button>
-					<button @click.stop="createQRCode(ROOT + item.url)"
-					style="background-image: url('http://localhost:5000/static/resource/images/QR.png');
-					background-size: calc(4 * var(--design-vh));
-					background-position: calc(1.3 * var(--design-vh)) center;
-					"></button>
-					<button @click.stop="copyText(item.url)"
-					style="background-image: url('http://localhost:5000/static/resource/images/Link.png');
-					background-size: calc(6 * var(--design-vh));
-					background-position: calc(0.3 * var(--design-vh)) center;
-					"></button>
-				</div>
-			</router-link>
-		</div>
-	</div>	
+	</teleport>
 	
 </template>	
 <script setup>
@@ -45,7 +50,7 @@
 	import { userState, userModule, navbarModule, 
 		copyText, createQRCode, classifyGroup, 
 		switchArrow, arrowStyle } from "../utils/index";
-	import { ref } from "vue"
+	import { ref, Teleport } from "vue"
 
 
 	let navList = ref([]);
@@ -57,7 +62,6 @@
 		if (!userState.isLogined || userModule.userAccessToken == "visitor") 
 		{ return null }
 		const res = await api.post('/api/getAllColl');
-		console.log(res.data)
 		navList.value = res.data;
 		currentContent.value = navList.value;
 		groupMap = classifyGroup(navList.value, 'type')
@@ -80,6 +84,8 @@
 			currentContent.value = []
 		}
 	}
+
+	arrowStyle.transform = {};
 	getAllColl();
 </script>
 

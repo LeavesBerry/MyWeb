@@ -482,8 +482,6 @@ async def change_avatar (file: UploadFile = File(...),
 @app.post("/api/initColl")
 async def init_coll(data: CollRequest, user_id: int = Depends(get_current_user("user_id")), 
                     db: Session = Depends(get_db)):
-    print('data:')
-    print(data.url)
     exist = db.query(
         exists().where(Coll.user_id == user_id, Coll.url_hash == hash_url(data.url))
     ).scalar()
