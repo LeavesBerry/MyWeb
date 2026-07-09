@@ -95,7 +95,8 @@ export const navbarModule = reactive({
     async toggleColl() {
         if (!userState.isLogined === "true") return
         try {
-            console.log(pageState)
+            pageState.isCollected = !pageState.isCollected;
+            userState.isChangedColl = "true";
             const res = await axiosRequest.toggleColl(pageState.currentUrl,
                 pageState.currentTitle, pageState.currentType);
             if (!disposeReturn(res)) {
@@ -104,7 +105,6 @@ export const navbarModule = reactive({
             }
         } catch (e) {
             showTips(e)
-            console.log(e)
         }
     },
 
@@ -177,17 +177,7 @@ export const navbarModule = reactive({
     // 导航栏缩放
     // ------------------------------
 
-    scaleNavbar() {
-        const vw = window.innerWidth;
-        const scale = vw / NAV_DESIGN_WIDTH;
 
-        navbarModule.navbar = {
-            '--design-vh': `${NAV_DESIGN_HEIGHT / 100}px`,
-            '--design-width': `${NAV_DESIGN_WIDTH}px`,
-            transform: `scale(${scale})`,
-            width: `${NAV_DESIGN_WIDTH}px`,
-        };
-    },
 
     // 搜索
     DoSearch() {

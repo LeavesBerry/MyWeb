@@ -1,10 +1,12 @@
 .sidebar {
     width: 25vw;
-    height: 92vh;
+    height: 100vh;
     position: fixed;
     top: calc(8 * var(--design-vh, 4.57px));
+    background-color: #FFF3D0;
     left: 0;
-    box-shadow: 0 10px 25px rgb(180, 145, 80, 1);
+    box-shadow: 0 10px 25px rgba(180, 145, 80, 1);
+    z-index: 15;
 }
 
 .sidebar * {
@@ -40,7 +42,7 @@
     transition: all 0.3s ease;
 }
 
-#item-box {
+.item-box {
     position: absolute;
     top: calc(8 * var(--design-vh));
     left: 28vw;
@@ -70,4 +72,15 @@
     z-index: 2;
     -webkit-user-select: none;
     user-select: none;
+}
+
+.refresh-tip {
+    display: flex;
+    font-size: 20px;
+    color: #3A251A;
+    font-weight: 300;
+    justify-content: center;
+    align-items: center;
+    padding-top: calc(6 * var(--design-vh));
+    padding-bottom: calc(6 * var(--design-vh));
 }

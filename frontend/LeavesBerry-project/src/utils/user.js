@@ -8,9 +8,8 @@ export const DEFAULTUSERINFO = {
 }
 
 export const userState = reactive({
-    isLogined: "false"
-})
-export const userModule = reactive({
+    isLogined: "false",
+    isChangedColl: "false",
     userName: '未登录',
     userId: null,
     userEmail: null,
@@ -19,6 +18,9 @@ export const userModule = reactive({
     avatarUrl: "http://localhost:5000/static/avatar/default_avatar.jpg",
     level: 0,
     xp: 0,
+})
+export const userModule = reactive({
+
 
     getToken() {
         return localStorage.getItem('userAccessToken')
@@ -43,24 +45,24 @@ export const userModule = reactive({
     },
     updateUserInfo(data) {
 
-        this.userName = data.user_name,
-            this.userId = data.user_id,
-            this.userEmail = data.user_email,
-            this.bio = data.bio,
-            this.avatarUrl = data.avatar_url,
-            this.level = data.level,
-            this.xp = data.xp,
+        userState.userName = data.user_name,
+            userState.userId = data.user_id,
+            userState.userEmail = data.user_email,
+            userState.bio = data.bio,
+            userState.avatarUrl = data.avatar_url,
+            userState.level = data.level,
+            userState.xp = data.xp,
             userState.isLogined = data.is_logined
     },
     resetUserInfo() {
-        this.userName = '未登录',
-            this.userId = null,
-            this.userEmail = null,
-            this.bio = "你好,世界!",
-            this.userAccessToken = null,
-            this.avatarUrl = "http://localhost:5000/static/avatar/default_avatar.jpg",
-            this.level = 0,
-            this.xp = 0,
+        userState.userName = '未登录',
+            userState.userId = null,
+            userState.userEmail = null,
+            userState.bio = "你好,世界!",
+            userState.userAccessToken = null,
+            userState.avatarUrl = "http://localhost:5000/static/avatar/default_avatar.jpg",
+            userState.level = 0,
+            userState.xp = 0,
             userState.isLogined = "true"
     },
     clear() {
@@ -92,6 +94,7 @@ export const userModule = reactive({
                 return;
             }
             this.updateUserInfo(res)
+            console.log(res);
             this.setCache(res);
             await navbarModule.initColl()
         } catch (e) {
@@ -156,8 +159,8 @@ export const loginModule = reactive({
     visitorEnter() {
         //给予访客一个固定的非法token,以使后端拒绝请求
         //同时用于前端判断身份
-        userModule.userAccessToken = 'vistor';
-        userModule.userId = 0;
+        userState.userAccessToken = 'vistor';
+        userState.userId = 0;
         userModule.setToken('visitor');
         showTips('您已以访客身份进入');
         this.closeLoginWindow();

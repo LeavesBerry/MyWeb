@@ -48,7 +48,7 @@ a {
 	width: 100vw;
 	min-height: 100dvh;
 	overflow: auto;
-	z-index: 10;
+	z-index: 9;
 	transform: translate3d(0, 0, 0);
 	backface-visibility: hidden;
 	contain: paint;
@@ -57,7 +57,7 @@ a {
 /* 新页面入场：只动画 transform，避免触发布局重排，性能更好 */
 .page-cover-slide-enter-active {
 	z-index: 20;
-	transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+	transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 	will-change: transform;
 }
 

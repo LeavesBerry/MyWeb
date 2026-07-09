@@ -5,65 +5,65 @@
 
     <div ref="qrBox" style="display: none;"></div>
 
-    <div id="navbar" :style="navbarModule.navbar">
-
-      <p id="tip" :style="tip.tipStyle">{{ tip.tipText }}</p>
-
-      <div id="menu-box" 
+    <div id="menu-box" 
       :class="pageState.isMenuClosed ? 'parent-prevent' : ''" 
       @click="menuModule.toggleMenu" 
       :style="menuModule.menuBox">
 
-        <div id="user_info">
-          <img id="avatar" :src="userModule.avatarUrl" @click="userModule.changeAvatar">
-          <p id="name">{{ userModule.userName }}</p>
-          <p id="bio" @click="userModule.changeBio">{{ userModule.bio }}</p>
-          <div id="level"><p>XP: Lv{{ userModule.level }}</p>
-            <div><line :style="{width: `${(userModule.xp / 1000) * 100}%`}"></line></div>
-          </div>
-        </div>
-
-        <span class="star s1">✦</span>
-        <span class="star s2">✦</span>
-        <span class="star s3">✦</span>
-        <span class="star s4">✦</span>
-        <span class="star s5">✦</span>
-        <span class="star s6">✦</span>
-        <span class="star s7">✦</span>
-        <span class="star s8">✦</span>
-
-        <svg width="100%" height="100%">
-          <line x1="6vh" y1="2.4vh" x2="55vh" y2="2.4vh" stroke="#73B436" stroke-width="1"/>
-          <line x1="2.2vh" y1="6vh" x2="2.2vh" y2="85.8vh" stroke="#73B436" stroke-width="1"/>
-          <line x1="58.8vh" y1="6vh" x2="58.8vh" y2="85.8vh" stroke="#73B436" stroke-width="1"/>
-          <line x1="6vh" y1="89.6vh" x2="55vh" y2="89.6vh" stroke="#73B436" stroke-width="1"/>
-          <line x1="2.2vh" y1="22vh" x2="58.8vh" y2="22vh" stroke="#73B436" stroke-width="1"/>
-        </svg>
-
-        <div id="menu-function-button-box">
-          <button class="menu-function-button">✦邮箱✦</button>
-          <button class="menu-function-button" @click="goPage('/Collect')">✦收藏夹✦</button>
-          <button class="menu-function-button">✦设置✦</button>
-          <button class="menu-function-button" 
-          @click="userModule.userAccessToken == 'visitor' ? 
-          loginModule.openLoginWindow() : loginModule.logout()">
-            {{ userModule.userAccessToken == 'visitor' ? '✦登入✦' : '✦登出✦' }}
-          </button>
-          <button class="menu-function-button">✦反馈箱✦</button>
-          <button class="menu-function-button">✦历史✦</button>
-          <button class="menu-function-button" @click="goPage('/')">✦主页✦</button>
-          <button class="menu-function-button" @click="goPage('/Announce')">✦公告栏✦</button>
-          <button class="menu-function-button">✦协议✦</button>
-          <button class="menu-function-button" style="border-radius:0 0 0 3vh">✦测试✦</button>
-          <button class="menu-function-button">✦指令表✦</button>
-          <button class="menu-function-button" style="border-radius:0 0 3vh 0">✦帮助✦</button>
+      <div id="user_info">
+        <img id="avatar" :src="userState.avatarUrl" @click="userModule.changeAvatar">
+        <p id="name">{{ userState.userName }}</p>
+        <p id="bio" @click="userModule.changeBio">{{ userState.bio }}</p>
+        <div id="level"><p>XP: Lv{{ userState.level }}</p>
+          <div><line :style="{width: `${(userState.xp / 1000) * 100}%`}"></line></div>
         </div>
       </div>
 
+      <span class="star s1">✦</span>
+      <span class="star s2">✦</span>
+      <span class="star s3">✦</span>
+      <span class="star s4">✦</span>
+      <span class="star s5">✦</span>
+      <span class="star s6">✦</span>
+      <span class="star s7">✦</span>
+      <span class="star s8">✦</span>
+
+      <svg width="100%" height="100%">
+        <line x1="27.2px" y1="11px" x2="250px" y2="11px" stroke="#73B436" stroke-width="1"/>
+        <line x1="10px" y1="27.42px" x2="10px" y2="392px" stroke="#73B436" stroke-width="1"/>
+        <line x1="268px" y1="27.42px" x2="268px" y2="392px" stroke="#73B436" stroke-width="1"/>
+        <line x1="27.2px" y1="410px" x2="250" y2="410px" stroke="#73B436" stroke-width="1"/>
+        <line x1="10px" y1="100px" x2="268px" y2="100px" stroke="#73B436" stroke-width="1"/>
+      </svg>
+
+      <div id="menu-function-button-box">
+        <button class="menu-function-button">✦邮箱✦</button>
+        <button class="menu-function-button" @click="goPage('/Collect')">✦收藏夹✦</button>
+        <button class="menu-function-button">✦设置✦</button>
+        <button class="menu-function-button" 
+        @click="userState.userAccessToken == 'visitor' ? 
+        loginModule.openLoginWindow() : loginModule.logout()">
+          {{ userState.userAccessToken == 'visitor' ? '✦登入✦' : '✦登出✦' }}
+        </button>
+        <button class="menu-function-button">✦反馈箱✦</button>
+        <button class="menu-function-button">✦历史✦</button>
+        <button class="menu-function-button" @click="goPage('/')">✦主页✦</button>
+        <button class="menu-function-button" @click="goPage('/Announce')">✦公告栏✦</button>
+        <button class="menu-function-button">✦协议✦</button>
+        <button class="menu-function-button" style="border-radius:0 0 0 3vh">✦测试✦</button>
+        <button class="menu-function-button">✦指令表✦</button>
+        <button class="menu-function-button" style="border-radius:0 0 3vh 0">✦帮助✦</button>
+      </div>
+    </div>
+    
       <button class="menu-button" id="button-left-up" :style="menuModule.leftUp"></button>
       <button class="menu-button" id="button-left-down" :style="menuModule.leftDown"></button>
       <button class="menu-button" id="button-right-up" :style="menuModule.rightUp"></button>
       <button class="menu-button" id="button-right-down" :style="menuModule.rightDown"></button>
+
+    <div id="navbar" :style="navbarModule.navbar">
+
+      <p id="tip" :style="tip.tipStyle">{{ tip.tipText }}</p>
 
       <input id="search-input" type="text" placeholder="查找……" v-model="navbarModule.searchKey" />
       <button id="search-button" @click="navbarModule.DoSearch">GO</button>
@@ -204,16 +204,13 @@ routeListener();
 // ------------------------------
 // 生命周期
 // ------------------------------
-const resizeHandler = debounce(navbarModule.scaleNavbar);
 onMounted(() => {
     userModule.initUser();
-    navbarModule.scaleNavbar();
-    window.addEventListener('resize', resizeHandler);
+    console.log(userState);
     document.addEventListener('click', onGlobalClick);
 })
 
 onUnmounted(() => {
-    window.removeEventListener('resize', resizeHandler);
     document.removeEventListener('click', onGlobalClick);
 })
 </script>

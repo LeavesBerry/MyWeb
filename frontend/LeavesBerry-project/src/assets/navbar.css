@@ -4,9 +4,10 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 20;
+    z-index: 10;
     background: #4a4030;
     transform-origin: left top;
+    box-shadow: 0 0 25px rgba(74, 64, 48, 1);
 }
 
 #navbar> :not(#bio) {
@@ -34,7 +35,7 @@
     position: fixed;
     top: calc(1 * var(--design-vh, 4.57px));
     left: calc(26% - calc(0.5 * var(--design-vh, 4.57px)));
-    width: 4.5%;
+    width: 40px;
     height: calc(6 * var(--design-vh, 4.57px));
     border: calc(0.5 * var(--design-vh, 4.57px)) solid white;
     border-radius: 0 calc(3 * var(--design-vh, 4.57px)) calc(3 * var(--design-vh, 4.57px)) 0;

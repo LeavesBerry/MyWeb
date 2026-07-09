@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, field_validator
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, update, exists
+from sqlalchemy import create_engine, Column, Integer, String, Text, Float, ForeignKey, update, exists
 from sqlalchemy.orm import sessionmaker, Session, DeclarativeBase
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta, timezone
@@ -36,6 +36,50 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7
 EMAIL_SENDER = os.getenv("EMAIL_SENDER")
 EMAIL_AUTH_CODE = os.getenv("EMAIL_AUTH_CODE")
 MAX_UPLOADIMG_SIZE = 2 * 1024 * 1024
+
+#邮件配置
+VERIFYCODEHTML = """
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>验证码通知</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8f3e6; font-family: Microsoft YaHei, sans-serif;">
+    <div style="max-width: 520px; margin: 40px auto; background-color: #fff3d0; border-radius: 16px; padding: 36px 30px; box-shadow: 0 6px 22px rgba(58, 37, 26, 0.12);">
+        <!-- 头部标题 -->
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="color: #3a251a; font-size: 24px; margin:0; letter-spacing: 1px;">收藏管理系统</h2>
+            <p style="color: #73b436; font-size: 14px; margin-top: 8px;">账号安全验证码</p >
+        </div>
+
+        <!-- 正文说明 -->
+        <p style="color: #3a251a; font-size: 15px; line-height: 1.7; margin: 0 0 24px 0;">
+            您好！您正在进行账号登录验证操作，本次操作的6位验证码如下，请在5分钟内完成验证：
+        </p >
+
+        <!-- 验证码区块（核心高亮） -->
+        <div style="background-color: #ffffff; border-left: 6px solid #73b436; border-radius: 10px; padding: 22px 16px; text-align: center; margin-bottom: 26px;">
+            <span style="font-size: 36px; font-weight: bold; color: #3a251a; letter-spacing: 6px;">{{CODE}}</span>
+        </div>
+
+        <!-- 提示文字 -->
+        <p style="color: #3a251a; font-size: 14px; line-height:1.6; margin:0;">
+            ⚠️ 验证码有效期仅5分钟，请勿向他人泄露验证码；<br>
+            若并非您本人操作，请忽略此邮件，您的账号不会受到影响。
+        </p >
+
+        <!-- 分割线 -->
+        <div style="height: 1px; background-color: rgba(58, 37, 26, 0.18); margin: 32px 0 20px 0;"></div>
+
+        <!-- 页脚 -->
+        <p style="text-align:center; font-size:13px; color:#73b436; margin:0;">
+            本邮件由系统自动发送，请勿直接回复
+        </p >
+    </div>
+</body>
+</html>
+    """
 
 # FastAPI 实例
 app = FastAPI()
@@ -110,20 +154,26 @@ async def handle_global_error(request: Request, exc: Exception):
     return JSONResponse({"error": "服务器异常"})
 
 # 工具函数
-def send_email(user_email: str, text: str, subject: str) -> bool:
+def send_email(user_email: str, subject: str, text_content: str, 
+               html_content: str | None = None) -> tuple[bool, Exception | None]:
     try:
-        sender = smtplib.SMTP_SSL("smtp.qq.com", 465)
-        sender.login(EMAIL_SENDER, EMAIL_AUTH_CODE)
-        msg = EmailMessage()
-        msg.set_content(text, subtype="plain", charset="utf-8")
-        msg["From"] = f"LeavesBerry <{EMAIL_SENDER}>"
-        msg["To"] = user_email
-        msg["Subject"] = subject
-        sender.send_message(msg)
-        sender.quit()
+        # 使用with自动管理连接，异常也会自动关闭通道
+        with smtplib.SMTP_SSL("smtp.qq.com", 465) as sender:
+            sender.login(EMAIL_SENDER, EMAIL_AUTH_CODE)
+            msg = EmailMessage()
+            # 纯文本内容，指定utf8
+            msg.set_content(text_content, subtype="plain", charset="utf-8")
+            # 存在html模板才添加富文本，同时补充字符集
+            if html_content:
+                msg.add_alternative(html_content, subtype="html", charset="utf-8")
+            msg["From"] = f"LeavesBerry <{EMAIL_SENDER}>"
+            msg["To"] = user_email
+            msg["Subject"] = subject
+            sender.send_message(msg)
+        # 正常执行无异常
         return True, None
     except Exception as e:
-        return False,e
+        return False, e
 
 def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
@@ -267,6 +317,14 @@ class Coll(Base):
     title = Column(String(255), default="未知界面", nullable=False)
     type = Column(String(10), default="other", nullable=False)
 
+class Anno(Base):
+    __tablename__ = "anno"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String(255), default="公告", nullable=False)
+    type = Column(String(10), default="other", nullable=False)
+    main_text = Column(Text(), nullable=False)
+
+
 class Pages(Base):
     __tablename__ = "pages"
     url = Column(String(100), primary_key=True, unique=True, nullable=False)
@@ -341,7 +399,8 @@ async def send_code(data: SendCodeRequest, db: Session = Depends(get_db)):
         except IntegrityError:
             db.rollback()
             continue
-    res,det = send_email(data.user_email, f"验证码：{code}", "LeavesBerry验证码")
+    res,det = send_email(data.user_email, f"验证码：{code}", "LeavesBerry验证码", 
+                         VERIFYCODEHTML.replace("{{CODE}}", code))
     if res:
         return JSONResponse({"msg": "验证码已发送"})
     else:
@@ -482,8 +541,6 @@ async def change_avatar (file: UploadFile = File(...),
 @app.post("/api/initColl")
 async def init_coll(data: CollRequest, user_id: int = Depends(get_current_user("user_id")), 
                     db: Session = Depends(get_db)):
-    print('data:')
-    print(data.url)
     exist = db.query(
         exists().where(Coll.user_id == user_id, Coll.url_hash == hash_url(data.url))
     ).scalar()
@@ -514,6 +571,13 @@ async def get_all_coll(user_id: int = Depends(get_current_user("user_id")),
     return JSONResponse([{"url": item.url.replace(ROOT_PATH, ''),
                            "title": item.title, "type": item.type} 
                          for item in colls])
+
+@app.post("/api/getAllAnno")
+async def get_all_coll(db: Session = Depends(get_db)):
+    annos = db.query(Anno).all()
+    return JSONResponse([{"title": item.title, 
+                          "main_text": item.main_text, "type": item.type} 
+                         for item in annos])
 
 if __name__ == "__main__":   
     uvicorn.run("main:app", host="127.0.0.1", port=5000, reload=True)

@@ -10,5 +10,10 @@ export const pageMetaConfig = {
         title: "公告界面",
         type: "other",
         description: '一些公告'
-    }
+    },
+    Test2: {
+        title: "测试2",
+        type: "other",
+        description: '用于测试'
+    },
 }
