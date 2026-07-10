@@ -6,6 +6,7 @@
     <div ref="qrBox" style="display: none;"></div>
 
     <div id="menu-box" 
+    
       :class="pageState.isMenuClosed ? 'parent-prevent' : ''" 
       @click="menuModule.toggleMenu" 
       :style="menuModule.menuBox">
@@ -19,6 +20,7 @@
         </div>
       </div>
 
+      
       <span class="star s1">✦</span>
       <span class="star s2">✦</span>
       <span class="star s3">✦</span>
@@ -28,6 +30,7 @@
       <span class="star s7">✦</span>
       <span class="star s8">✦</span>
 
+      
       <svg width="100%" height="100%">
         <line x1="27.2px" y1="11px" x2="250px" y2="11px" stroke="#73B436" stroke-width="1"/>
         <line x1="10px" y1="27.42px" x2="10px" y2="392px" stroke="#73B436" stroke-width="1"/>
@@ -60,6 +63,7 @@
       <button class="menu-button" id="button-left-down" :style="menuModule.leftDown"></button>
       <button class="menu-button" id="button-right-up" :style="menuModule.rightUp"></button>
       <button class="menu-button" id="button-right-down" :style="menuModule.rightDown"></button>
+
 
     <div id="navbar" :style="navbarModule.navbar">
 
