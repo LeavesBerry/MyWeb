@@ -63,6 +63,7 @@
 		{ return null }
 		const allColls = JSON.parse(localStorage.getItem('all_colls'))
 		if (userState.isChangedColl == "false" && allColls){
+			console.log(userState.isChangedColl)
 			navList.value = allColls;
 		}
 		else{

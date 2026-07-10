@@ -93,7 +93,7 @@ export const navbarModule = reactive({
     },
 
     async toggleColl() {
-        if (!userState.isLogined === "true") return
+        if (!userState.isLogined === "true" || userState.userAccessToken == 'visitor') return
         try {
             pageState.isCollected = !pageState.isCollected;
             userState.isChangedColl = "true";
