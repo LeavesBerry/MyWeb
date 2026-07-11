@@ -2,17 +2,18 @@
 	<!--受到transform影响,不要把fixed,拖拽,需获取坐标的点击等放入-->
     <div class="slide-page">
 		<div class="item-box">
-			<p class="no-item-tip" v-if="currentContent.length == 0">暂无收藏awa</p>
+			<p class="no-item-tip" v-if="currentContent.length == 0"
+			@click="getAllColl()">暂无收藏( •̀ ω •́ )✧<br>点击此处刷新</p>
 			<router-link class="items" 
 			v-for="item in currentContent" :to="item.url" :key="item.title">
 				<p id="coll-title">{{ item.title }}</p>
 				<div id="colls-function-box">
-					<button @click.stop.prevent="cancelColl(item.title)" 
+					<button @click.stop.prevent="cancelColl(ROOT + item.url)" 
 					style="color: #73B436; 
 					font-size: calc(6 * var(--design-vh));
 					padding-bottom: 2%;
 					border-left: 1px solid #3A251A;">✦</button>
-					<button @click.stop.prevent="createQRCode(ROOT + item.url)"
+					<button @click.stop.prevent="createQRCode(`${ROOT}${item.url}`)"
 					style="background-image: url('http://localhost:5000/static/resource/images/QR.png');
 					background-size: calc(4 * var(--design-vh));
 					background-position: calc(1.3 * var(--design-vh)) center;
@@ -25,7 +26,8 @@
 				</div>
 			</router-link>
 			<p class="refresh-tip" 
-			v-if="currentContent.length !== 0">若缺少收藏,可尝试刷新界面( •̀ ω •́ )</p>
+			v-if="currentContent.length !== 0"
+			@click="getAllColl()">若缺少收藏<br>可尝试点击此处刷新界面( •̀ ω •́ )</p>
 		</div>
 	</div>	
 	<teleport class="fixed-page" to="#app #app">
@@ -49,34 +51,44 @@
 	import api from "../utils/api"
 	import { userState, navbarModule, 
 		copyText, createQRCode, classifyGroup, 
-		switchArrow, arrowStyle } from "../utils/index";
-	import { ref, Teleport } from "vue"
+		switchArrow, arrowStyle, showTips } from "../utils/index";
+	import { ref, Teleport, watch, onMounted } from "vue"
 
 
 	let navList = ref([]);
 	let currentContent = ref([])
 	let groupMap = new Map()
 	const ROOT = "http://localhost:5173";
+
 	
 	async function getAllColl() {
 		if (!userState.isLogined || userState.userAccessToken == "visitor") 
 		{ return null }
 		const allColls = JSON.parse(localStorage.getItem('all_colls'))
 		if (userState.isChangedColl == "false" && allColls){
-			console.log(userState.isChangedColl)
 			navList.value = allColls;
 		}
 		else{
 			const res = await api.post('/api/getAllColl');
 			navList.value = res.data;
 			localStorage.setItem('all_colls', JSON.stringify(res.data));
+			userState.isChangedColl = "false"
 		}
 		currentContent.value = navList.value;
 		groupMap = classifyGroup(navList.value, 'type')
 	}
 
-	async function cancelColl(url, title) {
-		await navbarModule.toggleColl(url, title)
+	async function cancelColl(url) {
+		if (userState.isLogined !== "true" || userState.userAccessToken == 'visitor') return
+        try {
+            userState.isChangedColl = "true";
+            const res = await axiosRequest.toggleColl(url);
+            if (!disposeReturn(res)) {
+                localStorage.removeItem(`coll_${url}`)
+            }
+        } catch (e) {
+            showTips(e)
+        }
 	}
 
 	function switchDirContent(sn, type) {
@@ -94,7 +106,10 @@
 	}
 
 	arrowStyle.transform = {};
-	getAllColl();
+	onMounted(() => {
+		getAllColl();
+	})
+	
 </script>
 
 <style>

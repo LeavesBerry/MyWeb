@@ -1,16 +1,13 @@
-import { reactive } from "vue"
+import { reactive, watch } from "vue"
 import { showTips, disposeReturn, axiosRequest, pageState, navbarModule } from "./index"
 // ------------------------------
 // 用户状态
 // ------------------------------
-export const DEFAULTUSERINFO = {
 
-}
-
-export const userState = reactive({
+const DEFAULT_USER_STATE = {
     isLogined: "false",
     isChangedColl: "false",
-    userName: '未登录',
+    userName: "未登录",
     userId: null,
     userEmail: null,
     bio: "你好,世界!",
@@ -18,7 +15,35 @@ export const userState = reactive({
     avatarUrl: "http://localhost:5000/static/avatar/default_avatar.jpg",
     level: 0,
     xp: 0,
-})
+};
+
+function loadUserState() {
+    try {
+        const cached = localStorage.getItem("userState");
+        if (!cached) return DEFAULT_USER_STATE;
+
+        return {
+            ...DEFAULT_USER_STATE,
+            ...JSON.parse(cached),
+        };
+    } catch (e) {
+        localStorage.removeItem("userState");
+        return DEFAULT_USER_STATE;
+    }
+}
+
+export const userState = reactive(loadUserState());
+
+watch(
+    userState,
+    (newValue) => {
+        localStorage.setItem("userState", JSON.stringify(newValue));
+    },
+    {
+        deep: true,
+    }
+);
+
 export const userModule = reactive({
 
 
@@ -66,7 +91,6 @@ export const userModule = reactive({
             userState.isLogined = "true"
     },
     clear() {
-        userState.isLogined = "false"
         this.resetUserInfo()
         localStorage.clear()
     },
@@ -81,7 +105,6 @@ export const userModule = reactive({
         }
         const cacheData = this.getCache()
         if (cacheData) {
-            userState.isLogined = "true";
             this.updateUserInfo(cacheData)
             await navbarModule.initColl();
             return;
@@ -94,7 +117,6 @@ export const userModule = reactive({
                 return;
             }
             this.updateUserInfo(res)
-            console.log(res);
             this.setCache(res);
             await navbarModule.initColl()
         } catch (e) {

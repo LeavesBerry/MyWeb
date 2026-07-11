@@ -34,10 +34,10 @@
 		switchArrow, arrowStyle } from "../utils/index";
 	import { ref } from "vue"
 
-
-	const navList = ref([]);
-	const currentContent = ref([])
+	let navList = ref([]);
+	let currentContent = ref([])
 	const groupMap = new Map()
+	
 	
 	async function getAllColl() {
 		if (!userState.isLogined || userState.userAccessToken == "visitor") 

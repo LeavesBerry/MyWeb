@@ -43,19 +43,19 @@
         <button class="menu-function-button">✦邮箱✦</button>
         <button class="menu-function-button" @click="goPage('/Collect')">✦收藏夹✦</button>
         <button class="menu-function-button">✦设置✦</button>
-        <button class="menu-function-button" 
-        @click="userState.userAccessToken == 'visitor' ? 
-        loginModule.openLoginWindow() : loginModule.logout()">
-          {{ userState.userAccessToken == 'visitor' ? '✦登入✦' : '✦登出✦' }}
-        </button>
-        <button class="menu-function-button">✦反馈箱✦</button>
-        <button class="menu-function-button">✦历史✦</button>
         <button class="menu-function-button" @click="goPage('/')">✦主页✦</button>
         <button class="menu-function-button" @click="goPage('/Announce')">✦公告栏✦</button>
+        <button class="menu-function-button">✦历史✦</button>
+        <button class="menu-function-button">✦帮助✦</button> 
+        <button class="menu-function-button">✦反馈箱✦</button>
         <button class="menu-function-button">✦协议✦</button>
         <button class="menu-function-button" style="border-radius:0 0 0 3vh">✦测试✦</button>
         <button class="menu-function-button">✦指令表✦</button>
-        <button class="menu-function-button" style="border-radius:0 0 3vh 0">✦帮助✦</button>
+        <button class="menu-function-button" 
+        @click="userState.userAccessToken == 'visitor' ? 
+        loginModule.openLoginWindow() : loginModule.logout()" style="border-radius:0 0 3vh 0">
+          {{ userState.userAccessToken == 'visitor' ? '✦登入✦' : '✦登出✦' }}
+        </button>
       </div>
     </div>
     
@@ -210,7 +210,6 @@ routeListener();
 // ------------------------------
 onMounted(() => {
     userModule.initUser();
-    console.log(userState);
     document.addEventListener('click', onGlobalClick);
 })
 
