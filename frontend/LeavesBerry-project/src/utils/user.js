@@ -1,5 +1,8 @@
 import { reactive, watch } from "vue"
-import { showTips, disposeReturn, axiosRequest, pageState, navbarModule } from "./index"
+import {
+    showTips, disposeReturn, axiosRequest, pageState, navbarModule,
+    setupPersist, persistConfig, updatePersistField
+} from "./index"
 // ------------------------------
 // 用户状态
 // ------------------------------
@@ -17,32 +20,7 @@ const DEFAULT_USER_STATE = {
     xp: 0,
 };
 
-function loadUserState() {
-    try {
-        const cached = localStorage.getItem("userState");
-        if (!cached) return DEFAULT_USER_STATE;
-
-        return {
-            ...DEFAULT_USER_STATE,
-            ...JSON.parse(cached),
-        };
-    } catch (e) {
-        localStorage.removeItem("userState");
-        return DEFAULT_USER_STATE;
-    }
-}
-
-export const userState = reactive(loadUserState());
-
-watch(
-    userState,
-    (newValue) => {
-        localStorage.setItem("userState", JSON.stringify(newValue));
-    },
-    {
-        deep: true,
-    }
-);
+setupPersist(userState, persistConfig)
 
 export const userModule = reactive({
 
@@ -69,26 +47,29 @@ export const userModule = reactive({
         return data
     },
     updateUserInfo(data) {
-
-        userState.userName = data.user_name,
-            userState.userId = data.user_id,
-            userState.userEmail = data.user_email,
-            userState.bio = data.bio,
-            userState.avatarUrl = data.avatar_url,
-            userState.level = data.level,
-            userState.xp = data.xp,
-            userState.isLogined = data.is_logined
+        updatePersistField(userState, {
+            userName: data.user_name,
+            userId: data.user_id,
+            userEmail: data.user_email,
+            bio: data.bio,
+            avatarUrl: data.avatar_url,
+            level: data.level,
+            xp: data.xp,
+            isLogined: data.is_logined
+        }, persistConfig)
     },
     resetUserInfo() {
-        userState.userName = '未登录',
-            userState.userId = null,
-            userState.userEmail = null,
-            userState.bio = "你好,世界!",
-            userState.userAccessToken = null,
-            userState.avatarUrl = "http://localhost:5000/static/avatar/default_avatar.jpg",
-            userState.level = 0,
-            userState.xp = 0,
-            userState.isLogined = "true"
+        updatePersistField(userState, {
+            userName: '未登录',
+            userId: null,
+            userEmail: null,
+            bio: "你好,世界!",
+            userAccessToken: null,
+            avatarUrl: "http://localhost:5000/static/avatar/default_avatar.jpg",
+            level: 0,
+            xp: 0,
+            isLogined: "true"
+        }, persistConfig)
     },
     clear() {
         this.resetUserInfo()
