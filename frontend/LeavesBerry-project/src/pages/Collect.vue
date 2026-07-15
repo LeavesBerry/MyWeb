@@ -2,10 +2,10 @@
 	<!--受到transform影响,不要把fixed,拖拽,需获取坐标的点击等放入-->
     <div class="slide-page">
 		<div class="item-box">
-			<p class="no-item-tip none-select" v-if="currentContent.length == 0"
-			@click="getAllColl()">暂无收藏( •̀ ω •́ )✧<br>点击此处刷新</p>
+			<p class="no-item-tip none-select" v-if="currentConfig.length == 0"
+			@click="getAllColl">暂无收藏( •̀ ω •́ )✧<br>点击此处刷新</p>
 			<div class="items" 
-			v-for="item in currentContent" :key="item.title">
+			v-for="item in currentConfig" :key="item.title">
 				<p class="item-title" @click="goPage(item.url)">{{ item.title }}</p>
 				<div id="colls-function-box">
 					<button @click.stop.prevent="cancelColl(`${ROOT}${item.url}`)" 
@@ -26,13 +26,13 @@
 				</div>
 			</div>
 			<p class="refresh-tip none-select" 
-			v-if="currentContent.length !== 0"
-			@click="getAllColl()">若缺少收藏<br>可尝试点击此处刷新界面( •̀ ω •́ )</p>
+			v-if="currentConfig.length !== 0"
+			@click="getAllColl">若缺少收藏<br>可尝试点击此处刷新界面( •̀ ω •́ )</p>
 		</div>
 	</div>	
 	<teleport class="fixed-page" to="#app #app">
 		<div class="sidebar">
-			<span class="dir-active-arrow" :style="arrowStyle.transform"><<<</span>
+			<span class="dir-active-arrow" :style="arrowStyle"><<<</span>
 			<div class="type" id="all"
 			@click="switchDirContent(0, 'all')">❖所有❖</div>
 			<div class="type" id="good" 
@@ -55,7 +55,7 @@
 
 
 	let navList = ref([]);
-	let currentContent = ref([])
+	let currentConfig = ref([])
 	let groupMap = new Map()
 	const ROOT = "http://localhost:5173";
 	const goPage = useGoPage()
@@ -74,7 +74,7 @@
 			localStorage.setItem('all_colls', JSON.stringify(res.data));
 			userState.isChangedColl = "false"
 		}
-		currentContent.value = navList.value;
+		currentConfig.value = navList.value;
 		groupMap = classifyGroup(navList.value, 'type')
 	}
 
@@ -94,18 +94,18 @@
 	function switchDirContent(sn, type) {
 		switchArrow(sn);
 		if (type === "all") {
-			currentContent.value = navList.value
+			currentConfig.value = navList.value
 			return
 		}
 		if (groupMap.get(type)) {
-			currentContent.value = groupMap.get(type)
+			currentConfig.value = groupMap.get(type)
 		}
 		else {
-			currentContent.value = []
+			currentConfig.value = []
 		}
 	}
 
-	arrowStyle.transform = {};
+	arrowStyle.transform = "";
 	onMounted(() => {
 		getAllColl();
 	})

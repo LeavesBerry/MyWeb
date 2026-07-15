@@ -55,23 +55,27 @@
 .hidden-container {
     position: fixed;
     top: calc(100 * var(--design-vh));
-    left: 28vw;
-    width: 70vw;
+    left: 25vw;
+    width: 75vw;
     height: auto;
+    z-index: 9;
 }
 
 .content-container {
     position: absolute;
     top: 0;
     left: 0;
-    transition: translateY 0.8s ease;
+    width: 75vw;
+    transition: transform 0.5s ease;
     justify-content: center;
     align-items: center;
+    display: flex;
+    flex-direction: column;
 }
 
 .content-title {
     width: auto;
-    height: calc(8 * var(--design-vh));
+    font-size: calc(8 * var(--design-vh));
     color: #3A251A;
     font-weight: 800;
     padding-top: calc(6 * var(--design-vh));
@@ -79,11 +83,28 @@
 }
 
 .content-text {
-    width: 62vw;
-    height: auto;
+    width: 68vw;
+    height: fit-content;
     color: #3A251A;
     font-weight: 300;
+    padding-top: calc(6 * var(--design-vh));
     word-break: break-all;
     word-wrap: break-word;
     white-space: normal;
+    padding-bottom: 20px;
+}
+
+.hide-content-button {
+    position: absolute;
+    top: calc(4.5 * var(--design-vh));
+    right: 5%;
+    font-size: calc(8 * var(--design-vh));
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+}
+
+.title-content-divider {
+    width: 69vw;
+    height: 0;
+    border: 1px solid #3A251A;
 }
