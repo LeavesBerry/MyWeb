@@ -178,61 +178,13 @@
 .menu-function-button {
     width: calc(17.22 * var(--design-vh, 4.57px));
     height: calc(15.5 * var(--design-vh, 4.57px));
-    margin: calc(0.5 * var(--design-vh, 4.57px)) 0 0;
-    padding: calc(1.5 * var(--design-vh, 4.57px))
-             calc(0.8 * var(--design-vh, 4.57px))
-             calc(1.1 * var(--design-vh, 4.57px));
+    margin: 0;
+    padding-top: calc(10 * var(--design-vh, 4.57px));
     border: none;
-    overflow: hidden;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: calc(0.8 * var(--design-vh, 4.57px));
+    margin-top: calc(0.5 * var(--design-vh, 4.57px));
     font-size: calc(3 * var(--design-vh, 4.57px));
-    line-height: 1;
     font-weight: 900;
     text-align: center;
     background-color: #3A251A;
     color: #884C3A;
-}
-
-.menu-function-button > span:last-child {
-    display: block;
-    max-width: 100%;
-    white-space: nowrap;
-}
-
-.menu-function-icon,
-.menu-function-symbol {
-    width: calc(6.4 * var(--design-vh, 4.57px));
-    height: calc(6.4 * var(--design-vh, 4.57px));
-    flex: 0 0 calc(6.4 * var(--design-vh, 4.57px));
-    color: #884C3A;
-}
-
-.menu-function-icon {
-    display: block;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    overflow: visible;
-}
-
-.menu-function-symbol {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: Consolas, Monaco, "Courier New", monospace;
-    font-size: calc(5.6 * var(--design-vh, 4.57px));
-    line-height: 1;
-    font-weight: 500;
-}
-
-.menu-function-symbol--code {
-    font-size: calc(3.8 * var(--design-vh, 4.57px));
-    letter-spacing: calc(-0.2 * var(--design-vh, 4.57px));
 }

@@ -69,7 +69,7 @@ class Anno(Base):
     title = Column(String(255), default="公告", nullable=False)
     type = Column(String(10), default="other", nullable=False)
     main_text = Column(Text(), nullable=False)
-    cur_date = Column(Integer, nullable=False)
+    anno_date = Column(Integer, nullable=False)
 
 
 class Pages(Base):

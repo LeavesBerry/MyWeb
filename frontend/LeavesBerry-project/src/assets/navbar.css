@@ -1,5 +1,5 @@
 #navbar {
-    width: var(--design-width, 1096.8px);
+    width: 100vw;
     height: calc(8 * var(--design-vh, 4.57px));
     position: fixed;
     top: 0;

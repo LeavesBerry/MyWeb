@@ -5,18 +5,27 @@ import { userModule } from "./user";
 import api from "./api";
 import QRCode from "qrcodejs2-fix"
 import { updatePageInfo } from "../router";
+import { configModule } from "./config";
 
 // ------------------------------
 // 工具函数
 // ------------------------------
+let isRouteWithConfig = false
 
 export function routeListener() {
     const route = useRoute();
     watch(
         () => route.fullPath,
         (newPath) => {
-            updatePageInfo(route.params.page, `${location.origin}${newPath}`)
-            navbarModule.initColl(pageState.currentUrl);
+            if (isRouteWithConfig) {
+                isRouteWithConfig = false
+                return
+            }
+            else {
+                updatePageInfo(route.params.page, `${location.origin}${newPath}`)
+                navbarModule.initColl(pageState.currentUrl);
+            }
+
         },
         { flush: "sync", immediate: true }
     )
@@ -26,7 +35,20 @@ export function useGoPage() {
     const router = useRouter()
 
     function goPage(url) {
-        router.push(url)
+        const reg = /^(.*)\/([^\/]+)\/config_index:(\d+)$/;
+        const matchResult = url.match(reg)
+        if (!matchResult) {
+            router.push(url)
+        }
+        else {
+            isRouteWithConfig = true
+            const folderName = matchResult[2];
+            const baseUrl = matchResult[1] + "/" + folderName;
+            const configNum = Number(matchResult[3]);
+            configModule.expandContent(configNum, folderName, `${location.origin}${baseUrl}`)
+            router.push(baseUrl)
+        }
+
     }
 
     function backPage() {
@@ -193,12 +215,7 @@ export const axiosRequest = {
             type: currentType
         });
         return res.data;
-    },
-
-    async getAnnoText(annoId) {
-        const res = await api.post('/api/getAnnoText', { id: annoId });
-        return res.data;
-    },
+    }
 }
 
 // ------------------------------

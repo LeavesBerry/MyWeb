@@ -42,4 +42,4 @@ class CollRequest(BaseModel):
         return value
     
 class AnnoRequest(BaseModel):
-    id: str
+    id: int

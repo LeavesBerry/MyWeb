@@ -40,92 +40,21 @@
       </svg>
 
       <div id="menu-function-button-box">
-        <button class="menu-function-button">
-          <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
-            <rect x="4" y="7" width="24" height="18" rx="2"></rect>
-            <path d="M5 9l11 8 11-8"></path>
-          </svg>
-          <span>邮箱</span>
-        </button>
-
-        <button class="menu-function-button" @click="goPage('/Collect')">
-          <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
-            <path d="M16 4.5l3.5 7.1 7.8 1.1-5.6 5.5 1.3 7.8-7-3.7-7 3.7 1.3-7.8-5.6-5.5 7.8-1.1z"></path>
-          </svg>
-          <span>收藏夹</span>
-        </button>
-
-        <button class="menu-function-button">
-          <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
-            <circle cx="16" cy="16" r="4"></circle>
-            <path d="M16 3.5v4M16 24.5v4M3.5 16h4M24.5 16h4M7.2 7.2l2.8 2.8M22 22l2.8 2.8M24.8 7.2L22 10M10 22l-2.8 2.8"></path>
-            <circle cx="16" cy="16" r="9"></circle>
-          </svg>
-          <span>设置</span>
-        </button>
-
-        <button class="menu-function-button" @click="goPage('/')">
-          <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
-            <path d="M5 15.5L16 6l11 9.5"></path>
-            <path d="M8 14v12h16V14M13 26v-7h6v7"></path>
-          </svg>
-          <span>主页</span>
-        </button>
-
-        <button class="menu-function-button" @click="goPage('/Announce')">
-          <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
-            <path d="M5 14v5h5l11 5V9l-11 5z"></path>
-            <path d="M10 19l2 7h4l-2-6M24 12c2 2 2 6 0 8"></path>
-          </svg>
-          <span>公告栏</span>
-        </button>
-
-        <button class="menu-function-button">
-          <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
-            <circle cx="16" cy="16" r="11"></circle>
-            <path d="M16 9v7l5 3"></path>
-          </svg>
-          <span>历史</span>
-        </button>
-
-        <button class="menu-function-button">
-          <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
-            <circle cx="16" cy="16" r="11"></circle>
-            <path d="M12.5 12a3.7 3.7 0 017-1.7c1.4 3.4-3.5 4.1-3.5 7.2"></path>
-            <path d="M16 23h.01"></path>
-          </svg>
-          <span>帮助</span>
-        </button>
-
-        <button class="menu-function-button">
-          <span class="menu-function-symbol" aria-hidden="true">@</span>
-          <span>反馈箱</span>
-        </button>
-
-        <button class="menu-function-button">
-          <span class="menu-function-symbol" aria-hidden="true">#</span>
-          <span>协议</span>
-        </button>
-
-        <button class="menu-function-button" style="border-radius:0 0 0 3vh">
-          <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
-            <path d="M7 17l6 6L25 9"></path>
-          </svg>
-          <span>测试</span>
-        </button>
-
-        <button class="menu-function-button">
-          <span class="menu-function-symbol menu-function-symbol--code" aria-hidden="true">&lt;/&gt;</span>
-          <span>指令表</span>
-        </button>
-
+        <button class="menu-function-button">✦邮箱✦</button>
+        <button class="menu-function-button" @click="goPage('/Collect')">✦收藏夹✦</button>
+        <button class="menu-function-button">✦设置✦</button>
+        <button class="menu-function-button" @click="goPage('/')">✦主页✦</button>
+        <button class="menu-function-button" @click="goPage('/Announce')">✦公告栏✦</button>
+        <button class="menu-function-button">✦历史✦</button>
+        <button class="menu-function-button">✦帮助✦</button> 
+        <button class="menu-function-button">✦反馈箱✦</button>
+        <button class="menu-function-button">✦协议✦</button>
+        <button class="menu-function-button" style="border-radius:0 0 0 3vh">✦测试✦</button>
+        <button class="menu-function-button">✦指令表✦</button>
         <button class="menu-function-button" 
         @click="userState.userAccessToken == 'visitor' ? 
         loginModule.openLoginWindow() : loginModule.logout()" style="border-radius:0 0 3vh 0">
-          <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
-            <path d="M27 16H7M14 9l-7 7 7 7"></path>
-          </svg>
-          <span>{{ userState.userAccessToken == 'visitor' ? '登入' : '登出' }}</span>
+          {{ userState.userAccessToken == 'visitor' ? '✦登入✦' : '✦登出✦' }}
         </button>
       </div>
     </div>
