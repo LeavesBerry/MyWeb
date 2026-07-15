@@ -2,13 +2,13 @@
 	<!--受到transform影响,不要把fixed,拖拽,需获取坐标的点击等放入-->
     <div class="slide-page">
 		<div class="item-box">
-			<p class="no-item-tip" v-if="currentContent.length == 0"
+			<p class="no-item-tip none-select" v-if="currentContent.length == 0"
 			@click="getAllColl()">暂无收藏( •̀ ω •́ )✧<br>点击此处刷新</p>
-			<router-link class="items" 
-			v-for="item in currentContent" :to="item.url" :key="item.title">
-				<p id="coll-title">{{ item.title }}</p>
+			<div class="items" 
+			v-for="item in currentContent" :key="item.title">
+				<p class="item-title" @click="goPage(item.url)">{{ item.title }}</p>
 				<div id="colls-function-box">
-					<button @click.stop.prevent="cancelColl(ROOT + item.url)" 
+					<button @click.stop.prevent="cancelColl(`${ROOT}${item.url}`)" 
 					style="color: #73B436; 
 					font-size: calc(6 * var(--design-vh));
 					padding-bottom: 2%;
@@ -24,8 +24,8 @@
 					background-position: calc(0.3 * var(--design-vh)) center;
 					"></button>
 				</div>
-			</router-link>
-			<p class="refresh-tip" 
+			</div>
+			<p class="refresh-tip none-select" 
 			v-if="currentContent.length !== 0"
 			@click="getAllColl()">若缺少收藏<br>可尝试点击此处刷新界面( •̀ ω •́ )</p>
 		</div>
@@ -49,9 +49,8 @@
 </template>	
 <script setup>
 	import api from "../utils/api"
-	import { userState, navbarModule, 
-		copyText, createQRCode, classifyGroup, 
-		switchArrow, arrowStyle, showTips } from "../utils/index";
+	import { userState, copyText, createQRCode, classifyGroup, 
+		switchArrow, arrowStyle, showTips, useGoPage } from "../utils/index";
 	import { ref, Teleport, watch, onMounted } from "vue"
 
 
@@ -59,6 +58,7 @@
 	let currentContent = ref([])
 	let groupMap = new Map()
 	const ROOT = "http://localhost:5173";
+	const goPage = useGoPage()
 
 	
 	async function getAllColl() {
@@ -145,14 +145,5 @@
 		border-bottom:none;
 		border-left:none;
 		z-index: 4;
-	}
-	.items p{
-		width:auto;
-		height: 40%;
-		color:#3A251A;
-		font-weight: 800;
-		position: relative;
-		top: 15%;
-		left: 10%;
 	}
 </style>

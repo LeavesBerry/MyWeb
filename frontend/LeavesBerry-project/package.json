@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "cd ../../backend && python main.py run",
-    "start": "concurrently \"npm run dev\" \"npm run server\"",
+    "server": "cd ../../backend && uvicorn main:app --reload --host 0.0.0.0 --port 5000",
+    "start": "concurrently --kill-others false \"npm run dev\" \"npm run server\"",
     "build": "vite build",
     "preview": "vite preview"
   },

@@ -70,7 +70,7 @@ async def register(data: RegisterRequest, db: Session = Depends(get_db)):
         db.commit()
         raise APIError("验证码已过期")
 
-    exist = db.query(UserBase).filter(UserBase.user_email == data.user_email).first()
+    exist = db.query(UserBase.user_email).filter(UserBase.user_email == data.user_email).first()
     if exist:
         raise APIError("用户已存在")
 

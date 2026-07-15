@@ -13,6 +13,3 @@ async def favicon():
     return FileResponse(os.path.join(PUBLIC_DIR, "favicon.ico"))
 
 
-@router.get("/api/ping")
-async def ping():
-    return {"status": "ok", "msg": "后端连接成功"}

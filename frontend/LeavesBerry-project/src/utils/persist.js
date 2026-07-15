@@ -1,172 +1,148 @@
-import { watch } from "vue";
+import { watch } from "vue"
 
-const timers = {};
+const timers = {}
 
-function save(key, value) {
-    localStorage.setItem(
-        key,
-        JSON.stringify(value)
-    );
+function getStorage(type = "local") {
+    return type === "session" ? sessionStorage : localStorage
 }
 
-// 防抖保存
+function save(storage, key, value) {
+    storage.setItem(key, JSON.stringify(value))
+}
 
-function saveDelay(key, value, delay) {
-    clearTimeout(timers[key]);
+function saveDelay(storage, key, value, delay) {
+    clearTimeout(timers[key])
     timers[key] = setTimeout(() => {
-        save(key, value);
-    }, delay);
+        save(storage, key, value)
+        delete timers[key]
+    }, delay)
 }
 
-
+export function restorePersist(state, config) {
+    for (const [field, option] of Object.entries(config)) {
+        const storage = getStorage(option.storage)
+        const key = option.key ?? field
+        const rawValue = storage.getItem(key)
+        if (rawValue === null) continue
+        try {
+            state[field] = JSON.parse(rawValue)
+        } catch (error) {
+            console.warn(`[persist] 恢复字段 "${field}" 失败`, error)
+            storage.removeItem(key)
+        }
+    }
+}
 
 export function setupPersist(state, config) {
-    Object.keys(config).forEach(field => {
-
-        const option = config[field];
-
-        // rare:
-        // 完全不监听
-        if (option.type === "rare") {
-            return;
-        }
-
-        // frequent:
-        // 修改立即保存
+    for (const [field, option] of Object.entries(config)) {
+        if (option.type === "rare") continue
+        const storage = getStorage(option.storage)
+        const key = option.key ?? field
         if (option.type === "frequent") {
             watch(
                 () => state[field],
-
-                value => {
-                    save(
-                        option.key,
-                        value
-                    );
-                }
-            );
+                value => save(storage, key, value),
+                { deep: option.deep ?? false }
+            )
+            continue
         }
-
-        // burst:
-        // 延迟保存
         if (option.type === "burst") {
             watch(
                 () => state[field],
-                value => {
-                    saveDelay(
-                        option.key,
-                        value,
-                        option.delay ?? 1000
-                    );
-                }
-            );
+                value => saveDelay(
+                    storage,
+                    key,
+                    value,
+                    option.delay ?? 1000
+                ),
+                { deep: option.deep ?? false }
+            )
         }
-    });
+    }
 }
-
 
 export function updatePersistFields(state, values, config) {
     const result = {
         updated: [],
-        skipped: [],
-    };
-
+        skipped: []
+    }
     for (const [field, value] of Object.entries(values)) {
-        const option = config[field];
-
+        const option = config[field]
         if (!option) {
-            console.warn(`[persist] 字段 "${field}" 没有持久化配置`);
-            result.skipped.push(field);
-            continue;
+            console.warn(`[persist] 字段 "${field}" 没有持久化配置`)
+            result.skipped.push(field)
+            continue
         }
-
-        // 先更新响应式状态
-        state[field] = value;
-
-        // frequent 和 burst 已有 watcher 负责保存
+        state[field] = value
         if (option.type !== "rare") {
-            result.updated.push(field);
-            continue;
+            result.updated.push(field)
+            continue
         }
-
         try {
-            const storage = getStorage(option.storage);
-
-            storage.setItem(
-                option.key ?? field,
-                JSON.stringify(value)
-            );
-
-            result.updated.push(field);
+            const storage = getStorage(option.storage)
+            save(storage, option.key ?? field, value)
+            result.updated.push(field)
         } catch (error) {
-            console.error(`[persist] 保存字段 "${field}" 失败`, error);
-            result.skipped.push(field);
+            console.error(`[persist] 保存字段 "${field}" 失败`, error)
+            result.skipped.push(field)
         }
     }
-    return result;
+    return result
 }
 
+export function removePersistFields(fields, config) {
+    const fieldList = Array.isArray(fields) ? fields : [fields]
+    for (const field of fieldList) {
+        const option = config[field]
+        if (!option) continue
+        const key = option.key ?? field
+        const storage = getStorage(option.storage)
+        storage.removeItem(key)
+        clearTimeout(timers[key])
+        delete timers[key]
+    }
+}
 
 export const persistConfig = {
     isLogined: {
         type: "rare",
-        key: "isLogined",
-        storage: "local",
+        storage: "local"
     },
-
     isChangedColl: {
         type: "frequent",
-        key: "isChangedColl",
-        storage: "local",
+        storage: "local"
     },
-
     userName: {
         type: "rare",
-        key: "userName",
-        storage: "local",
+        storage: "local"
     },
-
     userId: {
         type: "rare",
-        key: "userId",
-        storage: "local",
+        storage: "local"
     },
-
     userEmail: {
         type: "rare",
-        key: "userEmail",
-        storage: "local",
+        storage: "local"
     },
-
     bio: {
         type: "rare",
-        key: "bio",
-        storage: "local",
+        storage: "local"
     },
-
     userAccessToken: {
         type: "rare",
-        key: "userAccessToken",
-        storage: "local",
+        storage: "local"
     },
-
     avatarUrl: {
         type: "rare",
-        key: "avatarUrl",
-        storage: "local",
+        storage: "local"
     },
-
     level: {
-        type: "frequent",
-        key: "level",
-        storage: "local",
+        type: "rare",
+        storage: "local"
     },
-
     xp: {
         type: "burst",
-        key: "xp",
         storage: "local",
-        delay: 500,
-    },
-};
-
-
+        delay: 500
+    }
+}

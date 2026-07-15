@@ -21,7 +21,6 @@ def get_user_info(
     user_profile = db.query(UserProfile).filter(UserProfile.user_id == user.user_id).first()
     return JSONResponse(
         {
-            "msg": "获取成功",
             "is_logined": "true",
             "user_id": user.user_id,
             "user_name": user.user_name,

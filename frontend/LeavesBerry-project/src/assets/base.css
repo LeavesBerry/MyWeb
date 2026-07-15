@@ -80,15 +80,27 @@ a {
 	transform: translate3d(0, 0, 0);
 }
 
-#tip {
+.tip {
 	margin-top: calc(2 * var(--design-vh, 4.57px));
 	height: calc(6 * var(--design-vh, 4.57px));
 	text-align: center;
+	color: #3A251A;
 	display: inline-block;
 	padding: 0 10px 0 10px;
-	background-color: white;
+	background-color: #FFF3D0;
 	border-radius: 4px;
-	border: 1px solid black;
+	border: 1px solid #73B436;
 	visibility: hidden;
-	transition: transform 0.2s ease-out;
+	transition: transform 0.2s ease-out,
+		background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.tip :hover {
+	background-color: #E6F4D9;
+	border-color: #629E2E;
+}
+
+.none-select {
+	-webkit-user-select: none;
+	user-select: none;
 }

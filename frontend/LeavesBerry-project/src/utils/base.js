@@ -1,6 +1,7 @@
 import { reactive, watch, ref } from "vue";
-import { useRoute } from "vue-router";
-import { navbarModule, menuModule, pageState, userModule } from "./index";
+import { useRoute, useRouter } from "vue-router";
+import { navbarModule, menuModule, pageState } from "./page";
+import { userModule } from "./user";
 import api from "./api";
 import QRCode from "qrcodejs2-fix"
 import { updatePageInfo } from "../router";
@@ -8,10 +9,7 @@ import { updatePageInfo } from "../router";
 // ------------------------------
 // 工具函数
 // ------------------------------
-export const tip = reactive({
-    tipStyle: {},
-    tipText: ''
-});
+
 export function routeListener() {
     const route = useRoute();
     watch(
@@ -24,28 +22,63 @@ export function routeListener() {
     )
 }
 
-export function showTips(text) {
-    let currentTask = Promise.resolve()
-    let taskQueue = []
-    taskQueue.push(text)
-    function disposeTask() {
-        if (taskQueue.length === 0) { return }
-        tip.tipText = taskQueue.shift()
-        currentTask = currentTask.then(() => {
-            return new Promise((resolve) => {
-                let showTime = text.length * 124 + 890;
-                tip.tipStyle = { visibility: 'visible', transform: 'translateY(6vh)' }
-                setTimeout(() => {
-                    tip.tipStyle = { visibility: 'hidden', transform: 'none' }
-                    resolve();
-                }, showTime);
-            });
-        }).then(() => {
-            disposeTask();
-        });
+export function useGoPage() {
+    const router = useRouter()
+
+    function goPage(url) {
+        router.push(url)
     }
-    disposeTask();
+
+    function backPage() {
+        router.back()
+    }
+
+    function goPageByName(routeName, parmes) {
+        router.push({ name: routeName, params })
+    }
+
+    return { goPage, backPage, goPageByName }
 }
+
+export const tip = reactive({
+    tipStyle: {},
+    tipText: ''
+});
+const tipQueue = []
+let isShowingTip = false
+
+export function showTips(text) {
+    tipQueue.push(text)
+    processTipQueue()
+}
+
+function processTipQueue() {
+    if (isShowingTip || tipQueue.length === 0) {
+        return
+    }
+
+    isShowingTip = true
+
+    const currentText = tipQueue.shift()
+    const showTime = currentText.length * 124 + 890
+
+    tip.tipText = currentText
+    tip.tipStyle = {
+        visibility: 'visible',
+        transform: 'translateY(6vh)'
+    }
+
+    setTimeout(() => {
+        tip.tipStyle = {
+            visibility: 'hidden',
+            transform: 'none'
+        }
+
+        isShowingTip = false
+        processTipQueue()
+    }, showTime)
+}
+
 export function disposeReturn(data) {
 
     if (data.error) { showTips(data.error);; return true }
@@ -160,7 +193,12 @@ export const axiosRequest = {
             type: currentType
         });
         return res.data;
-    }
+    },
+
+    async getAnnoText(annoId) {
+        const res = await api.post('/api/getAnnoText', { id: annoId });
+        return res.data;
+    },
 }
 
 // ------------------------------

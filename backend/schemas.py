@@ -40,3 +40,6 @@ class CollRequest(BaseModel):
         if not value or len(value) > 1000:
             raise ValueError("URL不合法")
         return value
+    
+class AnnoRequest(BaseModel):
+    id: str

@@ -67,7 +67,7 @@
 
     <div id="navbar" :style="navbarModule.navbar">
 
-      <p id="tip" :style="tip.tipStyle">{{ tip.tipText }}</p>
+      <p class="tip" :style="tip.tipStyle">{{ tip.tipText }}</p>
 
       <input id="search-input" type="text" placeholder="查找……" v-model="navbarModule.searchKey" />
       <button id="search-button" @click="navbarModule.DoSearch">GO</button>
@@ -186,18 +186,13 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted, onUnmounted, watch, reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import { debounce, tip, onGlobalClick,
-navbarModule, menuModule, pageState, 
+import { debounce, tip, onGlobalClick, useGoPage,
+navbarModule, menuModule, pageState, routeListener,
 userState, userModule, loginModule, qrBox } from './utils/index';
 import { useHead } from "@vueuse/head"
-import { routeListener } from './utils/index';
 
-const router = useRouter()
 
-const goPage = (url) => {
-  router.push(url);
-}
+const { goPage, backPage, goPageByName } = useGoPage()
 
 useHead({
   title: () => pageState.currentTitle,

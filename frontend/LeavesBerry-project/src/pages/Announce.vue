@@ -1,12 +1,13 @@
 <template>
     <div class="slide-page">
-        <div class="item-box">
+        <div class="item-box none-select" v-bind="!isAnnoExpanded">
 			<p class="no-item-tip" v-if="currentContent.length == 0">暂无公告awa</p>
 			<div class="items" 
-			v-for="item in currentContent" :to="item.url" :key="item.title">
-				<p id="annu-title">{{ item.title }}</p>	
+			v-for="item in currentContent" :key="item.title"
+			@click="expandAnno(item.id, item.title)">
+				<p class="item-title">{{ item.title }}</p>	
 			</div>
-			<p class="refresh-tip" 
+			<p class="refresh-tip none-select" 
 			v-if="currentContent.length !== 0">若缺少公告,可尝试刷新界面( •̀ ω •́ )</p>
 		</div>
     </div>
@@ -24,6 +25,12 @@
 			<div class="type" id="older"
             @click="switchDirContent(4, 'other')">❖其他❖</div>
         </div>
+		<div class="hidden-container">
+			<div class="content-container">
+				<p class="content-title">{{ annoTitle }}</p>
+				<p class="content-text">{{ annoText }}</p>
+			</div>
+		</div>
 	</teleport>
 </template>
 
@@ -31,20 +38,29 @@
     import api from "../utils/api"
 	import { userState, navbarModule, 
 		copyText, createQRCode, classifyGroup, 
-		switchArrow, arrowStyle } from "../utils/index";
+		switchArrow, arrowStyle, axiosRequest } from "../utils/index";
 	import { ref } from "vue"
 
 	let navList = ref([]);
 	let currentContent = ref([])
-	const groupMap = new Map()
+	let isAnnoExpanded = ref(false)
+	let annoTitle = ref("")
+	let annoText = ref("")
+	let groupMap = new Map()
 	
 	
-	async function getAllColl() {
-		if (!userState.isLogined || userState.userAccessToken == "visitor") 
-		{ return null }
-		const res = await api.post('/api/getAllAnno');
+	async function getAllAnnoInfo() {
+		const res = await api.post('/api/getAllAnnoInfo');
 		navList.value = res.data;
-		groupMap = classifyGroup(navList, 'type')
+		currentContent.value = navList.value;
+		groupMap = classifyGroup(navList.value, 'type')
+	}
+
+	async function expandAnno(anno_id, anno_title) {
+		const res = await axiosRequest.getAnnoText(anno_id);
+		isAnnoExpanded = true;
+		annoText = res.main_text;
+		annoTitle = anno_title;
 	}
 
     function switchDirContent(sn, type) {
@@ -62,4 +78,5 @@
 	}
 
 	arrowStyle.transform = {};
+	getAllAnnoInfo()
 </script>

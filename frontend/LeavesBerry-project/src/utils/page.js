@@ -1,5 +1,6 @@
 import { reactive, ref } from "vue"
-import { userState, axiosRequest, showTips, copyText, createQRCode, disposeReturn } from "./index"
+import { axiosRequest, showTips, copyText, createQRCode, disposeReturn } from "./base"
+import { userState } from "./user"
 import { create } from "axios"
 import { updatePageInfo } from "../router"
 import router from "../router"
