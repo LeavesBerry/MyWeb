@@ -11,7 +11,6 @@ import './assets/base.css'
 import './assets/navbar.css'
 import './assets/login.css'
 import './assets/menu.css'
-import './assets/sidebar.css'
 import './assets/config.css'
 
 

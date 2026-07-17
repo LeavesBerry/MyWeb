@@ -90,15 +90,12 @@
 #command-menu {
     position: fixed;
     top: calc(8 * var(--design-vh, 4.57px));
-    left: 15vw;
+    right: 0;
     z-index: 1;
     width: 70vw;
     height: calc(60 * var(--design-vh, 4.57px));
-    background: rgba(255, 255, 255, 0.4);
-    border: 3px solid black;
-    border-top: none;
-    border-radius: 0 0 calc(5 * var(--design-vh, 4.57px)) calc(5 * var(--design-vh, 4.57px));
-    transform: translateY(calc(-76 * var(--design-vh, 4.57px)));
+    background: #4a4030;
+    border: 5px solid #22130c;
     transition: transform 0.8s ease;
 }
 
@@ -109,6 +106,7 @@
     font-size: calc(4 * var(--design-vh, 4.57px));
     font-weight: 200;
     text-align: center;
+    color: #FFF3D0;
 }
 
 #close-command {
@@ -120,4 +118,5 @@
     height: calc(6 * var(--design-vh, 4.57px));
     font-size: calc(6 * var(--design-vh, 4.57px));
     background-color: rgba(255, 255, 255, 0);
+    color: #FFF3D0;
 }

@@ -1,6 +1,7 @@
 import { reactive } from "vue"
 import { showTips, disposeReturn, axiosRequest } from "./base"
-import { pageState, navbarModule } from "./page"
+import { pageState } from "./page"
+import { navbarModule } from "./navbar"
 import {
     persistConfig,
     restorePersist,
@@ -12,8 +13,8 @@ import {
 const USER_INFO_UPDATED_AT_KEY = "userInfoUpdatedAt"
 const USER_INFO_CACHE_DURATION = 10 * 60 * 1000
 const DEFAULT_USER_INFO = {
-    isLogined: "false",
-    isChangedColl: "false",
+    isLogined: false,
+    isChangedColl: false,
     userName: "未登录",
     userId: null,
     userEmail: null,
@@ -60,7 +61,7 @@ export const userModule = reactive({
             avatarUrl: data.avatar_url,
             level: data.level,
             xp: data.xp,
-            isLogined: data.is_logined ?? "true"
+            isLogined: data.is_logined
         }, persistConfig)
         markUserInfoFresh()
     },
@@ -80,7 +81,7 @@ export const userModule = reactive({
             return
         }
         if (token === "visitor") return
-        if (!forceRefresh && userState.isLogined === "true" && isUserInfoFresh()) {
+        if (!forceRefresh && userState.isLogined && isUserInfoFresh()) {
             await navbarModule.initColl()
             return
         }
@@ -98,8 +99,8 @@ export const userModule = reactive({
             throw error
         }
     },
-    async changeAvatar() {},
-    async changeBio() {},
+    async changeAvatar() { },
+    async changeBio() { },
     changeXp(change) {
         const oldLevel = userState.level
         const totalXp = 1000 * userState.level + userState.xp + change
@@ -138,7 +139,7 @@ export const loginModule = reactive({
         updatePersistFields(userState, {
             userAccessToken: "visitor",
             userId: 0,
-            isLogined: "false"
+            isLogined: false
         }, persistConfig)
         showTips("您已以访客身份进入")
         this.closeLoginWindow()

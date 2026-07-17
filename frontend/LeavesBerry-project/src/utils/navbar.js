@@ -1,0 +1,152 @@
+import { reactive, ref } from "vue"
+import {
+    axiosRequest, showTips, copyText,
+    createQRCode, disposeReturn, du
+} from "./base"
+import { pageState, updatePageInfo } from "./page"
+import { cmdHandler } from "./cmdhandler"
+import { userState } from "./user"
+import { create } from "axios"
+import router from "../router"
+
+export const navbarModule = reactive({
+
+    navbar: {},
+    searchKey: '',
+    srcShot: '',
+    isScrShot: false,
+    shareStyle: {},
+    shareText: '➹',
+    cmdInputValue: "",
+    cmdErrorText: "",
+
+
+    // 搜索
+    DoSearch() {
+        console.log('搜索:', this.searchKey);
+    },
+
+    // ------------------------------
+    // 截图（懒加载）
+    // ------------------------------
+    async createScreshot() {
+        //import html2canvas from 'html2canvas';
+        const canvas = await html2canvas(document, {
+            scale: 0.4,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+        });
+        this.srcShot = canvas.toDataURL('image/jpeg', 1);
+        this.isScrShot = true;
+    },
+
+
+    // ------------------------------
+    // 收藏功能
+    // ------------------------------
+    async initColl() {
+        if (pageState.currentUrl == '') {
+            const route = router.currentRoute.value
+            updatePageInfo(route.params.page, location.href);
+        }
+        const collCacheKey = `coll_${pageState.currentUrl}`;
+        const cached = localStorage.getItem(collCacheKey);
+        if (cached !== null) {
+            pageState.isCollected = cached === "true";
+            return
+        }
+        try {
+            const res = await axiosRequest.initColl(pageState.currentUrl)
+            if (!disposeReturn(res)) {
+                pageState.isCollected = res.is_collected ? "true" : "false";
+                localStorage.setItem(collCacheKey, res.is_collected)
+            }
+        } catch (e) {
+            showTips(e);
+        }
+    },
+
+    async toggleColl() {
+        if (!userState.isLogined || userState.userAccessToken == 'visitor') return
+        try {
+            pageState.isCollected = !pageState.isCollected;
+            userState.isChangedColl = true;
+            const res = await axiosRequest.toggleColl(pageState.currentUrl,
+                pageState.currentTitle, pageState.currentType);
+            if (!disposeReturn(res)) {
+                pageState.isCollected = res.is_collected === "true";
+                localStorage.setItem(`coll_${pageState.currentUrl}`, res.is_collected)
+            }
+        } catch (e) {
+            showTips(e)
+        }
+    },
+
+    // ------------------------------
+    // 分享功能
+    // ------------------------------
+
+    toggleShare(e) {
+
+        if (!pageState.isShareClosed && e) {
+            const btn = document.querySelector('#share-button');
+            const rect = btn.getBoundingClientRect();
+            if (e.clientX - rect.left >= rect.width / 2) {
+                copyText(pageState.currentUrl);
+            }
+            else {
+                createQRCode(pageState.currentUrl);
+
+            }
+        }
+
+        pageState.isShareClosed = !pageState.isShareClosed
+        if (!pageState.isShareClosed) {
+            this.shareText = '';
+            this.shareStyle = {
+                width: du(9),
+                paddingLeft: du(4.5),
+                paddingRight: du(4.5),
+                backgroundImage: 'url("http://localhost:5000/static/resource/images/QR.png"),url("http://localhost:5000/static/resource/images/Link.png")',
+                backgroundPosition: `${du(1)} center, right ${du(1)} center`,
+                backgroundSize: `${du(3)} ${du(3)}, ${du(3)} ${du(3)}`,
+                backgroundRepeat: 'no-repeat,no-repeat'
+            }
+            this.shareText = '';
+
+
+        } else {
+            this.shareStyle = {};
+            this.shareText = '➹';
+        }
+    },
+
+    // ------------------------------
+    // 命令面板
+    // ------------------------------
+    toggleCmdUI() {
+        pageState.isCmdClosed = !pageState.isCmdClosed;
+    },
+
+    showCmdError(error) {
+        this.cmdErrorText = error;
+    },
+
+
+    executeCmd() {
+        const cmd = this.cmdInputValue;
+        const reg = /^([a-zA-Z0-9_]+)\((.*)\)$/
+        const match = cmd.trim().match(reg)
+        if (!match) {
+            showCmdError("指令格式错误")
+        }
+        const cmdName = match[1]
+        const argsRaw = match[2]
+        const args = argsRaw.split(',').map(arg => arg.trim())
+        cmdHandler[cmdName](...args)
+    }
+
+
+});

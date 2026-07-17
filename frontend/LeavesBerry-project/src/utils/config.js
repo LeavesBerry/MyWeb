@@ -1,16 +1,11 @@
 import { ref, reactive } from "vue";
-import { pageState, navbarModule } from "./page";
+import { pageState, updatePageInfo } from "./page";
 import api from "./api";
+import { navbarModule } from "./navbar"
 import router from "../router";
-import { updatePageInfo } from "../router";
 
-const NAV_DESIGN_HEIGHT = 457
-const NAV_DESIGN_RATIO = 2.4
-const NAV_DESIGN_WIDTH = NAV_DESIGN_HEIGHT * NAV_DESIGN_RATIO
-const du = (value) => `calc(${value} * var(--design-vh, 4.57px))`
 
 export const configModule = reactive({
-    containerStyle: { transform: "" },
     hiddenContentStyle: { position: "fixed" },
     isContentExpanded: false,
     contentTitle: "",
@@ -32,7 +27,6 @@ export const configModule = reactive({
         }
         pageState.currentType = "essay"
         this.isContentExpanded = true
-        this.containerStyle.transform = `translateY(${du(-112)})`
         this.hiddenContentStyle.position = "absolute"
     },
 
@@ -40,7 +34,6 @@ export const configModule = reactive({
         const route = router.currentRoute.value
         updatePageInfo(route.params.page, location.href);
         navbarModule.initColl();
-        this.containerStyle.transform = ""
         setTimeout(() => {
             this.isContentExpanded = false;
             this.hiddenContentStyle.position = "fixed"

@@ -31,23 +31,12 @@
 		</div>
 	</div>	
 	<teleport class="fixed-page" to="#app #app">
-		<div class="sidebar">
-			<span class="dir-active-arrow" :style="arrowStyle"><<<</span>
-			<div class="type" id="all"
-			@click="switchDirContent(0, 'all')">❖所有❖</div>
-			<div class="type" id="good" 
-			@click="switchDirContent(1, 'good')">❖商品❖</div>
-			<div class="type" id="essay" 
-			@click="switchDirContent(2, 'essay')">❖文章❖</div>
-			<div class="type" id="resource" 
-			@click="switchDirContent(3, 'resourse')">❖资源❖</div>
-			<div class="type" id="other"
-			@click="switchDirContent(4, 'other')">❖其他❖</div>
-		</div>
+		<sidebar :type-list="collTypeList" @change-dir="switchDirContent"></sidebar>
 	</teleport>
 	
 </template>	
 <script setup>
+	import Sidebar from "../components/Sidebar.vue";
 	import api from "../utils/api"
 	import { userState, copyText, createQRCode, classifyGroup, 
 		switchArrow, arrowStyle, showTips, useGoPage } from "../utils/index";
@@ -58,6 +47,13 @@
 	let groupMap = new Map()
 	const { goPage, backPage, goPageByName } = useGoPage()
 
+	const collTypeList = [
+		{ index:0,typeKey:"all",label:"所有",id:"all"},
+		{ index:1,typeKey:"essay",label:"文章",id:"essay"},
+		{ index:2,typeKey:"good",label:"商品",id:"good"},
+		{ index:3,typeKey:"resourse",label:"资源",id:"resourse"},
+		{ index:4,typeKey:"other",label:"其他",id:"other"}
+	]
 	
 	async function getAllColl() {
 		if (!userState.isLogined || userState.userAccessToken == "visitor") 

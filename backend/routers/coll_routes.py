@@ -22,7 +22,7 @@ async def init_coll(
     exist = db.query(
         exists().where(Coll.user_id == user_id, Coll.url_hash == hash_url(data.url))
     ).scalar()
-    return JSONResponse({"msg": "ok", "is_collected": "true" if exist else "false"})
+    return JSONResponse({"msg": "ok", "is_collected": exist})
 
 
 @router.post("/api/toggleColl")
@@ -41,7 +41,7 @@ async def toggle_coll(
     if coll:
         db.delete(coll)
         db.commit()
-        return JSONResponse({"msg": "已取消收藏", "is_collected": "false"})
+        return JSONResponse({"msg": "已取消收藏", "is_collected": False})
 
     new_coll = Coll(
         user_id=user_id,
@@ -52,7 +52,7 @@ async def toggle_coll(
     )
     db.add(new_coll)
     db.commit()
-    return JSONResponse({"msg": "收藏成功", "is_collected": "true"})
+    return JSONResponse({"msg": "收藏成功", "is_collected": True})
 
 
 @router.post("/api/getAllColl")

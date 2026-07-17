@@ -176,9 +176,12 @@
 
       <div 
         id="command-menu" 
-        :style="{ transform: pageState.isCmdClosed ? 'translateY(-76vh)' : 'none' }">
+        v-if="!pageState.isCmdClosed">
         <p id="command-title">------------------Command Input------------------</p>
         <button id="close-command" @click="navbarModule.toggleCmdUI">×</button>
+        <input id="cmd-input" v-model="navbarModule.cmdInputValue">
+        <button id="execute-cmd-button" @click="navbarModule.executeCmd">GO</button>
+        <p id="cmd-error">{{ navbarModule.cmdErrorText }}</p>
       </div>
     </div>
 

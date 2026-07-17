@@ -1,11 +1,17 @@
 import { reactive, watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { navbarModule, menuModule, pageState } from "./page";
+import { pageState, updatePageInfo } from "./page";
+import { navbarModule } from "./navbar";
+import { menuModule } from "./menu";
 import { userModule } from "./user";
 import api from "./api";
 import QRCode from "qrcodejs2-fix"
-import { updatePageInfo } from "../router";
 import { configModule } from "./config";
+
+// ------------------------------
+// 常量
+// ------------------------------
+export const du = (value) => `calc(${value} * var(--design-vh, 4.57px))`
 
 // ------------------------------
 // 工具函数
