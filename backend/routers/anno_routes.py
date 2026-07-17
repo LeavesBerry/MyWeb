@@ -12,11 +12,14 @@ router = APIRouter()
 @router.post("/api/getAllAnnoInfo")
 async def get_all_anno_info(db: Session = Depends(get_db)):
     annos = db.query(Anno.title, Anno.type, Anno.id, Anno.anno_date).all()
+    annos = db.query(Anno.title, Anno.type, Anno.id, Anno.anno_date).all()
     return JSONResponse(
         [
             {
                 "title": item.title,
                 "type": item.type,
+                "id": item.id,
+                "anno_date": item.anno_date
                 "id": item.id,
                 "anno_date": item.anno_date
             }

@@ -9,6 +9,8 @@
 				<p class="item-title">{{ item.title }}</p>	
 				<p id="anno-date">————{{ Math.floor(item.anno_date / 10000) }}年{{ Math.floor((item.anno_date % 10000) / 100) }}月{{ (item.anno_date % 10000) % 100 }}日
 				</p>
+				<p id="anno-date">————{{ Math.floor(item.anno_date / 10000) }}年{{ Math.floor((item.anno_date % 10000) / 100) }}月{{ (item.anno_date % 10000) % 100 }}日
+				</p>
 			</div>
 			<p class="refresh-tip none-select" 
 			v-if="currentConfig.length !== 0"
