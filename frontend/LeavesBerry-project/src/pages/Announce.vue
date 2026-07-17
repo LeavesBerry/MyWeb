@@ -19,7 +19,8 @@
     </div>
 	<teleport class="fixed-page" to="#app #app">
 		<sidebar :type-list="annoTypeList" @change-dir="switchDirContent"></sidebar>
-		<div class="hidden-container" :style="configModule.hiddenContentStyle">
+		<div class="hidden-container" :style="{ position: 
+		configModule.isContentExpanded ? 'absolute' : 'fixed'}">
 			<div class="content-container" 
 			:style="{ transform: configModule.isContentExpanded ? 
 				`translateY(${du(-112)})` : 'none' }">

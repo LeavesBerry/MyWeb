@@ -6,7 +6,6 @@ import router from "../router";
 
 
 export const configModule = reactive({
-    hiddenContentStyle: { position: "fixed" },
     isContentExpanded: false,
     contentTitle: "",
     contentText: "",
@@ -27,7 +26,6 @@ export const configModule = reactive({
         }
         pageState.currentType = "essay"
         this.isContentExpanded = true
-        this.hiddenContentStyle.position = "absolute"
     },
 
     hideContent() {
@@ -36,7 +34,6 @@ export const configModule = reactive({
         navbarModule.initColl();
         setTimeout(() => {
             this.isContentExpanded = false;
-            this.hiddenContentStyle.position = "fixed"
         }, 500)
     }
 })
