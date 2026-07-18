@@ -9,7 +9,7 @@
 
 </template>
 <script setup>
-    import { arrowStyle, switchArrow } from '../utils/index';
+    import { arrowStyle, switchArrow, configModule } from '../utils/index';
     const proops = defineProps({
         typeList: {
             typr: Array,
@@ -19,8 +19,11 @@
     })
     const emit = defineEmits(["changeDir"])
     function handleItemClick(sn, type) {
-        switchArrow(sn)
-        emit("changeDir", sn, type)
+        if (!configModule.isContentExpanded) {
+            switchArrow(sn)
+            emit("changeDir", sn, type)
+        }
+        
     }
 </script>
 

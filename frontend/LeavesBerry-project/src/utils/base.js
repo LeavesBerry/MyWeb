@@ -7,6 +7,7 @@ import { userModule } from "./user";
 import api from "./api";
 import QRCode from "qrcodejs2-fix"
 import { configModule } from "./config";
+import router from "../router";
 
 // ------------------------------
 // 常量
@@ -38,20 +39,26 @@ export function routeListener() {
 }
 
 export function useGoPage() {
-    const router = useRouter()
 
     function goPage(url) {
         const reg = /^(.*)\/([^\/]+)\/config_index:(\d+)$/;
         const matchResult = url.match(reg)
         if (!matchResult) {
             router.push(url)
+            return true
         }
         else {
             isRouteWithConfig = true
             const folderName = matchResult[2];
             const baseUrl = matchResult[1] + "/" + folderName;
             const configNum = Number(matchResult[3]);
-            configModule.expandContent(configNum, folderName, `${location.origin}${baseUrl}`)
+            try {
+                configModule.expandContent(id = configNum, type = folderName,
+                    url = `${location.origin}${baseUrl}`)
+                return true
+            } catch {
+                return false
+            }
             router.push(baseUrl)
         }
 
@@ -62,7 +69,7 @@ export function useGoPage() {
     }
 
     function goPageByName(routeName, parmes) {
-        router.push({ name: routeName, params })
+        router.push({ name: routeName, parmes })
     }
 
     return { goPage, backPage, goPageByName }

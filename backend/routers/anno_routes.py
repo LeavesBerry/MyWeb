@@ -19,9 +19,8 @@ async def get_all_anno_info(db: Session = Depends(get_db)):
                 "title": item.title,
                 "type": item.type,
                 "id": item.id,
-                "anno_date": item.anno_date
+                "anno_date": item.anno_date,
                 "id": item.id,
-                "anno_date": item.anno_date
             }
             for item in annos
         ]

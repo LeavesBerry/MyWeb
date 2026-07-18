@@ -114,7 +114,8 @@
           <span>测试</span>
         </button>
 
-        <button class="menu-function-button">
+        <button class="menu-function-button"
+        @click="goPage('/CmdColumn')">
           <span class="menu-function-symbol menu-function-symbol--code" aria-hidden="true">&lt;/&gt;</span>
           <span>指令表</span>
         </button>
@@ -179,9 +180,13 @@
         v-if="!pageState.isCmdClosed">
         <p id="command-title">------------------Command Input------------------</p>
         <button id="close-command" @click="navbarModule.toggleCmdUI">×</button>
-        <input id="cmd-input" v-model="navbarModule.cmdInputValue">
-        <button id="execute-cmd-button" @click="navbarModule.executeCmd">GO</button>
-        <p id="cmd-error">{{ navbarModule.cmdErrorText }}</p>
+        <input id="cmd-input" v-model="navbarModule.cmdInputValue"
+        placeholder="请输入指令">
+        <button id="execute-cmd-button" 
+        @click="navbarModule.executeCmd(cmdOutputBox)">RUN</button>
+        <div id="cmd-output-box" ref="cmdOutputBox">
+          <p id="cmd-output">{{ navbarModule.cmdOutputText }}</p>
+        </div>
       </div>
     </div>
 
@@ -265,8 +270,9 @@ navbarModule, menuModule, pageState, routeListener,
 userState, userModule, loginModule, qrBox } from './utils/index';
 import { useHead } from "@vueuse/head"
 
-
 const { goPage, backPage, goPageByName } = useGoPage()
+
+const cmdOutputBox = ref(null)
 
 useHead({
   title: () => pageState.currentTitle,

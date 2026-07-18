@@ -1,5 +1,6 @@
 import { pageState } from "./page"
 import { reactive } from "vue"
+import { du } from "./base"
 
 export const menuModule = reactive({
 

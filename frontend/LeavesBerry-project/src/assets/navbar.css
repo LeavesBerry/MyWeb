@@ -120,3 +120,61 @@
     background-color: rgba(255, 255, 255, 0);
     color: #FFF3D0;
 }
+
+#cmd-input {
+    position: absolute;
+    top: calc(8 * var(--design-vh, 4.57px));
+    left: 5%;
+    width: 80%;
+    height: calc(5 * var(--design-vh, 4.57px));
+    padding-left: 1%;
+    color: #FFF3D0;
+    background-color: rgba(0, 0, 0, 0);
+    border: 2px solid #FFF3D0;
+    outline: none;
+}
+
+#cmd-input::placeholder {
+    color: rgba(255, 243, 208, 0.5);
+}
+
+#execute-cmd-button {
+    position: absolute;
+    top: calc(8 * var(--design-vh, 4.57px));
+    left: calc(86% + 4px);
+    width: 10%;
+    height: calc(5 * var(--design-vh, 4.57px) + 6px);
+    outline: none;
+    border: 2px solid #FFF3D0;
+    background-color: rgba(0, 0, 0, 0);
+    color: #FFF3D0;
+    font-weight: 600;
+}
+
+#cmd-output-box {
+    position: absolute;
+    top: calc(15 * var(--design-vh, 4.57px));
+    left: 5%;
+    width: 90%;
+    height: calc(42 * var(--design-vh, 4.57px));
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+}
+
+#cmd-output {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    font-size: calc(3 * var(--design-vh, 4.57px));
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: pre-line;
+    text-align: left;
+    -webkit-user-select: text;
+    user-select: text;
+    color: #c0ae93;
+}

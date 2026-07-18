@@ -1,4 +1,4 @@
-import { reactive, ref } from "vue"
+import { nextTick, reactive, ref } from "vue"
 import {
     axiosRequest, showTips, copyText,
     createQRCode, disposeReturn, du
@@ -18,7 +18,7 @@ export const navbarModule = reactive({
     shareStyle: {},
     shareText: '➹',
     cmdInputValue: "",
-    cmdErrorText: "",
+    cmdOutputText: "",
 
 
     // 搜索
@@ -130,22 +130,34 @@ export const navbarModule = reactive({
         pageState.isCmdClosed = !pageState.isCmdClosed;
     },
 
-    showCmdError(error) {
-        this.cmdErrorText = error;
+    showOutput(text, cmdOutputBox) {
+        this.cmdOutputText += `${text}\n`;
+        nextTick(() => {
+            if (cmdOutputBox) {
+                cmdOutputBox.scrollTop = cmdOutputBox.scrollHeight;
+            }
+        })
     },
 
-
-    executeCmd() {
+    executeCmd(cmdOutputBox) {
         const cmd = this.cmdInputValue;
         const reg = /^([a-zA-Z0-9_]+)\((.*)\)$/
         const match = cmd.trim().match(reg)
         if (!match) {
-            showCmdError("指令格式错误")
+            this.showOutput("指令格式错误", cmdOutputBox)
+            return
         }
         const cmdName = match[1]
         const argsRaw = match[2]
         const args = argsRaw.split(',').map(arg => arg.trim())
-        cmdHandler[cmdName](...args)
+        const handler = cmdHandler[cmdName]
+        if (typeof handler !== 'function') {
+            this.showOutput(`未知指令：${cmdName}`, cmdOutputBox);
+            return
+        }
+        const output = handler(...args)
+        this.cmdInputValue = ""
+        this.showOutput(`运行${cmdName}成功,输出: ${output}`, cmdOutputBox)
     }
 
 
