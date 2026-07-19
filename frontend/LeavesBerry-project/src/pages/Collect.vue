@@ -31,7 +31,7 @@
 		</div>
 	</div>	
 	<teleport class="fixed-page" to="#app #app">
-		<sidebar :type-list="collTypeList" @change-dir="switchDirContent"></sidebar>
+		<sidebar :type-list="collTypeList" @change-dir="switchDirConfig"></sidebar>
 	</teleport>
 	
 </template>	
@@ -44,7 +44,7 @@
 
 	let navList = ref([]);
 	let currentConfig = ref([])
-	let groupMap = new Map()
+	let groupMap = null
 	const { goPage, backPage, goPageByName } = useGoPage()
 
 	const collTypeList = [
@@ -85,7 +85,7 @@
         }
 	}
 
-	function switchDirContent(sn, type) {
+	function switchDirConfig(sn, type) {
 		switchArrow(sn);
 		if (type === "all") {
 			currentConfig.value = navList.value
@@ -99,8 +99,8 @@
 		}
 	}
 
-	arrowStyle.transform = "";
 	onMounted(() => {
+		arrowStyle.transform = "";
 		getAllColl();
 	})
 	

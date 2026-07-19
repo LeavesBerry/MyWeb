@@ -10,9 +10,9 @@
 </template>
 <script setup>
     import { arrowStyle, switchArrow, configModule } from '../utils/index';
-    const proops = defineProps({
+    const props = defineProps({
         typeList: {
-            typr: Array,
+            type: Array,
             required: true,
             default: () => []
         }

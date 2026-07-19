@@ -4,7 +4,7 @@ import {
     createQRCode, disposeReturn, du
 } from "./base"
 import { pageState, updatePageInfo } from "./page"
-import { cmdHandler } from "./cmdhandler"
+import { cmdHandler } from "./cmd"
 import { userState } from "./user"
 import { create } from "axios"
 import router from "../router"

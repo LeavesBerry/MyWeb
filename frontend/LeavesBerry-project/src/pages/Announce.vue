@@ -1,7 +1,7 @@
 <template>
     <div class="slide-page">
         <div class="item-box none-select" v-show="!configModule.isContentExpanded">
-			<p class="no-item-tip" v-if="currentConfig.length == 0"
+			<p class="no-item-tip none-select" v-if="currentConfig.length == 0"
 			@click="getAllAnnoInfo">暂无公告( •̀ ω •́ )✧<br>点击此处刷新</p>
 			<div class="items" 
 			v-for="item in currentConfig" :key="item.title"
@@ -18,7 +18,7 @@
 		</div>
     </div>
 	<teleport class="fixed-page" to="#app #app">
-		<sidebar :type-list="annoTypeList" @change-dir="switchDirContent"></sidebar>
+		<sidebar :type-list="annoTypeList" @change-dir="switchDirConfig"></sidebar>
 		<div class="hidden-container" :style="{ position: 
 		configModule.isContentExpanded ? 'absolute' : 'fixed'}">
 			<div class="content-container" 
@@ -39,13 +39,13 @@
 	import { userState, navbarModule, 
 		copyText, createQRCode, classifyGroup, 
 		switchArrow, arrowStyle, axiosRequest, configModule, du } from "../utils/index";
-	import { reactive, ref } from "vue"
+	import { reactive, ref, onMounted } from "vue"
 	import Sidebar from "../components/Sidebar.vue";
 
 
 	let navList = ref([]);
 	let currentConfig = ref([])
-	let groupMap = new Map()
+	let groupMap = null
 
 	const annoTypeList = [
 		{ index:0,typeKey:"all",label:"所有",id:"all"},
@@ -64,7 +64,7 @@
 	}
 
 
-    function switchDirContent(sn, type) {
+    function switchDirConfig(sn, type) {
 		if (type === "all") {
 			currentConfig.value = navList.value
 			return
@@ -77,8 +77,10 @@
 		}
 	}
 
-	arrowStyle.transform = {};
-	getAllAnnoInfo()
+	onMounted(() => {
+		arrowStyle.transform = "";
+		getAllAnnoInfo()
+	})
 </script>
 
 <style>
