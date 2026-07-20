@@ -76,7 +76,7 @@ export const navbarModule = reactive({
             const res = await axiosRequest.toggleColl(pageState.currentUrl,
                 pageState.currentTitle, pageState.currentType);
             if (!disposeReturn(res)) {
-                pageState.isCollected = res.is_collected === "true";
+                pageState.isCollected = res.is_collected;
                 localStorage.setItem(`coll_${pageState.currentUrl}`, res.is_collected)
             }
         } catch (e) {

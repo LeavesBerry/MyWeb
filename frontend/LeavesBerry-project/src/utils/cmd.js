@@ -64,7 +64,7 @@ export const cmdHandler = {
             return `不存在名为${item}的可打印字段`
         }
         if (field) {
-            return `${item}.${field}的值如下:${targetState[field]}`
+            return `${item}.${field}的值如下:${JSON.stringify(targetState[field])}`
         }
         else {
             return `${item}的值如下:${JSON.stringify(targetState)}`
@@ -126,7 +126,7 @@ export const cmdHandler = {
         }
     },
     cache: function (item) {
-        return `查找的缓存如下${JSON.stringify(localStorage.getItem(item))}`
+        return `查找的缓存:${JSON.stringify(localStorage.getItem(item))}`
     },
 }
 

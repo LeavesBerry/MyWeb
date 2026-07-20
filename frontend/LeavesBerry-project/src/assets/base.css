@@ -98,7 +98,7 @@ a {
 
 .tip {
 	margin-top: calc(2 * var(--design-vh, 4.57px));
-	height: calc(6 * var(--design-vh, 4.57px));
+	height: calc(6 * var(--design-vh, 4.57px) - 2px);
 	text-align: center;
 	color: #3A251A;
 	display: inline-block;

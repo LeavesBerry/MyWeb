@@ -53,13 +53,14 @@ export function useGoPage() {
             const baseUrl = matchResult[1] + "/" + folderName;
             const configNum = Number(matchResult[3]);
             try {
-                configModule.expandContent(id = configNum, type = folderName,
-                    url = `${location.origin}${baseUrl}`)
+                configModule.expandContent(configNum, folderName,
+                    `${location.origin}${baseUrl}`)
+                router.push(baseUrl)
                 return true
             } catch {
                 return false
             }
-            router.push(baseUrl)
+
         }
 
     }
@@ -100,7 +101,7 @@ function processTipQueue() {
     tip.tipText = currentText
     tip.tipStyle = {
         visibility: 'visible',
-        transform: 'translateY(6vh)'
+        transform: `translateY(${du(6)})`
     }
 
     setTimeout(() => {
@@ -116,9 +117,17 @@ function processTipQueue() {
 
 export function disposeReturn(data) {
 
-    if (data.error) { showTips(data.error);; return true }
-    if (data.xpChange) { userModule.changeXp(data.xpChange) }
-    if (data.msg) { showTips(data.msg); return false; }
+    if (data.error) {
+        showTips(data.error);
+        return true;
+    }
+    if (data.xpChange) {
+        userModule.changeXp(data.xpChange)
+    }
+    if (data.msg) {
+        showTips(data.msg);
+        return false;
+    }
     return false;
 }
 
