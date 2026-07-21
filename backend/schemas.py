@@ -43,3 +43,7 @@ class CollRequest(BaseModel):
     
 class AnnoRequest(BaseModel):
     id: int
+
+class FeedBackRequest(BaseModel):
+    user_email: EmailStr
+    feedback: str

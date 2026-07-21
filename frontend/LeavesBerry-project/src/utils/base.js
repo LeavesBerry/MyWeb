@@ -199,7 +199,7 @@ export function classifyGroup(data, keyField) {
 // ------------------------------
 // 后端请求
 // ------------------------------
-export const axiosRequest = {
+export const apiRequest = {
     async sendCode(email) {
         const res = await api.post('/api/sendCode', { user_email: email });
         return res.data;
@@ -237,6 +237,14 @@ export const axiosRequest = {
             type: currentType
         });
         return res.data;
+    },
+
+    async submitFeedback(userEmail, feedback) {
+        const res = await api.post('/api/submitFeedBack', {
+            user_email = userEmail,
+            feedback = feedback
+        });
+        return res.data
     }
 }
 

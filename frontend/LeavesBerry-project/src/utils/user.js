@@ -1,5 +1,5 @@
 import { reactive } from "vue"
-import { showTips, disposeReturn, axiosRequest } from "./base"
+import { showTips, disposeReturn, apiRequest } from "./base"
 import { pageState } from "./page"
 import { navbarModule } from "./navbar"
 import {
@@ -86,7 +86,7 @@ export const userModule = reactive({
             return
         }
         try {
-            const res = await axiosRequest.getUserInfo()
+            const res = await apiRequest.getUserInfo()
             if (disposeReturn(res)) {
                 this.clear()
                 loginModule.openLoginWindow()
@@ -161,7 +161,7 @@ export const loginModule = reactive({
     async sendCode() {
         const email = this.inputEmail
         if (!email) return
-        disposeReturn(await axiosRequest.sendCode(email))
+        disposeReturn(await apiRequest.sendCode(email))
     },
     async register() {
         if (!this.inputCode) {
@@ -174,7 +174,7 @@ export const loginModule = reactive({
             code: this.inputCode,
             password: this.inputPw
         }
-        const res = await axiosRequest.register(data)
+        const res = await apiRequest.register(data)
         disposeReturn(res)
     },
     async login() {
@@ -182,7 +182,7 @@ export const loginModule = reactive({
             user_email: this.inputEmail,
             password: this.inputPw
         }
-        const res = await axiosRequest.login(data)
+        const res = await apiRequest.login(data)
         if (disposeReturn(res)) return
         userModule.setToken(res.access_token)
         await userModule.initUser({ forceRefresh: true })
@@ -191,7 +191,7 @@ export const loginModule = reactive({
     },
     async logout() {
         try {
-            await axiosRequest.logout()
+            await apiRequest.logout()
         } finally {
             userModule.clear()
             showTips("您已登出")

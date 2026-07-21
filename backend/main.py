@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from config import PUBLIC_DIR
 from database import Base, engine
 from exceptions import register_exception_handlers
-from routers import anno_routes, auth_routes, coll_routes, system, user_routes
+from routers import anno_routes, auth_routes, coll_routes, feedback_routes, system, user_routes
 
 app = FastAPI()
 
@@ -30,6 +30,7 @@ app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
 app.include_router(coll_routes.router)
 app.include_router(anno_routes.router)
+app.include_router(feedback_routes.router)
 
 Base.metadata.create_all(bind=engine)
 

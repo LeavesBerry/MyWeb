@@ -35,7 +35,7 @@ import Sidebar from "../components/Sidebar.vue";
 import api from "../utils/api"
 import {
 	userState, copyText, createQRCode, classifyGroup,
-	switchArrow, arrowStyle, showTips, useGoPage, axiosRequest,
+	switchArrow, arrowStyle, showTips, useGoPage, apiRequest,
 	disposeReturn
 } from "../utils/index";
 import { ROOTPATH } from "../router/index.js";
@@ -82,7 +82,7 @@ async function cancelColl(url) {
 		localStorage.setItem('all_colls', JSON.stringify(navList.value))
 		groupMap = classifyGroup(navList.value, 'type')
 		url = `${ROOTPATH}${url}`
-		const res = await axiosRequest.toggleColl(url);
+		const res = await apiRequest.toggleColl(url);
 		if (!disposeReturn(res)) {
 			localStorage.setItem(`coll_${url}`, res.is_collected)
 		}

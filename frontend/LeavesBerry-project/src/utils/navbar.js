@@ -1,6 +1,6 @@
 import { nextTick, reactive, ref } from "vue"
 import {
-    axiosRequest, showTips, copyText,
+    apiRequest, showTips, copyText,
     createQRCode, disposeReturn, du
 } from "./base"
 import { pageState, updatePageInfo } from "./page"
@@ -58,7 +58,7 @@ export const navbarModule = reactive({
             return
         }
         try {
-            const res = await axiosRequest.initColl(pageState.currentUrl)
+            const res = await apiRequest.initColl(pageState.currentUrl)
             if (!disposeReturn(res)) {
                 pageState.isCollected = res.is_collected ? "true" : "false";
                 localStorage.setItem(collCacheKey, res.is_collected)
@@ -73,7 +73,7 @@ export const navbarModule = reactive({
         try {
             pageState.isCollected = !pageState.isCollected;
             userState.isChangedColl = true;
-            const res = await axiosRequest.toggleColl(pageState.currentUrl,
+            const res = await apiRequest.toggleColl(pageState.currentUrl,
                 pageState.currentTitle, pageState.currentType);
             if (!disposeReturn(res)) {
                 pageState.isCollected = res.is_collected;

@@ -65,7 +65,7 @@ class Coll(Base):
 class Anno(Base):
     __tablename__ = "anno"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     title = Column(String(255), default="公告", nullable=False)
     type = Column(String(10), default="other", nullable=False)
     main_text = Column(Text(), nullable=False)
@@ -73,7 +73,15 @@ class Anno(Base):
 
 
 class Pages(Base):
-    __tablename__ = "pages"
-
-    url = Column(String(100), primary_key=True, unique=True, nullable=False)
+    __tablename__ = "pages"\
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    url = Column(String(100), unique=True, nullable=False)
     title = Column(String(255), default="未知界面", nullable=False)
+
+class FeedBack(Base):
+    __tablename__ = "feedback"
+
+    user_email = Column(String(100), ForeignKey("user_base.user_email"),
+                        primary_key=True, nullable=False, index=True)
+    last_submit_time = Column(Integer, default=0, nullable=False)
