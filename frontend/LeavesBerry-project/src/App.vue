@@ -150,7 +150,7 @@
           <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
             <path d="M7 17l6 6L25 9"></path>
           </svg>
-          <span>测试</span>
+          <span>支持</span>
         </button>
 
         <button class="menu-function-button" @click="goPage('/CmdColumn')">

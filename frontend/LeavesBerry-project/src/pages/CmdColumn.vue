@@ -78,7 +78,7 @@ async function getCmdInfoList() {
 	}
 
 	try {
-		const res = await fetch('/text/cmdColumn.json')
+		const res = await fetch('/text/cmd_column.json')
 		const data = await res.json()
 		applyCmdList(data)		
 	} catch {

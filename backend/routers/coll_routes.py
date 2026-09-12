@@ -356,7 +356,7 @@ async def coll_sse(
         },
     )
 
-@router.get("/api/getAllColl")
+@router.post("/api/getAllColl")
 @limiter.limit("10/1minute")
 async def get_all_coll(request: Request, 
     user_id: int = Depends(get_current_user("user_id")),
