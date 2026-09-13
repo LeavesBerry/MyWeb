@@ -146,7 +146,7 @@
           <span>协议</span>
         </button>
 
-        <button class="menu-function-button" style="border-radius:0 0 0 3vh">
+        <button class="menu-function-button" style="border-radius:0 0 0 3vh" @click="goPage('/Sponsor')">
           <svg class="menu-function-icon" viewBox="0 0 32 32" aria-hidden="true">
             <path d="M7 17l6 6L25 9"></path>
           </svg>

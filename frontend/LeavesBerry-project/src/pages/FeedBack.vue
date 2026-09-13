@@ -1,14 +1,16 @@
 <template>
     <div class="page" id="feedback-page">
         <div class="slide-page">
-            <div id="title-input-devider"></div>
-            <textarea id="feedback-input" wrap="soft" :placeholder="placeholder" v-model="feedback"
-                :disabled="!couldSubmit">
-            </textarea>
-            <button id="submit-button" @click="couldSubmit ? submitFeedback() : refreshSubmitCondition()">
-                {{ couldSubmit ? "提交反馈" : "刷新冷却" }}</button>
-            <div id="tip-box">
-                <p v-for="(item, index) in tipList" :key="`${index}-${item}`">•{{ item }}</p>
+            <div class="content-container">
+                <div id="title-input-devider"></div>
+                <textarea id="feedback-input" wrap="soft" :placeholder="placeholder" v-model="feedback"
+                    :disabled="!couldSubmit">
+                </textarea>
+                <button id="submit-button" @click="couldSubmit ? submitFeedback() : refreshSubmitCondition()">
+                    {{ couldSubmit ? "提交反馈" : "刷新冷却" }}</button>
+                <div id="tip-box">
+                    <p v-for="(item, index) in tipList" :key="`${index}-${item}`">•{{ item }}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -102,12 +104,11 @@ onUnmounted(() => {
 
 <style scoped>
 #feedback-input {
-    position: relative;
     margin-top: 20px;
-    width: 90.5vw;
+    width: 90vw;
     height: fit-content;
     padding: 20px 5px;
-    border: 3px solid #4a4030;
+    border: 3px solid var(--secondary-color);
     border-bottom: none;
     border-radius: calc(6 * var(--design-vh, 4.57px)) calc(6 * var(--design-vh, 4.57px)) 0 0;
     field-sizing: content;
@@ -127,17 +128,17 @@ onUnmounted(() => {
 }
 
 #feedback-input::placeholder {
-    color: #4a4030;
+    color: var(--secondary-color);
 }
 
 #submit-button {
-    position: relative;
+
     margin-top: -1px;
     padding: 0, 5px;
-    width: 90.5vw;
+    width: 90vw;
     height: calc(8 * var(--design-vh, 4.57px));
     background-color: rgba(0, 0, 0, 0);
-    border: 3px solid #4a4030;
+    border: 3px solid var(--secondary-color);
     border-radius: 0 0 calc(6 * var(--design-vh, 4.57px)) calc(6 * var(--design-vh, 4.57px));
     font-size: 20px;
     font-weight: 600;
@@ -146,7 +147,7 @@ onUnmounted(() => {
 }
 
 #tip-box {
-    position: absolute;
+    padding-bottom: 20px;
     left: 5vw;
     width: 90vw;
     margin-top: calc(2 * var(--design-vh, 4.57px));
@@ -154,7 +155,7 @@ onUnmounted(() => {
 }
 
 #tip-box p {
-    color: #4a4030;
+    color: var(--secondary-color);
     font-size: 15px;
     font-weight: 500;
 }

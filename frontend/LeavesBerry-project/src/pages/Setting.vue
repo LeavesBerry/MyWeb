@@ -349,7 +349,7 @@ const bioModule = {
                 break;
         }
 
-        const cache = localStorage.getItem(`${type}_cache_${selectedJsonIndex}`)
+        const cache = sessionStorage.getItem(`${type}_cache_${selectedJsonIndex}`)
         let bioList = []
         if (cache) {
             bioList = JSON.parse(cache)
@@ -357,7 +357,7 @@ const bioModule = {
         else {
             const bios = await fetch(`/text/${type}/${type}_${selectedJsonIndex}.json`)
             bioList = await bios.json()
-            localStorage.setItem(`${type}_cache_${selectedJsonIndex}`, JSON.stringify(bioList))
+            sessionStorage.setItem(`${type}_cache_${selectedJsonIndex}`, JSON.stringify(bioList))
         }
         const index = Number(Math.floor(Math.random() * bioList.length))
         bioInputValue.value = bioList[index]

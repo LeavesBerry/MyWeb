@@ -67,7 +67,7 @@ function applyCmdList(data) {
 async function getCmdInfoList() {
 	const cmdInfoCache = sessionStorage.getItem("cmd_info_cache")
 
-	if (cmdInfoCache) {
+	if (cmdInfoCache && cmdInfoCache.length !== 0) {
 		try {
 			applyCmdList(JSON.parse(cmdInfoCache))
 			return
@@ -81,13 +81,14 @@ async function getCmdInfoList() {
 		const res = await fetch('/text/cmd_column.json')
 		const data = await res.json()
 		applyCmdList(data)		
+		sessionStorage.setItem("cmd_info_cache", JSON.stringify(data))
 	} catch {
 		const res = await apiRequest.getTextResourse("cmdInfoList")
 		if (isUnmounted) return
 
 		if (!disposeReturn(res)) {
 			applyCmdList(res)
-			sessionStorage.setItem("cmd_info_cache", JSON.stringify(navList.value))
+			sessionStorage.setItem("cmd_info_cache", JSON.stringify(res))
 		}
 	}
 

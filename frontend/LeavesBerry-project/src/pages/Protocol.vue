@@ -1,17 +1,19 @@
 <template>
     <div class="page" id="proto-page">
         <div class="slide-page">
-            <div id="sum-box">
-                <p id="proto-title">下面长达1mol的协议的概述,阅完此不视为你已阅读下方协议</p>
-                <div id="proto-text-box">
-                    <p class="proto-text" v-for="(item, index) in protoSumList" :key="`${index}-${item}`">•{{ item }}
-                    </p>
+            <div class="content-container">
+                <div id="sum-box">
+                    <p id="proto-title">下面长达1mol的协议的概述,阅完此不视为你已阅读下方协议</p>
+                    <div id="proto-text-box">
+                        <p class="proto-text" v-for="(item, index) in protoSumList" :key="`${index}-${item}`">•{{ item }}
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <div id="detail-box">
-                <p id="proto-title">有1mol字的协议正文</p>
-                <div id="proto-text-box">
-                    <p class="proto-text" id="detail-text">{{ protoDetail }}</p>
+                <div id="detail-box">
+                    <p id="proto-title">有1mol字的协议正文</p>
+                    <div id="proto-text-box">
+                        <p class="proto-text" id="detail-text">{{ protoDetail }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -89,7 +91,7 @@ onUnmounted(() => {
 
 #proto-text-box {
     margin-top: calc(4 * var(--design-vh, 4.57px));
-    width: 100vw;
+    width: 90vw;
     height: fit-content;
     padding: 20px 0;
     border-top: 1px solid var(--secondary-color);
@@ -97,7 +99,6 @@ onUnmounted(() => {
 }
 
 .proto-text {
-    position: relative;
     left: 10vw;
     width: 80vw;
     height: fit-content;
