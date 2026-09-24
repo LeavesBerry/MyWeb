@@ -42,6 +42,30 @@ html {
 	background-color: var(--primary-color);
 }
 
+@font-face {
+	font-family: "Harmony";
+	src: url("/font/HarmonyOS_Sans_SC_Black.woff2") format("woff2");
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Harmony";
+	src: url("/font/HarmonyOS_Sans_SC.woff2") format("woff2");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Harmony";
+	src: url("/font/HarmonyOS_Sans_SC_Bold.woff2") format("woff2");
+	font-weight: 800;
+	font-style: normal;
+	font-display: swap;
+}
+
 body {
 	overflow-x: hidden;
 	background-color: var(--primary-color);

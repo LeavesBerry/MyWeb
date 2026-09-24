@@ -14,7 +14,7 @@
 						100) }}月{{ (item.anno_date % 10000) % 100 }}日
 					</p>
 					<p class="item-desc" id="anno-desc">
-                        |{{ item.desc.length > 0 ? item.desc : '未在本站详细注册的界面' }}</p>
+                        | {{ item.desc.length > 0 ? item.desc : '未在本站详细注册的界面' }}</p>
 				</div>
 				<p class="refresh-tip none-select" v-if="currentConfig.length !== 0" @click="getAllAnnoInfo">
 					若缺少公告<br>可尝试点击此处刷新界面( •̀ ω •́ )</p>

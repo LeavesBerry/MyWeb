@@ -13,7 +13,8 @@
     top: calc(38 * var(--design-vh));
     font-size: 20px;
     color: var(--secondary-color);
-    font-weight: 300;
+    font-family: 'Harmony';
+    font-weight: 400;
     justify-content: center;
     align-items: center;
 }
@@ -44,6 +45,7 @@
     font-size: calc(6 * var(--design-vh));
     color: var(--secondary-color);
     font-weight: 800;
+    font-family: 'Harmony';
     position: relative;
     top: 15%;
     left: 7%;
@@ -55,6 +57,7 @@
     font-size: calc(4 * var(--design-vh));
     color: var(--secondary-color);
     font-weight: 400;
+    font-family: 'Harmony';
     position: absolute;
     top: 55%;
     left: 7%;
@@ -64,7 +67,8 @@
     display: flex;
     font-size: 20px;
     color: var(--secondary-color);
-    font-weight: 300;
+    font-weight: 400;
+    font-family: 'Harmony';
     justify-content: center;
     align-items: center;
     padding-top: calc(6 * var(--design-vh));

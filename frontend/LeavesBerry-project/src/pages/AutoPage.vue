@@ -28,7 +28,8 @@ export default {
 #no-page-tip {
     margin-top: calc(50vh - 52px);
     font-size: 20px;
-    font-weight: 300;
+    font-weight: 400;
+    font-family: 'Harmony';
     color: var(--secondary-color);
 }
 </style>

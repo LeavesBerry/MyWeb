@@ -72,13 +72,7 @@ const router = createRouter({
     routes
 });
 
-/**
- * 无论导航来自：
- * - goPage()
- * - 浏览器前进 / 后退
- * - 地址栏直接访问
- * 都先把 /:page 对应的真实页面组件加载完成，再确认路由切换。
- */
+
 router.beforeEach(async (to, from, next) => {
     try {
         if (to.name === 'AutoPage') {

@@ -99,6 +99,7 @@ onMounted(() => {
     font-size: calc(4 * var(--design-vh));
     color: var(--secondary-color);
     font-weight: 400;
+    font-family: 'Harmony';
     position: absolute;
     top: 55%;
     left: 7%;
@@ -138,6 +139,7 @@ onMounted(() => {
     font-size: calc(4 * var(--design-vh));
     color: var(--secondary-color);
     font-weight: 400;
+    font-family: 'Harmony';
     position: relative;
     top: 0;
     left: 7%;
@@ -152,7 +154,8 @@ onMounted(() => {
     background: none;
     border: none;
     font-size: calc(10 * var(--design-vh));
-    font-weight: 500;
+    font-weight: 600;
+    font-family: 'Harmony';
     color: var(--secondary-color);
 }
 

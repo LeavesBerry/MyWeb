@@ -49,7 +49,7 @@
 						</button>
 					</div>
 					<p class="item-desc" id="coll-desc">
-                        |{{ item.desc ? item.desc : '未在本站详细注册的界面' }}</p>
+                        | {{ item.desc ? item.desc : '未在本站详细注册的界面' }}</p>
 				</div>
 				<p class="refresh-tip none-select" v-if="currentConfig.length !== 0" @click="getAllColl">
 					若缺少收藏<br>可尝试点击此处刷新界面( •̀ ω •́ )</p>
@@ -117,7 +117,7 @@ async function getAllColl() {
 
 	if (isUnmounted) return
 
-	const res = api.get('/api/getAllColl')
+	const res = await api.get('/api/getAllColl')
 
 	applyCollList(res.data)
 }

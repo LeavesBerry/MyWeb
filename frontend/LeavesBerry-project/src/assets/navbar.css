@@ -5,7 +5,7 @@
     top: 0;
     left: 0;
     z-index: 12;
-    background: #2e1d12;
+    background: #3b1f09;
     transform-origin: left top;
     box-shadow: 0 0 25px rgba(74, 64, 48, 1);
 }
@@ -190,7 +190,8 @@
     height: calc(6 * var(--design-vh, 4.57px));
     margin-top: 5px;
     font-size: calc(4 * var(--design-vh, 4.57px));
-    font-weight: 200;
+    font-weight: 400;
+    font-family: 'Harmony';
     text-align: center;
     color: var(--primary-color);
 }
@@ -237,6 +238,7 @@
     background-color: rgba(0, 0, 0, 0);
     color: var(--secondary-color);
     font-weight: 600;
+    font-family: 'Harmony';
 }
 
 #cmd-output-box {

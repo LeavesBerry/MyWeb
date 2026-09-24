@@ -51,6 +51,7 @@ import { configModule, du } from '../utils';
     font-size: calc(8 * var(--design-vh));
     color: var(--secondary-color);
     font-weight: 800;
+    font-family: 'Harmony';
     padding-top: calc(6 * var(--design-vh));
     padding-bottom: calc(6 * var(--design-vh));
 }
@@ -59,7 +60,8 @@ import { configModule, du } from '../utils';
     width: 83vw;
     height: fit-content;
     color: var(--secondary-color);
-    font-weight: 300;
+    font-weight: 400;
+    font-family: 'Harmony';
     padding-top: calc(6 * var(--design-vh));
     word-break: break-all;
     word-wrap: break-word;

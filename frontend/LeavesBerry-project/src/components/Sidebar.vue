@@ -62,7 +62,8 @@ function handleItemClick(sn, type) {
 .sidebar-config-text {
     color: var(--secondary-color);
     font-size: calc(3.5 * var(--design-vh, 4.57px));
-    font-weight: 500;
+    font-weight: 600;
+    font-family: 'Harmony';
     letter-spacing: 10px;
     transition: color 0.3s ease;
 }

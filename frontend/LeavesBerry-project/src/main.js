@@ -5,7 +5,7 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import { api, refreshApi } from './utils/api.js'
-import { userState, updatePersistFields, persistConfig } from './utils/index.js'
+import { userState, updatePersistFields, persistConfig, loginModule } from './utils/index.js'
 
 import './assets/base.css'
 import './assets/navbar.css'
@@ -94,6 +94,8 @@ api.interceptors.response.use(
 
             return api(originalRequest);
         } catch (refreshError) {
+            loginModule.openLoginWindow();
+
             updatePersistFields(
                 userState,
                 {

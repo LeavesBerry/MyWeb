@@ -127,6 +127,7 @@
     color: var(--secondary-color);
     font-size: 5vh;
     font-weight: 800;
+    font-family: 'Harmony';
     text-align: center;
 }
 
@@ -143,6 +144,7 @@
 #enter-tip p {
     font-size: 5vh;
     font-weight: 800;
+    font-family: 'Harmony';
 }
 
 #visitor-entry {
@@ -181,6 +183,7 @@
     font-size: 3vh;
     color: var(--secondary-color);
     font-weight: 400;
+    font-family: 'Harmony';
     text-align: center;
     letter-spacing: 2vh;
     transform-origin: 50% 100%;
@@ -220,6 +223,7 @@
     color: #3a251abc;
     font-size: 3vh;
     font-weight: 400;
+    font-family: 'Harmony';
 }
 
 #info-input-box input::placeholder {
@@ -227,6 +231,7 @@
     line-height: 1;
     font-size: 3vh;
     font-weight: 400;
+    font-family: 'Harmony';
     color: #3a251abc;
 }
 

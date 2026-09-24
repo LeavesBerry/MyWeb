@@ -28,7 +28,7 @@
 							100) }}月{{ (item.email_date % 10000) % 100 }}日
 						</p>
 						<p class="item-desc" id="email-desc">
-							|{{ item.desc.length > 0 ? item.desc : '未在本站详细注册的界面' }}</p>
+							| {{ item.desc.length > 0 ? item.desc : '未知邮件' }}</p>
 					</div>
 					<p class="refresh-tip none-select" v-if="currentConfig.length !== 0" @click="getAllEmailInfo">
 						若缺少邮件<br>可尝试点击此处刷新界面( •̀ ω •́ )</p>
@@ -257,12 +257,14 @@ onUnmounted(() => {
 	font-size: calc(4 * var(--design-vh));
 	color: var(--secondary-color);
 	font-weight: 600;
+	font-family: 'Harmony';
 }
 
 #email-title-input::placeholder {
 	font-size: calc(4 * var(--design-vh));
 	color: var(--secondary-color);
 	font-weight: 600;
+	font-family: 'Harmony';
 }
 
 #recipient-input {
@@ -283,6 +285,7 @@ onUnmounted(() => {
 	font-size: calc(4 * var(--design-vh));
 	color: var(--secondary-color);
 	font-weight: 600;
+	font-family: 'Harmony';
 }
 
 #main-text-input {
@@ -304,7 +307,8 @@ onUnmounted(() => {
     resize: none;
     overflow-y: hidden;
     background-color: rgba(0, 0, 0, 0);
-    font-weight: 300;
+    font-weight: 400;
+	font-family: 'Harmony';
     text-align: top;
     word-break: break-all;
     word-wrap: break-word;
@@ -315,6 +319,7 @@ onUnmounted(() => {
 	font-size: calc(4 * var(--design-vh));
 	color: var(--secondary-color);
 	font-weight: 600;
+	font-family: 'Harmony';
 }
 
 #send-email-button {
@@ -328,6 +333,7 @@ onUnmounted(() => {
 	background: none;
 	font-size: calc(4 * var(--design-vh));
 	font-weight: 600;
+	font-family: 'Harmony';
 	color: var(--secondary-color);
 	cursor: pointer;
 }
@@ -343,7 +349,8 @@ onUnmounted(() => {
 #tip-box p{
 	color: #4a4030;
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 600;
+	font-family: 'Harmony';
 }
 
 #write-email-box {

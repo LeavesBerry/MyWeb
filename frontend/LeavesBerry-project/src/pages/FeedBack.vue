@@ -120,7 +120,8 @@ onUnmounted(() => {
     height: fit-content;
     color: var(--secondary-color);
     font-size: 20px;
-    font-weight: 300;
+    font-weight: 400;
+    font-family: 'Harmony';
     text-align: top;
     word-break: break-all;
     word-wrap: break-word;
@@ -142,6 +143,7 @@ onUnmounted(() => {
     border-radius: 0 0 calc(6 * var(--design-vh, 4.57px)) calc(6 * var(--design-vh, 4.57px));
     font-size: 20px;
     font-weight: 600;
+    font-family: 'Harmony';
     color: var(--secondary-color);
     cursor: pointer;
 }
@@ -157,6 +159,7 @@ onUnmounted(() => {
 #tip-box p {
     color: var(--secondary-color);
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 600;
+    font-family: 'Harmony';
 }
 </style>

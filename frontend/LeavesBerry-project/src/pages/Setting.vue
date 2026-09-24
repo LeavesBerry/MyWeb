@@ -459,7 +459,8 @@ onUnmounted(() => {
     word-wrap: break-word;
     color: var(--secondary-color);
     font-size: 16px;
-    font-weight: 200;
+    font-weight: 400;
+    font-family: 'Harmony';
 }
 
 #origin-img {
@@ -557,6 +558,7 @@ onUnmounted(() => {
     font-size: 20px;
     color: var(--secondary-color);
     font-weight: 600;
+    font-family: 'Harmony';
 }
 
 .item {
@@ -567,6 +569,7 @@ onUnmounted(() => {
     font-size: 20px;
     color: var(--secondary-color);
     font-weight: 600;
+    font-family: 'Harmony';
     outline: none;
     border: none;
     line-height: calc(8 * var(--design-vh));

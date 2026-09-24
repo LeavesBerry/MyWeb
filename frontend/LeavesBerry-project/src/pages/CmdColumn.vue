@@ -130,6 +130,7 @@ onUnmounted(() => {
 	font-size: calc(6 * var(--design-vh));
 	color: var(--secondary-color);
 	font-weight: 800;
+	font-family: 'Harmony';
 	position: relative;
 	top: 0;
 	left: 7%;
@@ -145,6 +146,7 @@ onUnmounted(() => {
 	border: none;
 	font-size: calc(10 * var(--design-vh));
 	font-weight: 500;
+	font-family: 'Harmony';
 	color: var(--secondary-color);
 }
 

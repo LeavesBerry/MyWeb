@@ -85,7 +85,8 @@ onUnmounted(() => {
 #proto-title {
     color: var(--secondary-color);
     font-size: 25px;
-    font-weight: 700;
+    font-weight: 800;
+    font-family: 'Harmony';
     padding-top: calc(4 * var(--design-vh, 4.57px));
 }
 
@@ -105,7 +106,8 @@ onUnmounted(() => {
     text-align: left;
     color: var(--secondary-color);
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 600;
+    font-family: 'Harmony';
 }
 
 #detail-text {
