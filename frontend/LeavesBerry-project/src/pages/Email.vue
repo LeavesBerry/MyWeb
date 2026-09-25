@@ -45,7 +45,6 @@
 			</div>
 		</div>
 		<teleport class="fixed-page" to="#app #app-root">
-			<Owner></Owner>
 			<Sidebar :type-list="emailTypeList" @change-dir="switchDirConfig"
 			v-show="!configModule.isConfigClosed"></Sidebar>
 			<ExContent></ExContent>
@@ -64,7 +63,6 @@ import {
 } from "../utils/index";
 import { ref, onMounted, onUnmounted, watch } from "vue"
 import Sidebar from "../components/Sidebar.vue";
-import Owner from "../components/Owner.vue";
 import ExContent from "../components/ExContent.vue";
 
 useHashDetail('Email')
@@ -279,6 +277,8 @@ onUnmounted(() => {
 	background: none;
 	font-size: calc(4 * var(--design-vh));
 	color: var(--secondary-color);
+	font-weight: 600;
+	font-family: 'Harmony';
 }
 
 #recipient-input::placeholder {

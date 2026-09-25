@@ -56,7 +56,6 @@
 			</div>
 		</div>
 		<teleport class="fixed-page" to="#app #app-root">
-			<Owner></Owner>
 			<sidebar :type-list="collTypeList" @change-dir="switchDirConfig"></sidebar>
 		</teleport>
 	</div>
@@ -73,7 +72,6 @@ import {
 } from "../utils/index";
 import { ROOTPATH } from "../router/index.js";
 import { ref, onMounted, onUnmounted } from "vue"
-import Owner from "../components/Owner.vue";
 
 let navList = []
 let groupMap = new Map()

@@ -21,7 +21,6 @@
 			</div>
 		</div>
 		<teleport class="fixed-page" to="#app #app-root">
-			<Owner></Owner>
 			<sidebar :type-list="annoTypeList" @change-dir="switchDirConfig"
 			v-show="!configModule.isConfigClosed"></sidebar>
 			<ExContent></ExContent>
@@ -37,7 +36,6 @@ import {
 } from "../utils/index";
 import { ref, onMounted, onUnmounted } from "vue"
 import Sidebar from "../components/Sidebar.vue";
-import Owner from "../components/Owner.vue";
 import ExContent from "../components/ExContent.vue";
 
 useHashDetail('Announce')

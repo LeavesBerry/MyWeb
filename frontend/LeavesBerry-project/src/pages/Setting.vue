@@ -2,64 +2,74 @@
     <div class="page" id="setting-page">
         <div class="slide-page">
             <div class="item-box" v-if="currentContent == 'name'">
-                <input class="item" id="name-input" v-model="nameInputValue" placeholder="请输入名称 | 8字以内"
-                maxlength="8">
-                <button class="item" id="change-name-button" @click="changeName">更改名称</button>
+                <div class="item change-box">
+                    <input class="border-up" v-model="nameInputValue" placeholder="请输入名称 | 8字以内"
+                    maxlength="8">
+                    <button class="border-down" @click="changeName">更改名称</button>
+                </div>
             </div>
             <div class="item-box" v-if="currentContent == 'bio'">
-                <input class="item" id="bio-input" v-model="bioInputValue" placeholder="请输入简介 | 26字以内"
-                maxlength="26">
-                <button class="item" id="change-bio-button" @click="bioModule.changeBio">更改简介</button>
-                <p class="refresh-tip">•如果你想不出一个满意的简介,不妨试试</p>
-                <div style="width: 70vw;position:absolute;top: 60%;border-top: 3px solid var(--secondary-color);"></div>
-                <div id="gener-bio-button-box">
-                    <button class="gener-bio-button item" id="poem-gener-bio-button"
-                    @click="bioModule.generBio('poetry')">从诗歌中选取</button>
-                    <button class="gener-bio-button item" id="game-gener-bio-button"
-                    @click="bioModule.generBio('lines')">从台词中选取</button>
+                <div class="item change-box">
+                    <input class="border-up" v-model="bioInputValue" placeholder="请输入简介 | 26字以内"
+                    maxlength="26">
+                    <button class="border-down" @click="bioModule.changeBio">更改简介</button>
+                    <p class="refresh-tip">•如果你想不出一个满意的简介,不妨试试</p>
+                    <div style="width: 70vw;margin-top: -5px;border-top: 3px solid var(--secondary-color);"></div>
+                    <div id="gener-bio-button-box">
+                        <button class="gener-bio-button border-up" id="poem-gener-bio-button"
+                        @click="bioModule.generBio('poetry')">从诗歌中选取</button>
+                        <button class="gener-bio-button border-down" id="line-gener-bio-button"
+                        @click="bioModule.generBio('lines')">从台词中选取</button>
+                    </div>
                 </div>
             </div>
             <div class="item-box" v-if="currentContent == 'avatar'">
-                <label class="item" id="avatar-input">
-                    <span id="docu-name">
-                        {{ avatarState.avatarFile ? `已选择: ${avatarState.avatarFile.name} | 点击更改` : "点击选择文件" }}
-                    </span>
-                    <input placeholder="选择文件" type="file" accept="image/*" @change="avatarModule.selectFile($event)">
-                </label>
+                <div class="item change-box">
+                    <label class="border-up" id="avatar-input">
+                        <span id="docu-name">
+                            {{ avatarState.avatarFile ? `已选择: ${avatarState.avatarFile.name} | 点击更改` : "点击选择文件" }}
+                        </span>
+                        <input placeholder="选择文件" type="file" accept="image/*" @change="avatarModule.selectFile($event)">
+                    </label>
 
-                <button class="item" id="change-avatar-button" @click="avatarModule.changeAvatar"
-                    :disabled="!avatarModule.cropReady">更改头像</button>
+                    <button class="border-down" id="change-avatar-button" @click="avatarModule.changeAvatar"
+                        :disabled="!avatarModule.cropReady">更改头像</button>
 
-                <div id="crop-area">
-                    <div id="crop-tip-box">
-                        <p id="crop-tip" v-for="(item, index) in avatarState.tipList" :key="`${item}-${index}`"
-                        v-if="avatarState.avatarFile">•{{ item }}</p>
-                    </div>
+                    <div style="width: 70vw;margin-top: 30px;border-top: 3px solid var(--secondary-color);"></div>
 
-                    <div v-if="avatarState.originImgUrl" id="preview-box" :ref="el => avatarState.previewRef = el">
-                        <img :src="avatarState.originImgUrl" :ref="el => avatarState.imgRef = el" id="origin-img" draggable="false" @load="avatarModule.initCropBox">
-                        <div id="crop-box" :style="avatarModule.cropBoxStyle" @mousedown="avatarModule.startMove">
-                            <div v-for="handle in avatarState.handles" :key="handle" :class="['handle', handle]"
-                                @mousedown.stop="avatarModule.startResize(handle, $event)">
+                    <div id="crop-area">
+                        <div id="crop-tip-box">
+                            <p id="crop-tip" v-for="(item, index) in avatarState.tipList" :key="`${item}-${index}`"
+                            v-if="avatarState.avatarFile">•{{ item }}</p>
+                        </div>
+
+                        <div v-if="avatarState.originImgUrl" id="preview-box" :ref="el => avatarState.previewRef = el">
+                            <img :src="avatarState.originImgUrl" :ref="el => avatarState.imgRef = el" id="origin-img" draggable="false" @load="avatarModule.initCropBox">
+                            <div id="crop-box" :style="avatarModule.cropBoxStyle" @mousedown="avatarModule.startMove">
+                                <div v-for="handle in avatarState.handles" :key="handle" :class="['handle', handle]"
+                                    @mousedown.stop="avatarModule.startResize(handle, $event)">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="space"></div>
+                    <div class="space"></div>
+                </div>
 
             </div>
             <div class="item-box" v-if="currentContent == 'email'">
-                <input class="item" id="email-input" v-model="emailInputValue" placeholder="请输入邮箱"
-                maxlength="40">
-                <input class="item" id="password-input" v-model="passwordInputValue" placeholder="请输入密码"
-                maxlength="40">
-                <button class="item" id="change-email-button" @click="changeEmail">更改邮箱</button>
+                <div class="item change-box">
+                    <input class="border-up" v-model="emailInputValue" placeholder="请输入邮箱"
+                    maxlength="40">
+                    <input class="border-down" id="password-input" 
+                    v-model="passwordInputValue" placeholder="请输入密码"
+                    maxlength="40">
+                    <button class="border-down" @click="changeEmail">更改邮箱</button>
+                </div>
             </div>
             <div class="item-box" v-if="currentContent == 'logout'"></div>
         </div>
         <teleport class="fixed-page" to="#app #app-root">
-            <Owner></Owner>
             <Sidebar :type-list="setTypeList" @change-dir="switchDirContent"></Sidebar>
         </teleport>
     </div>
@@ -67,7 +77,6 @@
 
 <script setup>
 import { ref, reactive, onUnmounted, onMounted } from 'vue'
-import Owner from '../components/owner.vue'
 import Sidebar from '../components/Sidebar.vue'
 import {
     apiRequest, userState, disposeReturn, showTips, currentSidebarConfig,
@@ -428,17 +437,20 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.item:active {
+    transform: none;
+}
+
 #crop-area {
     position: relative;
-    top: calc(8 * var(--design-vh));
+    margin-top: calc(8 * var(--design-vh));
 }
 
 #preview-box {
-    position: absolute;
+    position: relative;
     width: 600px;
+    margin-top: 20px;
     overflow: hidden;
-    top: 0;
-    left: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -446,9 +458,7 @@ onUnmounted(() => {
 }
 
 #crop-tip-box {
-    position: absolute;
-    top: -4px;
-    left: 620px;
+    margin-top: calc(-1 * var(--design-vh));
     width: calc(70vw - 620px);
     text-align: left;
 }
@@ -561,28 +571,63 @@ onUnmounted(() => {
     font-family: 'Harmony';
 }
 
-.item {
-    height: calc(8 * var(--design-vh));
-    flex-direction: column;
-    padding-top: calc(0.4 * var(--design-vh));
-    text-align: center;
-    font-size: 20px;
-    color: var(--secondary-color);
-    font-weight: 600;
-    font-family: 'Harmony';
-    outline: none;
-    border: none;
-    line-height: calc(8 * var(--design-vh));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .space {
-    margin-top: 80vh;
+    margin-top: 10px;
     width: 100vw;
     height: 10vh;
     background:none;
+}
+
+.change-box {
+    min-height: calc(20 * var(--design-vh));
+	flex-direction: column;
+	height: max-content;
+	display: flex;
+	align-items: center;
+	padding-bottom: calc(5 * var(--design-vh));
+}
+
+.border-up {
+    width: 65vw;
+	height: calc(8 * var(--design-vh));
+	border-radius: calc(5 * var(--design-vh)) calc(5 * var(--design-vh)) 0 0;
+	border: 3px solid var(--secondary-color);
+	text-align: center;
+	line-height: calc(8 * var(--design-vh));
+	position: relative;
+	margin-top: calc(6 * var(--design-vh));
+	background: none;
+	font-size: calc(4 * var(--design-vh));
+	color: var(--secondary-color);
+	font-weight: 600;
+	font-family: 'Harmony';
+}
+
+.border-down {
+    width: 65vw;
+	height: calc(8 * var(--design-vh));
+	border-radius: 0 0 calc(5 * var(--design-vh)) calc(5 * var(--design-vh));
+	border: 3px solid var(--secondary-color);
+	text-align: center;
+	line-height: calc(8 * var(--design-vh));
+	position: relative;
+	margin-top: -3px;
+	background: none;
+	font-size: calc(4 * var(--design-vh));
+	color: var(--secondary-color);
+    font-weight: 600;
+	font-family: 'Harmony';
+}
+
+#password-input {
+    border-radius: 0;
+}
+
+.border-down::placeholder,.border-up::placeholder,#password-input::placeholder {
+    font-size: calc(4 * var(--design-vh));
+	color: var(--secondary-color);
+    font-weight: 600;
+	font-family: 'Harmony';
 }
 
 </style>

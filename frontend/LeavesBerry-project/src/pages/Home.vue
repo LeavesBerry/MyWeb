@@ -4,27 +4,16 @@
 			<Logo logo-class="home-logo" :width="logoSize" :height="logoSize"></Logo>
 			<div class="home-divider" id="home-d1"></div>
 			<div id="home-icon-box">
-				<img class="home-icon" src="/image/home/home_music_icon.png">
-				<img class="home-icon" src="/image/home/home_diary_icon.png">
-				<img class="home-icon" src="/image/home/home_draw_lots_icon.png">
 			</div>
 			<div class="home-divider" id="home-d2"></div>
-			<span class="home-star none-select" id="home-s1">✦</span>
-			<span class="home-star none-select" id="home-s2">✦</span>
-			<span class="home-star none-select" id="home-s3">✦</span>
-			<span class="home-star none-select" id="home-s4">✦</span>
-			<span class="home-star none-select" id="home-s5">✦</span>
-			<span class="home-star none-select" id="home-s6">✦</span>
+			<span v-for="index in 6" class="home-star none-select" :id="`home-s${index}`"
+			:key="index">✦</span>
 		</div>
 	</div>
-	<teleport class="fixed-page" to="#app #app-root">
-		<Owner></Owner>
-	</teleport>
 </template>
 
 <script setup>
 import Logo from '../components/Logo.vue';
-import Owner from '../components/owner.vue';
 import { ref } from 'vue';
 import { isPortrait } from '../utils/index.js';
 

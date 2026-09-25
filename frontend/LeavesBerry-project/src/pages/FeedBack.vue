@@ -14,15 +14,11 @@
             </div>
         </div>
     </div>
-    <teleport class="fixed-page" to="#app #app-root">
-        <Owner></Owner>
-    </teleport>
 </template>
 
 <script setup>
 import { apiRequest, userState, disposeReturn, showTips } from '../utils/index.js';
 import { ref, onMounted, onUnmounted } from 'vue';
-import Owner from '../components/Owner.vue';
 
 let isUnmounted = false;
 const feedback = ref("")

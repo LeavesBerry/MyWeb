@@ -8,6 +8,8 @@
     background: #3b1f09;
     transform-origin: left top;
     box-shadow: 0 0 25px rgba(74, 64, 48, 1);
+    overflow: hidden;
+    isolation: isolate;
 }
 
 #navbar> :not(#bio) {
@@ -95,15 +97,6 @@
     max-height: calc(3 * var(--design-vh, 4.57px));
     flex: none;
     pointer-events: none;
-}
-
-.navbar-function-text {
-    display: grid;
-    place-items: center;
-    width: calc(3 * var(--design-vh, 4.57px));
-    height: calc(3 * var(--design-vh, 4.57px));
-    line-height: 1;
-    font-size: calc(3 * var(--design-vh, 4.57px));
 }
 
 /* Navbar function icons: pixel-aligned to the reference artwork. */
@@ -223,6 +216,8 @@
 
 #cmd-input::placeholder {
     color: rgba(0, 36, 55, 0.5);
+    font-family: 'Harmony';
+    font-weight: 400;
 }
 
 #execute-cmd-button {
@@ -260,6 +255,8 @@
     width: 100%;
     height: auto;
     font-size: calc(3 * var(--design-vh, 4.57px));
+    font-family: 'Harmony';
+    font-weight: 400;
     word-break: break-all;
     word-wrap: break-word;
     white-space: pre-line;
@@ -267,6 +264,67 @@
     -webkit-user-select: text;
     user-select: text;
     color: var(--secondary-color);
+}
+
+.navbar-decoration {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    color: #d7b35f;
+}
+
+.navbar-ornament {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.navbar-ornament path {
+    vector-effect: non-scaling-stroke;
+}
+
+.ornament-line,
+.ornament-corner,
+.ornament-mid,
+.ornament-center-flourish,
+.ornament-diamond {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.15;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+}
+
+.ornament-line--soft { opacity: .48; }
+.ornament-corner { opacity: .78; }
+.ornament-mid { opacity: .82; }
+
+.ornament-node {
+    fill: #3b1f09;
+    stroke: currentColor;
+    stroke-width: 1;
+}
+
+.ornament-node--small { opacity: .8; }
+.ornament-center-flourish { opacity: .88; }
+
+.ornament-diamond {
+    fill: none;
+    stroke-width: 1.25;
+    opacity: .96;
+}
+
+#search-input,
+#search-button,
+#navbar-fuction-button-box {
+    z-index: 2;
+}
+
+#search-input,
+#search-button {
+    background-color: #3b1f09;
 }
 
 @media (min-width: 1px) and (orientation: portrait) {
@@ -319,4 +377,22 @@
     #cmd-input::placeholder {
         color: rgba(255, 243, 208, 0.5);
     }
+
+    .navbar-decoration {
+        color: #9a6b2e;
+    }
+
+    #search-input,
+    #search-button {
+        background-color: #f8e6b4;
+    }
+
+    .ornament-node {
+        fill: #f8e6b4;
+    }
+}
+
+@media (max-width: 900px) {
+    .ornament-center-flourish { opacity: .55; }
+    .ornament-mid { opacity: .62; }
 }

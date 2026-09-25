@@ -12,7 +12,6 @@
 			</div>
 		</div>
 		<teleport class="fixed-page" to="#app #app-root">
-			<Owner></Owner>
 			<Sidebar :type-list="cmdTypeList" @change-dir="switchDirConfig"></Sidebar>
 		</teleport>
 	</div>
@@ -27,7 +26,6 @@ import {
 	currentSidebarConfig, classifyGroup,
 	apiRequest, disposeReturn
 } from '../utils/index';
-import Owner from '../components/Owner.vue';
 
 let navList = []
 let currentContent = ref([])

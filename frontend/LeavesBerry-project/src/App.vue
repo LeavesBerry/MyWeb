@@ -10,6 +10,8 @@
     </div>
     <!-------------提示-------------->
     <p class="tip" :style="tip.tipStyle">{{ tip.tipText }}</p>
+    <!-------------版权-------------->
+    <CopyRight></CopyRight>
     <!-------------固定界面出口-------------->
     <div id="teleport-root"></div>
     
@@ -34,38 +36,12 @@
 
       <!------------------菜单边框装饰------------------->
       <!-------------星星-------------->
-      <span class="menu-star s1"><svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"
-              fill="currentColor"></path>
-          </svg></span>
-      <span class="menu-star s2"><svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"
-              fill="currentColor"></path>
-          </svg></span>
-      <span class="menu-star s3"><svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"
-              fill="currentColor"></path>
-          </svg></span>
-      <span class="menu-star s4"><svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"
-              fill="currentColor"></path>
-          </svg></span>
-      <span class="menu-star s5"><svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"
-              fill="currentColor"></path>
-          </svg></span>
-      <span class="menu-star s6"><svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"
-              fill="currentColor"></path>
-          </svg></span>
-      <span class="menu-star s7"><svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"
-              fill="currentColor"></path>
-          </svg></span>
-      <span class="menu-star s8"><svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"
-              fill="currentColor"></path>
-          </svg></span>
+      <span v-for="index in 8" class="menu-star" :class="`s${index}`" :key="index">
+        <svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"
+            fill="currentColor"></path>
+        </svg>
+      </span>
       <!-------------线条-------------->
       <svg width="100%" height="100%" class="menu-line">
         <line x1="27.2px" y1="11px" x2="250px" y2="11px" stroke="currentColor" stroke-width="1" />
@@ -179,6 +155,63 @@
 
     <!-----------------------导航栏-------------------------->
     <div id="navbar" :style="pageState.navbar">
+
+      <!-- 导航栏复古纹样：纯线条 SVG，不遮挡搜索框和功能按钮 -->
+      <div class="navbar-decoration" aria-hidden="true">
+        <svg class="navbar-ornament" viewBox="0 0 1000 80" preserveAspectRatio="none">
+          <path class="ornament-line ornament-line--soft" d="M8 5H992 M8 75H992" />
+          <path class="ornament-line" d="M18 9H982 M18 71H982" />
+
+          <g class="ornament-corner ornament-corner--left">
+            <path d="M8 5L23 5L34 16L46 5H77L87 15L98 5H124" />
+            <path d="M8 75L23 75L34 64L46 75H77L87 65L98 75H124" />
+
+            <path d="M47 9L56 18L66 9M47 71L56 62L66 71" />
+            <path d="M74 9L83 18L92 9M74 71L83 62L92 71" />
+          </g>
+
+          <g class="ornament-corner ornament-corner--right" transform="translate(1000 0) scale(-1 1)">
+            <path d="M8 5L23 5L34 16L46 5H77L87 15L98 5H124" />
+            <path d="M8 75L23 75L34 64L46 75H77L87 65L98 75H124" />
+
+            <path d="M47 9L56 18L66 9M47 71L56 62L66 71" />
+            <path d="M74 9L83 18L92 9M74 71L83 62L92 71" />
+          </g>
+
+          <g class="ornament-mid">
+            <path d="M310 40H388 M612 40H690" />
+            <path d="M215 40H285 M715 40H785" />
+            <path d="M112 40H188 M812 40H888" />
+            <path d="M64 40H92 M908 40H936" />
+            <path d="M292 40H302 M698 40H708" />
+            <path d="M195 40H205 M795 40H805" />
+            <path d="M99 40H105 M895 40H901" />
+            <path class="ornament-node" d="M304 40l6-5 6 5-6 5z M684 40l6-5 6 5-6 5z" />
+            <path class="ornament-node ornament-node--small"
+              d="M282 40l3-3 3 3-3 3z M712 40l3-3 3 3-3 3z
+                 M185 40l3-3 3 3-3 3z M812 40l3-3 3 3-3 3z
+                 M89 40l3-3 3 3-3 3z M908 40l3-3 3 3-3 3z" />
+          </g>
+
+          <g class="ornament-center-flourish">
+            <path d="M420 40H458 M542 40H580" />
+            <path d="M458 40C469 40 472 31 480 27C474 36 477 40 486 40" />
+            <path d="M542 40C531 40 528 31 520 27C526 36 523 40 514 40" />
+            <path d="M466 40C475 46 480 50 489 51C483 46 480 42 480 38" />
+            <path d="M534 40C525 46 520 50 511 51C517 46 520 42 520 38" />
+            <path d="M451 40l7-6 7 6-7 6z M535 40l7-6 7 6-7 6z" />
+          </g>
+
+          <!-- 中央宝石简化为纯线条棱形 -->
+          <g class="ornament-diamond">
+            <path d="M500 17L523 40L500 63L477 40Z" />
+            <path d="M500 23L517 40L500 57L483 40Z" />
+            <path d="M500 29L511 40L500 51L489 40Z" />
+            <path d="M500 17V23 M523 40H517 M500 63V57 M477 40H483" />
+          </g>
+        </svg>
+      </div>
+
 
       <input id="search-input" type="text" placeholder="查找……" v-model="pageState.searchKey" />
       <button id="search-button" @click="navbarModule.DoSearch">GO</button>
@@ -320,6 +353,7 @@ import {
   userState, userModule, loginModule, startTimer
 } from './utils/index';
 import { useHead } from "@vueuse/head"
+import CopyRight from './components/CopyRight.vue';
 
 const { goPage, backPage, goPageByName } = useGoPage()
 

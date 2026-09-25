@@ -40,7 +40,7 @@ function processTipQueue() {
     tip.tipText = currentText
     tip.tipStyle = {
         visibility: 'visible',
-        transform: `translateY(${du(6)})`
+        transform: `translateY(${du(7)})`
     }
 
     setTimeout(() => {

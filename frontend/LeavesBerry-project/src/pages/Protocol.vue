@@ -18,13 +18,9 @@
             </div>
         </div>
     </div>
-    <teleport class="fixed-page" to="#app #app-root">
-        <Owner></Owner>
-    </teleport>
 </template>
 
 <script setup>
-import Owner from '../components/Owner.vue'
 import { apiRequest, disposeReturn } from '../utils'
 import { ref, onMounted, onUnmounted } from 'vue'
 

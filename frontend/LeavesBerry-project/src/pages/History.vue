@@ -20,14 +20,12 @@
         </div>
     </div>
     <teleport class="fixed-page" to="#app #app-root">
-        <Owner></Owner>
         <Sidebar :type-list="historyTypeList" @change-dir="switchDirContent"></Sidebar>
     </teleport>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import Owner from '../components/Owner.vue';
 import Sidebar from '../components/Sidebar.vue';
 import api from '../utils/api.js';
 import { disposeReturn, currentSidebarConfig, useGoPage } from '../utils/index.js';
