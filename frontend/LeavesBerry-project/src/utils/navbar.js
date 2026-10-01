@@ -217,7 +217,7 @@ export const navbarModule = {
 
         this.collState.collRefreshPromise = (async () => {
 
-            const res = await api.post('/api/getAllColl')
+            const res = await api.get('/api/getAllColl')
 
             const collInfo = Array.isArray(res.data)
                 ? res.data
@@ -255,7 +255,7 @@ export const navbarModule = {
             )
 
             return collInfo
-        })
+        })()
 
         try {
             return await this.collState.collRefreshPromise

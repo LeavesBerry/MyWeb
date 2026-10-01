@@ -9,6 +9,10 @@ import { visitList } from "./route"
 
 const { goPage } = useGoPage()
 
+function getStorage(type = "local") {
+    return type === "session" ? sessionStorage : localStorage
+}
+
 
 export const cmdHandler = {
     // ------------------------------
@@ -115,11 +119,11 @@ export const cmdHandler = {
     // ------------------------------
     clean: function (item, storage) {
         if (item == "all") {
-            storage.clear()
+            getStorage(storage).clear()
             return `已移除所有本地储存`
         }
-        else if (storage.getItem(item)) {
-            storage.removeItem(item)
+        else if (getStorage(storage).getItem(item)) {
+            getStorage(storage).removeItem(item)
             return `已移除本地储存:${item}`
         }
         else {
@@ -127,6 +131,6 @@ export const cmdHandler = {
         }
     },
     cache: function (item, storage) {
-        return `查找的缓存:${JSON.stringify(storage.getItem(item))}`
+        return `查找的缓存:${JSON.stringify(getStorage(storage).getItem(item))}`
     },
 }

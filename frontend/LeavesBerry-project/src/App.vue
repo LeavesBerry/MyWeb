@@ -228,7 +228,7 @@
         </button>
         <!-------------收藏-------------->
         <button class="navbar-function-button" id="collect-button"
-          :style="{ color: pageState.isCollected ? 'var(--thirdary-color)' : 'var(--secondary-color)' }"
+          :style="{ color: pageState.isCollected ? 'var(--thirdary-color)' : '' }"
           @click="navbarModule.toggleColl" aria-label="收藏">
           <svg class="navbar-function-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 2.8C12.8 7.8 16.2 11.2 21.2 12C16.2 12.8 12.8 16.2 12 21.2C11.2 16.2 7.8 12.8 2.8 12C7.8 11.2 11.2 7.8 12 2.8Z"

@@ -75,8 +75,8 @@ export async function createQRCode(url) {
         width: 220,
         height: 220,
         color: {
-            dark: "var(--secondary-color)",
-            light: "var(--primary-color)"
+            dark: "#3a251a",
+            light: "#fff3d0"
         }
     })
     const a = document.createElement('a')

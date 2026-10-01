@@ -16,7 +16,7 @@
                     {{ singleDrawModule.lotText }}</p>
             </div>
 
-            <img id="draw-lots-background-image" src="/image/drawlots/background.jpg">
+            <img id="draw-lots-background-image">
             
             <button id="draw-lots-button" @click="mode == 'single' ? singleDrawModule.drawLot()
             : console.log(1)"></button>

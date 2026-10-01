@@ -437,6 +437,10 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.item {
+    cursor: default;
+}
+
 .item:active {
     transform: none;
 }
