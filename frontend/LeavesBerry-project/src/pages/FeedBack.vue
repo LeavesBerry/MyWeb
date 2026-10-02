@@ -82,7 +82,7 @@ async function submitFeedback() {
     if (isUnmounted) return
 
     if (!disposeReturn(res)) {
-        outputSubmitRes("已成功提交反馈")
+        outputSubmitRes("下次提交有24小时冷却")
         feedback.value = ""
         couldSubmit.value = false
         localStorage.setItem("last_submit_feedback_time", String(Date.now()))

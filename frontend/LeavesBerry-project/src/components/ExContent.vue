@@ -11,6 +11,7 @@
             <p class="content-title">{{ configModule.contentTitle }}</p>
             <div class="title-content-divider"></div>
             <p class="content-text" >{{ configModule.contentText }}</p>
+            <div class="blank"></div>
         </div>
     </div>
 </template>
@@ -19,29 +20,27 @@
 import { configModule, du } from '../utils';
 </script>
 
-<style scoped>
+<style>
 .hidden-container {
     position: fixed;
     top: 120vh;
-    left: 5vw;
-    width: 90vw;
-    height: auto;
+    left: 2.5vw;
+    width: 95vw;
+    height: 20px;
     z-index: 10;
 }
 
 .content-container {
-    position: absolute;
+    position: relative;
     top: 0;
     left: 0;
-    width: 90vw;
+    width: 95vw;
     box-shadow: 8px 10px 25px rgb(180, 145, 80, 1);
     background-color: var(--primary-color);
     border-radius: calc(6 * var(--design-vh));
-    width: 90vw;
     transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
     justify-content: center;
     align-items: center;
-    display: flex;
     flex-direction: column;
     display: flex;
 }

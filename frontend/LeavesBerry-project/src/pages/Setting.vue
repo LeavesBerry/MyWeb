@@ -591,15 +591,13 @@ onUnmounted(() => {
 	padding-bottom: calc(5 * var(--design-vh));
 }
 
-.border-up {
+.border-up,.border-down {
     width: 65vw;
 	height: calc(8 * var(--design-vh));
-	border-radius: calc(5 * var(--design-vh)) calc(5 * var(--design-vh)) 0 0;
 	border: 3px solid var(--secondary-color);
 	text-align: center;
 	line-height: calc(8 * var(--design-vh));
 	position: relative;
-	margin-top: calc(6 * var(--design-vh));
 	background: none;
 	font-size: calc(4 * var(--design-vh));
 	color: var(--secondary-color);
@@ -607,20 +605,14 @@ onUnmounted(() => {
 	font-family: 'Harmony';
 }
 
+.border-up {
+    border-radius: calc(5 * var(--design-vh)) calc(5 * var(--design-vh)) 0 0;
+    margin-top: calc(6 * var(--design-vh));
+}
+
 .border-down {
-    width: 65vw;
-	height: calc(8 * var(--design-vh));
 	border-radius: 0 0 calc(5 * var(--design-vh)) calc(5 * var(--design-vh));
-	border: 3px solid var(--secondary-color);
-	text-align: center;
-	line-height: calc(8 * var(--design-vh));
-	position: relative;
 	margin-top: -3px;
-	background: none;
-	font-size: calc(4 * var(--design-vh));
-	color: var(--secondary-color);
-    font-weight: 600;
-	font-family: 'Harmony';
 }
 
 #password-input {

@@ -71,6 +71,11 @@ export const pageMetaConfig = {
         title: "叶果的工坊 | 邮箱",
         type: "other",
         description: "接受和发送站内邮件"
+    },
+    "Sponsor": {
+        title: "叶果的工坊 | 支持",
+        type: "other",
+        description: "查看为本站提供支持者的名单"
     }
 }
 

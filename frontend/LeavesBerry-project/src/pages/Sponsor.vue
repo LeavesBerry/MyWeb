@@ -11,8 +11,8 @@
                     <div id="sponsor-card-decoration" :style="{backgroundColor: sponsorColorMap[item] 
                         ?? 'var(--secondary-color)'}"></div>
                 </div>
-                
             </div>
+            <div class="blank"></div>
         </div>
     </div>
 </template>
@@ -81,7 +81,8 @@ onUnmounted(() => {
 <style scoped>
 #sponsor-box {
     position: absolute;
-    margin-top: 20vh;
+    margin-top: 5vh;
+    padding-bottom: 30px;
     left: 2.5vw;
     width: 95vw;
     display: grid;
@@ -116,7 +117,7 @@ onUnmounted(() => {
     right: -13%;
     top: 65%;
     transform: rotate(-15deg);
-    width: 80%;
+    width: 150%;
     height: 20%;
 }
 
@@ -134,5 +135,11 @@ onUnmounted(() => {
     font-weight: 600;
     font-family: 'Harmony';
     padding: 15px 0;
+}
+
+@media (min-width: 1px) and (orientation: portrait) {
+	.sponsor-card p {
+        font-size: calc(4 * var(--design-vh, 4.57px));;
+    }
 }
 </style>

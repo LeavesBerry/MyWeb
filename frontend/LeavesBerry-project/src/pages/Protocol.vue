@@ -15,6 +15,7 @@
                         <p class="proto-text" id="detail-text">{{ protoDetail }}</p>
                     </div>
                 </div>
+                <div class="blank"></div>
             </div>
         </div>
     </div>
